@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Nursery.Catalog.Application.Data;
 using Nursery.Catalog.Domain.Models;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
+using System.Runtime.InteropServices;
 
 namespace Nursery.Catalog.Infrastructure.Repository;
 
@@ -28,5 +29,29 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
             plant = existingPlant;
         }
         return plant;
+    }
+
+    public async Task<bool> IsPlantExistsAsync(string name, CancellationToken cancellationToken)
+    {
+        var plant = await db.Plants.FirstOrDefaultAsync(p =>p.Name == name);
+        if(plant == null)
+            return false;
+        return true;
+    }
+
+    public async Task<bool> IsCategoryExistsAsync(string name, CancellationToken cancellationToken)
+    {
+        var category = await db.Categories.FirstOrDefaultAsync(p => p.Name == name);
+        if (category == null)
+            return false;
+        return true;
+    }
+
+    public async Task<Category> CreateCategoryAsync(Category category, CancellationToken cancellationToken)
+    {
+        db.Categories.Add(category);
+        var result = await db.SaveChangesAsync(cancellationToken);
+        return category;
+
     }
 }

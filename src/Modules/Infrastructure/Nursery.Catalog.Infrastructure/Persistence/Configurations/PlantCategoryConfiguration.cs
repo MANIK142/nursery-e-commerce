@@ -7,22 +7,22 @@ using System.Text;
 
 namespace Nursery.Catalog.Infrastructure.Persistence.Configurations;
 
-public class PlantCategoryConfiguration 
+public class PlantCategoryConfiguration : IEntityTypeConfiguration<PlantCategory>
 {
-    //public void Configure(EntityTypeBuilder<PlantCategory> builder)
-    //{
-    //    builder.HasKey(pc => new { pc.PlantId, pc.CategoryId });
+    public void Configure(EntityTypeBuilder<PlantCategory> builder)
+    {
+        builder.HasKey(pc => new { pc.PlantId, pc.CategoryId });
 
 
-    //    builder.HasOne<Plant>()
-    //        .WithMany("_categories")
-    //        .HasForeignKey(pc => pc.PlantId)
-    //        .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Plant>()
+            .WithMany("_categories")
+            .HasForeignKey(pc => pc.PlantId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    //    builder.HasOne<Category>()
-    //        .WithMany()
-    //        .HasForeignKey(pc => pc.CategoryId)
-    //        .OnDelete(DeleteBehavior.Cascade);
+        builder.HasOne<Category>()
+            .WithMany()
+            .HasForeignKey(pc => pc.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-    //}
+    }
 }

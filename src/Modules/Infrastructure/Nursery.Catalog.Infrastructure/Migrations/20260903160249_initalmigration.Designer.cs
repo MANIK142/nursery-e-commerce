@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using Nursery.Catalog.Infrastructure.Persistence.Context;
 namespace Nursery.Catalog.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260903160249_initalmigration")]
+    partial class initalmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -119,22 +122,22 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.ToTable("Plants", (string)null);
                 });
 
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantCategory", b =>
+            modelBuilder.Entity("PlantCategory", b =>
                 {
-                    b.Property<Guid>("PlantId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("PlantId", "CategoryId");
+                    b.Property<Guid>("PlantId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasIndex("CategoryId");
+                    b.HasKey("CategoryId", "PlantId");
+
+                    b.HasIndex("PlantId");
 
                     b.ToTable("PlantCategory");
                 });
 
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantCategory", b =>
+            modelBuilder.Entity("PlantCategory", b =>
                 {
                     b.HasOne("Nursery.Catalog.Domain.Models.Category", null)
                         .WithMany()
@@ -143,15 +146,10 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
-                        .WithMany("_categories")
+                        .WithMany()
                         .HasForeignKey("PlantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
-                {
-                    b.Navigation("_categories");
                 });
 #pragma warning restore 612, 618
         }

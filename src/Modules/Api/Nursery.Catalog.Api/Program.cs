@@ -1,11 +1,14 @@
 using BuildingBlocks.Common.Behaviors;
+using BuildingBlocks.Exceptions.Handler;
 using Carter;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Nursery.Catalog.Application;
+using Nursery.Catalog.Application.Data;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 using Nursery.Catalog.Infrastructure.Repository;
-using Nursery.Catalog.Application.Data;
-using Nursery.Catalog.Application;
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 
@@ -28,14 +31,20 @@ builder.Services.AddDbContext<CatalogDbContext>(options =>
 builder.Services.AddScoped<ICatalogDbContext, CatalogDbContext>();
 builder.Services.AddScoped<ICatalogRepository,CatalogRepository>();
 
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    //app.MapOpenApi();
+    app.MapOpenApi();
+    app.MapScalarApiReference();
 }
+
 app.MapCarter();
+app.UseExceptionHandler(options => { });
 app.UseHttpsRedirection();
+
 
 app.Run();

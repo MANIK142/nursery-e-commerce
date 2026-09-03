@@ -6,9 +6,9 @@ using Nursery.Catalog.Domain.Models;
 
 namespace Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
-public record CreatePlantCommand(string SkuCode, string Name, string Description, decimal RetailPrice, string ImageUrl, string CreatedBy) : ICommand<CreatePlantResponse>;
+public record CreatePlantCommand(string SkuCode, string Name, string Description, decimal RetailPrice, string ImageUrl, string CreatedBy, List<Guid> Categories) : ICommand<CreatePlantResponse>;
 
-public record CreatePlantResponse(Plant Plant);
+public record CreatePlantResponse(Guid Id);
 
 public class CreatePlantCommandValidator : AbstractValidator<CreatePlantCommand>
 {
@@ -20,5 +20,6 @@ public class CreatePlantCommandValidator : AbstractValidator<CreatePlantCommand>
         RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
         RuleFor(x => x.Description).MaximumLength(1000).WithMessage("Description must not exceed 1000 characters");
         RuleFor(x => x.RetailPrice).GreaterThan(0).WithMessage("Retail Price must be a positive number");
+        RuleFor(x =>x.Categories).NotNull().WithMessage("Category cannot be empty");
     }
 }

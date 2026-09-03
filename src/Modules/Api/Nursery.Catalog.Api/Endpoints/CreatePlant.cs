@@ -8,11 +8,11 @@ namespace Nursery.Catalog.Api.Endpoints;
 
 public class CreatePlant : ICarterModule
 {
-    public record CreatePlantRequest(string SkuCode, string Name, string Description, decimal RetailPrice, string ImageUrl, string CreatedBy);
-    public record CreatePlantResponse(Plant Plant);
+    public record CreatePlantRequest(string SkuCode, string Name, string Description, decimal RetailPrice, string ImageUrl, string CreatedBy, List<Guid> Categories);
+    public record CreatePlantResponse(Guid Id);
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-       app.MapPost("/plants", async (CreatePlantRequest command, ISender sender) =>
+       app.MapPost("/api/v1/plants", async (CreatePlantRequest command, ISender sender) =>
         {
             var RequestCommand = command.Adapt<CreatePlantCommand>();
             var result = await sender.Send(RequestCommand);
