@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Catalog/">
+    <Project Path="src/Modules/Api/Nursery.Catalog.Api/Nursery.Catalog.Api.csproj" />
+    <Project Path="src/Modules/Application/Nursery.Catalog.Application/Nursery.Catalog.Application.csproj" />
+    <Project Path="src/Modules/Catalog/Nursery.Catalog.Domain/Nursery.Catalog.Domain.csproj" />
+    <Project Path="src/Modules/Infrastructure/Nursery.Catalog.Infrastructure/Nursery.Catalog.Infrastructure.csproj" />
+  </Folder>
+</Solution>
