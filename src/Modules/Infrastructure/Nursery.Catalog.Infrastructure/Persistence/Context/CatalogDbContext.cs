@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nursery.Catalog.Domain.Models;
+using Nursery.Catalog.Application.Data;
 
 namespace Nursery.Catalog.Infrastructure.Persistence.Context;
 
-public class CatalogDbContext : DbContext
+public class CatalogDbContext : DbContext, ICatalogDbContext
 {
     public CatalogDbContext(DbContextOptions<CatalogDbContext> options) : base(options)
     {
