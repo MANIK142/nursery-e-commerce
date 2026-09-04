@@ -34,4 +34,10 @@ public class Category :BaseDomainModel
         Name = name;
         SetModified(modifiedBy);
     }
+
+    public void UpdateDescription(string? description, string modifiedBy)
+    {
+        Description = description;
+        SetModified(modifiedBy);
+    }
 }

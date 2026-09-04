@@ -8,4 +8,5 @@ public interface ICatalogDbContext
 {
     DbSet<Plant> Plants { get; }
     DbSet<Category> Categories { get; }
+    DbSet<PlantCategory> PlantCategories { get; }
 }

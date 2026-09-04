@@ -4,7 +4,7 @@ using MediatR;
 using Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 using Nursery.Catalog.Domain.Models;
 
-namespace Nursery.Catalog.Api.Endpoints;
+namespace Nursery.Catalog.Api.Endpoints.Plant;
 
 public class CreatePlant : ICarterModule
 {

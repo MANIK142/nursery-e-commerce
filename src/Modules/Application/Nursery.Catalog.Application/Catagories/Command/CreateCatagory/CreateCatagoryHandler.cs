@@ -7,7 +7,7 @@ using Nursery.Catalog.Domain.Models;
 
 namespace Nursery.Catalog.Application.Catagories.Command.CreateCatagory;
 
-public class CreateCatagoryHandler(ICatalogRepository catalogRepository) : ICommandHandler<CreateCategoryCommand, CreateCategoryResut>
+public class UpdateCatagoryHandler(ICatalogRepository catalogRepository) : ICommandHandler<CreateCategoryCommand, CreateCategoryResut>
 {
     private readonly ICatalogRepository catalogRepository = catalogRepository;
 

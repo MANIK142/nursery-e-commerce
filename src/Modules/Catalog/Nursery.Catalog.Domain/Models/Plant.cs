@@ -80,4 +80,16 @@ public class Plant : BaseDomainModel
         IsActive = false;
         SetModified(modifiedBy);
     }
+
+    public void SetDescription(string description, string modifiedBy)
+    {
+        Description = description;
+        SetModified(modifiedBy);
+    }
+
+    public void SetName(string name, string modifiedBy)
+    {
+        Name = name;
+        SetModified(modifiedBy);
+    }
 }

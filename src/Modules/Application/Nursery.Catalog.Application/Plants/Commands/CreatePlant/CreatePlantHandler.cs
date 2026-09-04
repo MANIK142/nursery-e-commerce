@@ -1,9 +1,4 @@
-﻿using BuildingBlocks.Common.CQRS;
-using MediatR;
-using Nursery.Catalog.Application.Data;
-using Nursery.Catalog.Domain.Models;
-
-namespace Nursery.Catalog.Application.Plants.Commands.CreatePlant;
+﻿namespace Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
 public class CreatePlantHandler(ICatalogRepository catalogRepository) : ICommandHandler<CreatePlantCommand, CreatePlantResponse>
 {

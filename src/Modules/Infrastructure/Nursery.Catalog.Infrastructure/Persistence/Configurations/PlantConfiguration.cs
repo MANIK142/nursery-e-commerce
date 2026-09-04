@@ -21,10 +21,6 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
 
         builder.Ignore(p => p.CategoryIds);
 
-        builder.HasMany<PlantCategory>("_categories")
-                .WithOne()
-                .HasForeignKey(pc => pc.PlantId)
-                .OnDelete(DeleteBehavior.Cascade);
 
         builder.Navigation("_categories")
             .UsePropertyAccessMode(PropertyAccessMode.Field);

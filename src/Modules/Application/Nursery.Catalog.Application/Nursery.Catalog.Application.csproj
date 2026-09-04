@@ -7,11 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Catagories\Queries\" />
-    <Folder Include="Plants\Queries\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\..\Catalog\Nursery.Catalog.Domain\Nursery.Catalog.Domain.csproj" />
   </ItemGroup>
