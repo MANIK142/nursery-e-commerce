@@ -5,10 +5,8 @@ namespace Nursery.Catalog.Domain.Models;
 public class Plant : BaseDomainModel
 {
     public Guid Id { get; private set; }
-    public string SkuCode { get; private set; } = default!;
     public string Name { get; private set; } = default!;
     public string Description { get; private set; } = default!;
-    public decimal RetailPrice { get; private set; }
     public string ImageUrl { get; private set; } = default!;
     public bool IsActive { get; private set; } = true;
     private readonly List<PlantCategory> _categories = new();
@@ -17,36 +15,22 @@ public class Plant : BaseDomainModel
 
     private Plant() { }
 
-    private Plant(Guid id, string skuCode, string name, string description, decimal retailPrice, string imageUrl)
+    private Plant(Guid id, string name, string description,  string imageUrl)
     {
         Id = id;
-        SkuCode = skuCode;
         Name = name;
         Description = description;
-        RetailPrice = retailPrice;
         ImageUrl = imageUrl;
     }
 
-    public static Plant Create(string skuCode, string name, string description, decimal retailPrice, string imageUrl, string createdBy)
+    public static Plant Create( string name, string description,  string imageUrl, string createdBy)
     {
-        if (string.IsNullOrWhiteSpace(skuCode))
-            throw new ArgumentException("SKU code is required.", nameof(skuCode));
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Plant name is required.", nameof(name));
-        if (retailPrice < 0)
-            throw new ArgumentException("Retail price cannot be negative.", nameof(retailPrice));
-        var plant = new Plant(Guid.NewGuid(), skuCode, name, description, retailPrice, imageUrl);
+ 
+        var plant = new Plant(Guid.NewGuid(), name, description, imageUrl);
         plant.SetCreated(createdBy);
         return plant;
-    }
-
-    public void UpdatePrice(decimal newPrice, string modifiedBy)
-    {
-        if (newPrice <= 0)
-            throw new ArgumentOutOfRangeException(nameof(newPrice), "Retail price must be greater than zero.");
-
-        RetailPrice = newPrice;
-        SetModified(modifiedBy);
     }
 
     public void AddCategory(Guid categoryId, string modifiedBy)
