@@ -9,12 +9,9 @@ public class PlantVariant : BaseDomainModel
     public Money RetailPrice { get; private set; } = default!;
     public Money WholesalePrice { get; private set; } = default!;
     public bool IsActive { get; private set; }
-
     private readonly List<VariantSalePrice> _salePrices = new();
     public IReadOnlyCollection<VariantSalePrice> SalePrices => _salePrices.AsReadOnly();
-
     private PlantVariant() { } // EF Core
-
     private PlantVariant(Guid id, Guid plantId, string sku, string variantName, Money retailPrice, Money wholesalePrice)
     {
         Id = id;
@@ -25,7 +22,6 @@ public class PlantVariant : BaseDomainModel
         WholesalePrice = wholesalePrice;
         IsActive = true;
     }
-
     internal static PlantVariant Create(
         Guid plantId, string sku, string variantName, Money retailPrice, Money wholesalePrice, string createdBy)
     {
@@ -42,7 +38,6 @@ public class PlantVariant : BaseDomainModel
         plantVariant.SetCreated(createdBy);
         return plantVariant;
     }
-
     public void StartSale(Money salePrice, DateTime startsAtUtc, DateTime endsAtUtc, string modifiedBy)
     {
         var hasOverlap = _salePrices.Any(existing => existing.OverlapsWith(startsAtUtc, endsAtUtc));
@@ -54,7 +49,6 @@ public class PlantVariant : BaseDomainModel
         _salePrices.Add(variantSalePrice);
         SetModified(modifiedBy);
     }
-
     public void EndSaleEarly(string modifiedBy)
     {
         var activeSale = _salePrices.FirstOrDefault(s => s.IsActiveAt(DateTime.UtcNow));
@@ -63,6 +57,30 @@ public class PlantVariant : BaseDomainModel
 
         activeSale.EndSale(modifiedBy);
         SetModified(modifiedBy);
+    }
+
+    public void UpdateVariantName(string variantName,string ModifiedBy)
+    {
+        VariantName = variantName;
+        SetModified(ModifiedBy);
+    }
+
+    public void UdpateRetailPrice(Money retailPrice, string ModifiedBy)
+    {
+        RetailPrice = retailPrice;
+        SetModified(ModifiedBy);
+    }
+
+    public void UdpateWholesalePrice(Money wholesalePrice, string ModifiedBy)
+    {
+        WholesalePrice = wholesalePrice;
+        SetModified(ModifiedBy);
+    }
+
+    public void UdpateSku(string sku, string ModifiedBy)
+    {
+        Sku = sku;
+        SetModified(ModifiedBy);
     }
 
     public Money GetPrice(CustomerTier tier, DateTime asOfUtc)
@@ -75,7 +93,6 @@ public class PlantVariant : BaseDomainModel
 
         return WholesalePrice;
     }
-
     public void Deactivate(string modifiedBy)
     {
         IsActive = false;

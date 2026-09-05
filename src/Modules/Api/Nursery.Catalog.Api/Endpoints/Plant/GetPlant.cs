@@ -18,6 +18,7 @@ public class GetPlant : ICarterModule
         .Produces<GetPlantResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Get Plants")
-        .WithDescription("Get Plants"); ;
+        .WithDescription("Get Plants")
+        .WithTags("Plants");
     }
 }   

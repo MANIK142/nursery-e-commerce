@@ -20,7 +20,10 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
 
     public async Task<Plant?> GetPlantById(Guid Id, CancellationToken cancellationToken)
     {
-        var plant = await db.Plants.FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+        var plant = await db.Plants
+            .Include(p => p.Variants)
+            .ThenInclude(v => v.SalePrices)
+            .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
         return plant;
     }
 
@@ -45,7 +48,7 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
     }
     public async Task<bool> UpdatePlantAsync(Plant plant, CancellationToken cancellationToken)
     {
-        db.Plants.Update(plant);
+        //db.Plants.Update(plant);
         var affectedRows = await db.SaveChangesAsync(cancellationToken);
         return affectedRows > 0;
     }

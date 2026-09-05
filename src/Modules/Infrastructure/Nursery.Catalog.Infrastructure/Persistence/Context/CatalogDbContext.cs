@@ -12,6 +12,9 @@ public class CatalogDbContext : DbContext, ICatalogDbContext
     public DbSet<Plant> Plants => Set<Plant>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<PlantCategory> PlantCategories => Set<PlantCategory>();
+
+    public DbSet<PlantVariant> PlantVariants => Set<PlantVariant>();
+    public DbSet<VariantSalePrice> VariantSalePrices => Set<VariantSalePrice>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(CatalogDbContext).Assembly);

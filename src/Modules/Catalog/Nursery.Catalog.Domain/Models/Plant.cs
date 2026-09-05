@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Numerics;
 
 namespace Nursery.Catalog.Domain.Models;
 
@@ -12,6 +13,8 @@ public class Plant : BaseDomainModel
     private readonly List<PlantCategory> _categories = new();
     public IReadOnlyCollection<Guid> CategoryIds => _categories.Select(pc => pc.CategoryId).ToList();
 
+    private readonly List<PlantVariant> _variants = new();
+    public IReadOnlyCollection<PlantVariant> Variants => _variants.AsReadOnly();
 
     private Plant() { }
 
@@ -23,14 +26,62 @@ public class Plant : BaseDomainModel
         ImageUrl = imageUrl;
     }
 
-    public static Plant Create( string name, string description,  string imageUrl, string createdBy)
+    public static Plant Create( string name, string description,  string imageUrl, string createdBy, List<PlantVariantSpec> plantVariantSpecs)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Plant name is required.", nameof(name));
  
         var plant = new Plant(Guid.NewGuid(), name, description, imageUrl);
         plant.SetCreated(createdBy);
+        foreach (var plantVariantSpec in plantVariantSpecs)
+        {
+            var plantVariantSpecPlantId = new PlantVariantSpecWithPlantId(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName,
+                                                    plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice);
+
+            //var plantVariant = PlantVariant.Create(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName, 
+            //                                        plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice, createdBy);
+ 
+            plant.AddVariant(plantVariantSpecPlantId, createdBy);
+        }  
         return plant;
+    }
+
+    public PlantVariant AddVariant(PlantVariantSpecWithPlantId plantVariantSpec, string modifiedBy)
+    {
+        if (plantVariantSpec is null)
+            throw new ArgumentNullException(nameof(plantVariantSpec), "Variant cannot be null.");
+        if (_variants.Any(v => v.Sku == plantVariantSpec.Sku))
+            throw new InvalidOperationException($"A variant with SKU '{plantVariantSpec.Sku}' already exists for this plant.");
+
+        var variant = PlantVariant.Create(plantVariantSpec.PlantId, plantVariantSpec.Sku, plantVariantSpec.VariantName,
+                                                    plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice, modifiedBy);
+
+        _variants.Add(variant);
+        SetModified(modifiedBy);
+        return variant;
+
+    }
+
+
+    public void UpdateVariant(PlantVariantSpecWithId newVariant, string modifiedBy)
+    {
+        var variant = _variants.FirstOrDefault(v => v.Id == newVariant.Id);
+        if (variant is null)
+            throw new InvalidOperationException($"No variant with ID '{newVariant.Id}' exists for this plant.");
+
+        variant.UpdateVariantName(newVariant.VariantName, modifiedBy);
+        variant.UdpateSku(newVariant.Sku, modifiedBy);
+        variant.UdpateRetailPrice(newVariant.RetailPrice, modifiedBy);
+        variant.UdpateWholesalePrice(newVariant.WholesalePrice, modifiedBy);
+       
+    }
+    public void RemoveVariant(Guid variantId, string modifiedBy)
+    {
+        var variant = _variants.FirstOrDefault(v => v.Id == variantId);
+        if (variant is null)
+            throw new InvalidOperationException($"No variant with ID '{variantId}' exists for this plant.");
+        _variants.Remove(variant);
+        SetModified(modifiedBy);
     }
 
     public void AddCategory(Guid categoryId, string modifiedBy)
@@ -77,3 +128,8 @@ public class Plant : BaseDomainModel
         SetModified(modifiedBy);
     }
 }
+
+public record PlantVariantSpec(string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
+public record PlantVariantSpecWithPlantId(Guid PlantId, string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
+
+public record PlantVariantSpecWithId(Guid Id,string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);

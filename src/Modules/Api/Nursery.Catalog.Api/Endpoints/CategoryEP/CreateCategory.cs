@@ -22,7 +22,8 @@ public class CreateCategory : ICarterModule
         .Produces<CreateCategoryResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Create Category")
-        .WithDescription("Create Category"); ;
+        .WithDescription("Create Category")
+        .WithTags("Category"); 
     }
 }
 

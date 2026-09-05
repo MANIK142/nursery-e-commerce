@@ -42,6 +42,7 @@ public class VariantSalePrice : BaseDomainModel
         return variantSalePrice;
     }
 
+  
     public void EndSale(string modifiedBy)
     {
         EndsAtUtc = DateTime.UtcNow;

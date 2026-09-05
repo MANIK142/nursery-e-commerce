@@ -21,7 +21,8 @@ namespace Nursery.Catalog.Api.Endpoints.Plant
         .Produces<UpdatePlantResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Update Plant")
-        .WithDescription("Update Plant");
+        .WithDescription("Update Plant")
+        .WithTags("Plants");
         }
     }
 }

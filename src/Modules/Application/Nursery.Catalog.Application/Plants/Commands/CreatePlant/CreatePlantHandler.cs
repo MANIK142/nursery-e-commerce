@@ -5,13 +5,14 @@ public class CreatePlantHandler(ICatalogRepository catalogRepository) : ICommand
     private readonly ICatalogRepository catalogRepository = catalogRepository;
     public async Task<CreatePlantResponse> Handle(CreatePlantCommand request, CancellationToken cancellationToken)
     {
+     
         var plant = Plant.Create(
-            request.SkuCode,
             request.Name,
             request.Description,
-            request.RetailPrice,
             request.ImageUrl,
-            request.CreatedBy);
+            request.CreatedBy,
+            request.plantVariantSpecs
+            );
 
         foreach (var catId in request.Categories) {
             plant.AddCategory(catId, "admin@nursery.com");

@@ -26,7 +26,8 @@ builder.Services.AddValidatorsFromAssembly(Assembly);
 
 //DbContext Configuration
 builder.Services.AddDbContext<CatalogDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("catalogDb")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("catalogDb")
+    ));
 
 builder.Services.AddScoped<ICatalogDbContext, CatalogDbContext>();
 builder.Services.AddScoped<ICatalogRepository,CatalogRepository>();

@@ -17,7 +17,8 @@ namespace Nursery.Catalog.Api.Endpoints.Plant
             .Produces<DeletePlantResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .WithSummary("Delete Plant")
-            .WithDescription("Delete Plant");
+            .WithDescription("Delete Plant")
+            .WithTags("Plants");
         }
     }
 }

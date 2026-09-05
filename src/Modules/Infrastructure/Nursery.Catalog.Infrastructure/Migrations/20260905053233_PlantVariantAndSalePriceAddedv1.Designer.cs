@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using Nursery.Catalog.Infrastructure.Persistence.Context;
 namespace Nursery.Catalog.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260905053233_PlantVariantAndSalePriceAddedv1")]
+    partial class PlantVariantAndSalePriceAddedv1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,6 +28,7 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Category", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -62,6 +66,7 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -123,6 +128,7 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -169,6 +175,7 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.VariantSalePrice", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")

@@ -19,7 +19,8 @@ public class UpdateCategory : ICarterModule
         .Produces<UpdateCategoryResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Update Category")
-        .WithDescription("Update Category");
+        .WithDescription("Update Category")
+        .WithTags("Category");
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace Nursery.Catalog.Application.Plants.Queries.GetPlants;
 
@@ -16,12 +16,13 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
                               {
                                   Id = p.Id,
                                   Name = p.Name,
-                                  SkuCode = p.SkuCode,
                                   Description = p.Description,
-                                  RetailPrice = p.RetailPrice,
                                   Categories = context.PlantCategories
                                       .Where(pc => pc.PlantId == p.Id)
-                                      .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList()
+                                      .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
+                                  PlantVariants = context.PlantVariants
+                                                    .Where(pv => pv.PlantId == p.Id).Include(p =>p.SalePrices).ToList()
+                                                    
                               })
                               .ToListAsync();
             return new GetPlantResponse(plant);
@@ -64,8 +65,6 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
                   {
                       Id = p.Id,
                       Name = p.Name,
-                      SkuCode = p.SkuCode,
-                      RetailPrice = p.RetailPrice,
                       Description = p.Description,
                       Categories = context.PlantCategories
                             .Where(pc => pc.PlantId == p.Id)

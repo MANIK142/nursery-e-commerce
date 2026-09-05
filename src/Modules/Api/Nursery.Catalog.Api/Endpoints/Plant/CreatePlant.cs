@@ -8,7 +8,7 @@ namespace Nursery.Catalog.Api.Endpoints.Plant;
 
 public class CreatePlant : ICarterModule
 {
-    public record CreatePlantRequest(string SkuCode, string Name, string Description, decimal RetailPrice, string ImageUrl, string CreatedBy, List<Guid> Categories);
+    public record CreatePlantRequest(string Name, string Description,  string ImageUrl, string CreatedBy, List<Guid> Categories,List<PlantVariantSpec> plantVariantSpecs);
     public record CreatePlantResponse(Guid Id);
     public void AddRoutes(IEndpointRouteBuilder app)
     {
@@ -22,6 +22,7 @@ public class CreatePlant : ICarterModule
         .Produces<CreatePlantResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Create Plant")
-        .WithDescription("Create Plant");
+        .WithDescription("Create Plant")
+        .WithTags("Plants");
     }
 }

@@ -19,6 +19,7 @@ public class GetCategory : ICarterModule
         .Produces<GetCategoryResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Get Category")
-        .WithDescription("Get Category");
+        .WithDescription("Get Category")
+        .WithTags("Category");
     }
 }

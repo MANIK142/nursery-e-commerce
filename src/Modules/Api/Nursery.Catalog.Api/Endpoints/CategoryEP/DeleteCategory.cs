@@ -20,6 +20,7 @@ public class DeleteCategory : ICarterModule
         .Produces<DeleteCategoryResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Delete Category")
-        .WithDescription("Delete Category");
+        .WithDescription("Delete Category")
+        .WithTags("Category");
     }
 }
