@@ -28,8 +28,6 @@ public class PlantVariantConfiguration : IEntityTypeConfiguration<PlantVariant>
             m.Property(x => x.Currency).HasColumnName("WholesalePrice_Currency").HasMaxLength(3);
         });
 
-
-
         builder.HasMany(pv => pv.SalePrices)
             .WithOne()
             .HasForeignKey(v => v.PlantVariantId)
@@ -37,6 +35,11 @@ public class PlantVariantConfiguration : IEntityTypeConfiguration<PlantVariant>
 
         builder.Navigation(v => v.SalePrices)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder.HasMany(pv => pv.Images)
+            .WithOne()
+            .HasForeignKey(pi => pi.PlantVariantId)
+            .OnDelete(DeleteBehavior.Restrict);
 
     }
 }

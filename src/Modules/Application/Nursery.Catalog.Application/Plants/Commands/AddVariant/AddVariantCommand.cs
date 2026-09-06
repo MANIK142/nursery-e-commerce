@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Nursery.Catalog.Application.Plants.Commands.AddVariant;
 
-public record AddVariantCommand(Guid PlantId, string Sku, string VariantName, Money RetailPrice, Money WholesalePrice, string ModifiedBy) : ICommand<AddVariantResult>;
+public record AddVariantCommand(Guid PlantId, string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice, string ModifiedBy) : ICommand<AddVariantResult>;
 public record AddVariantResult(Guid Id);
 
 public class AddVariantValidator : AbstractValidator<AddVariantCommand>

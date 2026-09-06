@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.Identity.Client.RP;
 using Nursery.Catalog.Domain.Models;
 
 
@@ -16,15 +17,8 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
 
         builder.Property(x => x.Name).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Description).IsRequired().HasMaxLength(1000);
-        builder.Property(p => p.ImageUrl).HasMaxLength(500);
 
         builder.Ignore(p => p.CategoryIds);
-
-        //builder.HasMany<PlantCategory>("_categories")
-        //.WithOne()
-        //.HasForeignKey(pc => pc.PlantId)
-        //.OnDelete(DeleteBehavior.Cascade);
-
         builder.Navigation("_categories")
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
@@ -36,5 +30,17 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
 
         builder.Navigation(p => p.Variants)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+
+        builder.HasMany(p => p.Images)
+            .WithOne()
+            .HasForeignKey(pi => pi.PlantId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(p => p.CareInstruction)
+            .WithOne()
+            .HasForeignKey<CareInstruction>(ci => ci.PlantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

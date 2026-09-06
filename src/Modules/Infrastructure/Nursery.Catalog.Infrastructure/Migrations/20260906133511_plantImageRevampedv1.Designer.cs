@@ -12,8 +12,8 @@ using Nursery.Catalog.Infrastructure.Persistence.Context;
 namespace Nursery.Catalog.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20260905082054_ValueGenratedNeverSetInAllEntity")]
-    partial class ValueGenratedNeverSetInAllEntity
+    [Migration("20260906133511_plantImageRevampedv1")]
+    partial class plantImageRevampedv1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -123,6 +123,57 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.ToTable("PlantCategories");
                 });
 
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AltText")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPrimaryImage")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PlantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PlantVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlantId");
+
+                    b.HasIndex("PlantVariantId");
+
+                    b.ToTable("PlantImages", (string)null);
+                });
+
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -223,6 +274,19 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantImage", b =>
+                {
+                    b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
+                        .WithMany("Images")
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Nursery.Catalog.Domain.Models.PlantVariant", null)
+                        .WithMany("Images")
+                        .HasForeignKey("PlantVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
                     b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
@@ -321,6 +385,8 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Variants");
 
                     b.Navigation("_categories");
@@ -328,6 +394,8 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("SalePrices");
                 });
 #pragma warning restore 612, 618

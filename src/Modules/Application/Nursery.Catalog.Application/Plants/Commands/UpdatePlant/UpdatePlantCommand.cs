@@ -6,7 +6,7 @@ using Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 namespace Nursery.Catalog.Application.Plants.Commands.UpdatePlant;
 
 public record UpdatePlantCommand(Guid Id, string Name, string Description,
-                                decimal RetailPrice, string SkuCode, string ImageUrl,
+                                decimal RetailPrice, string SkuCode, 
                                 string ModifiedBy,bool IsActive, List<Guid> CategoryIds) 
                                 : ICommand<UpdatePlantResult>;
 

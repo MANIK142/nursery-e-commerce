@@ -11,4 +11,5 @@ public interface ICatalogDbContext
     DbSet<PlantCategory> PlantCategories { get; }
     DbSet<PlantVariant> PlantVariants { get; }
     DbSet<VariantSalePrice> VariantSalePrices { get; }
+    DbSet<PlantImage> PlantImages { get; }
 }

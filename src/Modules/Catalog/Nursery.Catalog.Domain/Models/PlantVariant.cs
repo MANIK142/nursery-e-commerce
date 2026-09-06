@@ -11,6 +11,10 @@ public class PlantVariant : BaseDomainModel
     public bool IsActive { get; private set; }
     private readonly List<VariantSalePrice> _salePrices = new();
     public IReadOnlyCollection<VariantSalePrice> SalePrices => _salePrices.AsReadOnly();
+
+    private readonly List<PlantImage> _images = new();
+    public IReadOnlyCollection<PlantImage> Images => _images.AsReadOnly();
+
     private PlantVariant() { } // EF Core
     private PlantVariant(Guid id, Guid plantId, string sku, string variantName, Money retailPrice, Money wholesalePrice)
     {
@@ -23,7 +27,7 @@ public class PlantVariant : BaseDomainModel
         IsActive = true;
     }
     internal static PlantVariant Create(
-        Guid plantId, string sku, string variantName, Money retailPrice, Money wholesalePrice, string createdBy)
+        Guid plantId, string sku, string variantName, List<ImageSpec> ImageSpecs, Money retailPrice, Money wholesalePrice, string createdBy)
     {
         if (string.IsNullOrWhiteSpace(sku))
             throw new ArgumentException("SKU code is required.", nameof(sku));
@@ -36,6 +40,11 @@ public class PlantVariant : BaseDomainModel
 
         var plantVariant = new PlantVariant(Guid.NewGuid(), plantId, sku, variantName, retailPrice, wholesalePrice);
         plantVariant.SetCreated(createdBy);
+        foreach(var imageSpec in ImageSpecs)
+        {
+            plantVariant.AddPlantImage(plantVariant.Id, imageSpec, createdBy);
+        }
+        
         return plantVariant;
     }
     public void StartSale(Money salePrice, DateTime startsAtUtc, DateTime endsAtUtc, string modifiedBy)
@@ -96,6 +105,42 @@ public class PlantVariant : BaseDomainModel
     public void Deactivate(string modifiedBy)
     {
         IsActive = false;
+        SetModified(modifiedBy);
+    }
+
+
+    public PlantImage AddPlantImage(Guid PlantId, ImageSpec ImageSpec, string modifiedBy)
+    {
+        if (ImageSpec is null)
+            throw new ArgumentNullException(nameof(ImageSpec), "Variant cannot be null.");
+        if (_images.Any(v => v.StorageKey == ImageSpec.StorageKey))
+            throw new InvalidOperationException($"A Image with storagekey '{ImageSpec.StorageKey}' already exists for this plant.");
+
+        var plantImage = PlantImage.CreateForVariant(PlantId,ImageSpec.AltText,ImageSpec.StorageKey,ImageSpec.IsPrimaryImage);
+        _images.Add(plantImage);
+        SetModified(modifiedBy);
+        return plantImage;
+    }
+
+    public void UpdatePlantImage(PlantVariantSpecWithId newVariant, string modifiedBy)
+    {
+        //var variant = _Images.FirstOrDefault(v => v.Id == newVariant.Id);
+        //if (variant is null)
+        //    throw new InvalidOperationException($"No variant with ID '{newVariant.Id}' exists for this plant.");
+
+        //variant.UpdateVariantName(newVariant.VariantName, modifiedBy);
+        //variant.UdpateSku(newVariant.Sku, modifiedBy);
+        //variant.UdpateRetailPrice(newVariant.RetailPrice, modifiedBy);
+        //variant.UdpateWholesalePrice(newVariant.WholesalePrice, modifiedBy);
+
+    }
+
+    public void RemovePlantImage(Guid ImageId, string modifiedBy)
+    {
+        var image = _images.FirstOrDefault(v => v.Id == ImageId);
+        if (image is null)
+            throw new InvalidOperationException($"No Image with ID '{ImageId}' exists for this plant.");
+        _images.Remove(image);
         SetModified(modifiedBy);
     }
 }

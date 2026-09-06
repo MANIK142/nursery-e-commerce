@@ -21,7 +21,7 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
                                       .Where(pc => pc.PlantId == p.Id)
                                       .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
                                   PlantVariants = context.PlantVariants
-                                                    .Where(pv => pv.PlantId == p.Id).Include(p =>p.SalePrices).ToList()
+                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p =>p.SalePrices).ToList()
                                                     
                               })
                               .ToListAsync();
@@ -68,7 +68,9 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
                       Description = p.Description,
                       Categories = context.PlantCategories
                             .Where(pc => pc.PlantId == p.Id)
-                            .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList()
+                            .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
+                      PlantVariants = context.PlantVariants
+                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p => p.SalePrices).ToList()
                   })
                   .ToListAsync();
         return new GetPlantResponse(FilteredPlants);

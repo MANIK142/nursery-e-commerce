@@ -6,7 +6,7 @@ namespace Nursery.Catalog.Api.Endpoints.Plant
     public class UpdatePlant : ICarterModule
     {
         public record UpdatePlantRequest(Guid Id, string Name, string Description,
-                                        decimal RetailPrice, string SkuCode,string ImageUrl,
+                                        decimal RetailPrice, string SkuCode,
                                         string ModifiedBy,bool IsActive, List<Guid> CategoryIds);
 
         public record UpdatePlantResponse(bool IsSuccess);

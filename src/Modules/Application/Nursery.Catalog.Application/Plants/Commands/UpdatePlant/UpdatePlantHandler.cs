@@ -14,7 +14,6 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
             throw new ItemNotFoundException($"Plant with ID {request.Id} not found");
         }
         
-        plant.SetImage(request.ImageUrl, request.ModifiedBy);
         plant.SetName(request.Name, request.ModifiedBy);
         plant.SetDescription(request.Description, request.ModifiedBy);
         if (!request.IsActive)

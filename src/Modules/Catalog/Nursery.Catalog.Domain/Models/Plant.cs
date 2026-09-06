@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Nursery.Catalog.Domain.Models;
 
@@ -8,8 +9,13 @@ public class Plant : BaseDomainModel
     public Guid Id { get; private set; }
     public string Name { get; private set; } = default!;
     public string Description { get; private set; } = default!;
-    public string ImageUrl { get; private set; } = default!;
     public bool IsActive { get; private set; } = true;
+
+    public CareInstruction? CareInstruction { get; private set; } = default!;
+
+    private readonly List<PlantImage> _images = new();       // generic/hero images
+    public IReadOnlyCollection<PlantImage> Images => _images.AsReadOnly();
+
     private readonly List<PlantCategory> _categories = new();
     public IReadOnlyCollection<Guid> CategoryIds => _categories.Select(pc => pc.CategoryId).ToList();
 
@@ -18,33 +24,69 @@ public class Plant : BaseDomainModel
 
     private Plant() { }
 
-    private Plant(Guid id, string name, string description,  string imageUrl)
+    private Plant(Guid id, string name, string description)
     {
         Id = id;
         Name = name;
         Description = description;
-        ImageUrl = imageUrl;
     }
 
-    public static Plant Create( string name, string description,  string imageUrl, string createdBy, List<PlantVariantSpec> plantVariantSpecs)
+    public static Plant Create( string name, string description,   string createdBy, List<PlantVariantSpec> plantVariantSpecs,List<ImageSpec> imageSpecs)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Plant name is required.", nameof(name));
  
-        var plant = new Plant(Guid.NewGuid(), name, description, imageUrl);
+        var plant = new Plant(Guid.NewGuid(), name, description);
         plant.SetCreated(createdBy);
         foreach (var plantVariantSpec in plantVariantSpecs)
         {
-            var plantVariantSpecPlantId = new PlantVariantSpecWithPlantId(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName,
+            var plantVariantSpecPlantId = new PlantVariantSpecWithPlantId(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName,plantVariantSpec.ImageSpecs,
                                                     plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice);
-
-            //var plantVariant = PlantVariant.Create(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName, 
-            //                                        plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice, createdBy);
- 
             plant.AddVariant(plantVariantSpecPlantId, createdBy);
         }  
+
+        foreach(var imagesepc in imageSpecs)
+        {
+            plant.AddPlantImage(plant.Id, imagesepc, createdBy);
+        }
         return plant;
     }
+
+    public PlantImage AddPlantImage(Guid PlantId, ImageSpec ImageSpec, string modifiedBy)
+    {
+        if (ImageSpec is null)
+            throw new ArgumentNullException(nameof(ImageSpec), "Variant cannot be null.");
+        if (_images.Any(v => v.StorageKey == ImageSpec.StorageKey))
+            throw new InvalidOperationException($"A Image with storagekey '{ImageSpec.StorageKey}' already exists for this plant.");
+
+        var plantImage = PlantImage.CreateForPlant(PlantId, ImageSpec.AltText, ImageSpec.StorageKey, ImageSpec.IsPrimaryImage);
+        _images.Add(plantImage);
+        SetModified(modifiedBy);
+        return plantImage;
+    }
+
+    public void UpdatePlantImage(PlantVariantSpecWithId newVariant, string modifiedBy)
+    {
+        //var variant = _images.FirstOrDefault(v => v.Id == newVariant.Id);
+        //if (variant is null)
+        //    throw new InvalidOperationException($"No variant with ID '{newVariant.Id}' exists for this plant.");
+
+        //variant.UpdateVariantName(newVariant.VariantName, modifiedBy);
+        //variant.UdpateSku(newVariant.Sku, modifiedBy);
+        //variant.UdpateRetailPrice(newVariant.RetailPrice, modifiedBy);
+        //variant.UdpateWholesalePrice(newVariant.WholesalePrice, modifiedBy);
+
+    }
+
+    public void RemovePlantImage(Guid ImageId, string modifiedBy)
+    {
+        var image = _images.FirstOrDefault(v => v.Id == ImageId);
+        if (image is null)
+            throw new InvalidOperationException($"No Image with ID '{ImageId}' exists for this plant.");
+        _images.Remove(image);
+        SetModified(modifiedBy);
+    }
+
 
     public PlantVariant AddVariant(PlantVariantSpecWithPlantId plantVariantSpec, string modifiedBy)
     {
@@ -53,8 +95,10 @@ public class Plant : BaseDomainModel
         if (_variants.Any(v => v.Sku == plantVariantSpec.Sku))
             throw new InvalidOperationException($"A variant with SKU '{plantVariantSpec.Sku}' already exists for this plant.");
 
-        var variant = PlantVariant.Create(plantVariantSpec.PlantId, plantVariantSpec.Sku, plantVariantSpec.VariantName,
+        var variant = PlantVariant.Create(plantVariantSpec.PlantId, plantVariantSpec.Sku, plantVariantSpec.VariantName,plantVariantSpec.ImageSpecs,
                                                     plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice, modifiedBy);
+
+    
 
         _variants.Add(variant);
         SetModified(modifiedBy);
@@ -104,11 +148,6 @@ public class Plant : BaseDomainModel
         SetModified(modifiedBy);
     }
 
-    public void SetImage(string? imageUrl, string modifiedBy)
-    {
-        ImageUrl = imageUrl;
-        SetModified(modifiedBy);
-    }
 
     public void Deactivate(string modifiedBy)
     {
@@ -129,7 +168,7 @@ public class Plant : BaseDomainModel
     }
 }
 
-public record PlantVariantSpec(string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
-public record PlantVariantSpecWithPlantId(Guid PlantId, string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
-
+public record PlantVariantSpec(string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice);
+public record PlantVariantSpecWithPlantId(Guid PlantId, string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice);
 public record PlantVariantSpecWithId(Guid Id,string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
+public record ImageSpec(string StorageKey, bool IsPrimaryImage, string AltText);

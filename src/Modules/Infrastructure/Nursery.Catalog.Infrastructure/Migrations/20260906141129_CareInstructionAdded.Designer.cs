@@ -12,8 +12,8 @@ using Nursery.Catalog.Infrastructure.Persistence.Context;
 namespace Nursery.Catalog.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20260905053233_PlantVariantAndSalePriceAddedv1")]
-    partial class PlantVariantAndSalePriceAddedv1
+    [Migration("20260906141129_CareInstructionAdded")]
+    partial class CareInstructionAdded
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,10 +25,91 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.Category", b =>
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.CareInstruction", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AdditionalNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DifficultyLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FertilizingFrequency")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("HumidityLevel")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<bool>("IsToxicToPets")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxTemperatureCelsius")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinTemperatureCelsius")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PlantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PruningNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("SoilType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("SunlightRequirement")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("WateringFrequency")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlantId")
+                        .IsUnique();
+
+                    b.ToTable("CareInstructions", (string)null);
+                });
+
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.Category", b =>
+                {
+                    b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -66,7 +147,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -79,11 +159,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("ImageUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -125,10 +200,60 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.ToTable("PlantCategories");
                 });
 
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AltText")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPrimaryImage")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("PlantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("PlantVariantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlantId");
+
+                    b.HasIndex("PlantVariantId");
+
+                    b.ToTable("PlantImages", (string)null);
+                });
+
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -175,7 +300,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.VariantSalePrice", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
@@ -212,6 +336,15 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.ToTable("VariantSalePrices");
                 });
 
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.CareInstruction", b =>
+                {
+                    b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
+                        .WithOne("CareInstruction")
+                        .HasForeignKey("Nursery.Catalog.Domain.Models.CareInstruction", "PlantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantCategory", b =>
                 {
                     b.HasOne("Nursery.Catalog.Domain.Models.Category", null)
@@ -225,6 +358,19 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                         .HasForeignKey("PlantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantImage", b =>
+                {
+                    b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
+                        .WithMany("Images")
+                        .HasForeignKey("PlantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Nursery.Catalog.Domain.Models.PlantVariant", null)
+                        .WithMany("Images")
+                        .HasForeignKey("PlantVariantId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
@@ -325,6 +471,10 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
                 {
+                    b.Navigation("CareInstruction");
+
+                    b.Navigation("Images");
+
                     b.Navigation("Variants");
 
                     b.Navigation("_categories");
@@ -332,6 +482,8 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("SalePrices");
                 });
 #pragma warning restore 612, 618

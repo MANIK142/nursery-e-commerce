@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Nursery.Catalog.Application.Data;
 using Nursery.Catalog.Domain.Models;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
-using System.Runtime.InteropServices;
 
 namespace Nursery.Catalog.Infrastructure.Repository;
 
@@ -24,6 +23,7 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
             .Include(p => p.Variants)
             .ThenInclude(v => v.SalePrices)
             .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+
         return plant;
     }
 

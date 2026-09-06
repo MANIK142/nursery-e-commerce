@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 
@@ -11,9 +12,11 @@ using Nursery.Catalog.Infrastructure.Persistence.Context;
 namespace Nursery.Catalog.Infrastructure.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    partial class CatalogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260906102449_RemoveFKatPlantAndPlantVariant")]
+    partial class RemoveFKatPlantAndPlantVariant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,88 +24,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.CareInstruction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("AdditionalNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DifficultyLevel")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("FertilizingFrequency")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("HumidityLevel")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<bool>("IsToxicToPets")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("MaxTemperatureCelsius")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinTemperatureCelsius")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("PlantId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("PruningNotes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<string>("SoilType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("SunlightRequirement")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("WateringFrequency")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlantId")
-                        .IsUnique();
-
-                    b.ToTable("CareInstructions", (string)null);
-                });
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Category", b =>
                 {
@@ -157,6 +78,11 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -200,6 +126,7 @@ namespace Nursery.Catalog.Infrastructure.Migrations
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantImage", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AltText")
@@ -221,6 +148,14 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("OwnerType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<Guid?>("PlantId")
                         .HasColumnType("uniqueidentifier");
@@ -244,6 +179,8 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.HasIndex("PlantId");
 
                     b.HasIndex("PlantVariantId");
+
+                    b.HasIndex("OwnerType", "OwnerId");
 
                     b.ToTable("PlantImages", (string)null);
                 });
@@ -333,15 +270,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                     b.ToTable("VariantSalePrices");
                 });
 
-            modelBuilder.Entity("Nursery.Catalog.Domain.Models.CareInstruction", b =>
-                {
-                    b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
-                        .WithOne("CareInstruction")
-                        .HasForeignKey("Nursery.Catalog.Domain.Models.CareInstruction", "PlantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantCategory", b =>
                 {
                     b.HasOne("Nursery.Catalog.Domain.Models.Category", null)
@@ -361,13 +289,11 @@ namespace Nursery.Catalog.Infrastructure.Migrations
                 {
                     b.HasOne("Nursery.Catalog.Domain.Models.Plant", null)
                         .WithMany("Images")
-                        .HasForeignKey("PlantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PlantId");
 
                     b.HasOne("Nursery.Catalog.Domain.Models.PlantVariant", null)
                         .WithMany("Images")
-                        .HasForeignKey("PlantVariantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("PlantVariantId");
                 });
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.PlantVariant", b =>
@@ -468,8 +394,6 @@ namespace Nursery.Catalog.Infrastructure.Migrations
 
             modelBuilder.Entity("Nursery.Catalog.Domain.Models.Plant", b =>
                 {
-                    b.Navigation("CareInstruction");
-
                     b.Navigation("Images");
 
                     b.Navigation("Variants");

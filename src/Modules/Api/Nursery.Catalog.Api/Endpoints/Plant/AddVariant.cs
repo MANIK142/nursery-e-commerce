@@ -5,7 +5,7 @@ namespace Nursery.Catalog.Api.Endpoints.Plant;
 
 public class AddVariant : ICarterModule
 {
-    public record AddVariantRequest(Guid PlantId, string Sku, string VariantName, Money RetailPrice, Money WholesalePrice, string ModifiedBy);
+    public record AddVariantRequest(Guid PlantId, string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice, string ModifiedBy);
     public record AddVariantResponse(Guid Id);
     public void AddRoutes(IEndpointRouteBuilder app)
     {

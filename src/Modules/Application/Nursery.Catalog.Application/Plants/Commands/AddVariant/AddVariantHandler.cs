@@ -16,7 +16,7 @@ public class AddVariantHandler(ICatalogRepository catalogRepository) : ICommandH
             throw new ItemNotFoundException($"Plant not found for id {request.PlantId}");
         }
 
-        var  plantVariantSpecPlantId = new PlantVariantSpecWithPlantId(plant.Id, request.Sku, request.VariantName,
+        var  plantVariantSpecPlantId = new PlantVariantSpecWithPlantId(plant.Id, request.Sku, request.VariantName,request.ImageSpecs,
                                                     request.RetailPrice, request.WholesalePrice);
 
         var variant = plant.AddVariant(plantVariantSpecPlantId,request.ModifiedBy);
