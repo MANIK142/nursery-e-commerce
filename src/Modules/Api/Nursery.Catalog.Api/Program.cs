@@ -1,10 +1,12 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
+using Azure.Storage.Blobs;
 using BuildingBlocks.Common.Behaviors;
 using BuildingBlocks.Exceptions.Handler;
 using Carter;
 using FluentValidation;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nursery.Catalog.Application;
@@ -41,20 +43,26 @@ builder.Services.AddScoped<ICatalogRepository,CatalogRepository>();
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 
-var AccessKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:AccessKey");
-var SecretKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:SecretKey");
-var ServiceUrl = builder.Configuration.GetValue<string>("Storage_Aws:S3:ServiceUrl");
-var ForcePathStyle = builder.Configuration.GetValue<bool>("Storage_Aws:S3:ForcePathStyle");
-var AuthenticationRegion = builder.Configuration.GetValue<string>("Storage_Aws:S3:Region");
-builder.Services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(
-                AccessKey, SecretKey,
-                new AmazonS3Config
-                {
-                    ServiceURL = ServiceUrl,
-                    ForcePathStyle = ForcePathStyle,
-                    AuthenticationRegion = AuthenticationRegion
-                }));
-builder.Services.AddScoped<IBlobStorageService, S3BlobStorageService>();
+//var AccessKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:AccessKey");
+//var SecretKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:SecretKey");
+//var ServiceUrl = builder.Configuration.GetValue<string>("Storage_Aws:S3:ServiceUrl");
+//var ForcePathStyle = builder.Configuration.GetValue<bool>("Storage_Aws:S3:ForcePathStyle");
+//var AuthenticationRegion = builder.Configuration.GetValue<string>("Storage_Aws:S3:Region");
+//builder.Services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(
+//                AccessKey, SecretKey,
+//                new AmazonS3Config
+//                {
+//                    ServiceURL = ServiceUrl,
+//                    ForcePathStyle = ForcePathStyle,
+//                    AuthenticationRegion = AuthenticationRegion
+//                }));
+//builder.Services.AddScoped<IBlobStorageService, S3BlobStorageService>();
+
+
+var AzureConnectionKey = builder.Configuration.GetValue<string>("Storage_Azure:Azure:ConnectionString");
+builder.Services.AddSingleton(new BlobServiceClient(AzureConnectionKey));
+builder.Services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
+
 
 
 var app = builder.Build();
