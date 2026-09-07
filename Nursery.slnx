@@ -10,4 +10,7 @@
     <Project Path="src/Modules/Catalog/Nursery.Catalog.Domain/Nursery.Catalog.Domain.csproj" />
     <Project Path="src/Modules/Infrastructure/Nursery.Catalog.Infrastructure/Nursery.Catalog.Infrastructure.csproj" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>

@@ -8,11 +8,9 @@ using Nursery.Catalog.Domain.Models;
 namespace Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
 public record CreatePlantCommand(string SkuCode, string Name, string Description, decimal RetailPrice, 
-    string CreatedBy, List<Guid> Categories, List<PlantVariantSpec> plantVariantSpecs, List<ImageUploadDto> Images) : ICommand<CreatePlantResponse>;
+    string CreatedBy, List<Guid> Categories, List<PlantVariantSpec> plantVariantSpecs, List<ImageSpec> Images) : ICommand<CreatePlantResponse>;
 
 public record CreatePlantResponse(Guid Id);
-
-public record CreatePlantImageDto(IFormFile File, string AltText, int SortOrder);
 
 public class CreatePlantCommandValidator : AbstractValidator<CreatePlantCommand>
 {

@@ -5,21 +5,21 @@ public class CreatePlantHandler(ICatalogRepository catalogRepository) : ICommand
     private readonly ICatalogRepository catalogRepository = catalogRepository;
     public async Task<CreatePlantResponse> Handle(CreatePlantCommand request, CancellationToken cancellationToken)
     {
-        List<ImageSpec> imageSpecs = [];
-        foreach(var image in request.Images)
-        {
+        //List<ImageSpec> imageSpecs = [];
+        //foreach(var image in request.Images)
+        //{
             // Upload Image to Server/Cloud
-            var storageKey = Guid.NewGuid().ToString();
-            var imageSpec = new ImageSpec(storageKey,image.IsPrimary,image.AltName);
-            imageSpecs.Add(imageSpec);
-        }
+            //var storageKey = Guid.NewGuid().ToString();
+            //var imageSpec = new ImageSpec(storageKey,image.IsPrimary,image.AltName);
+        //    imageSpecs.Add(image);
+        //}
 
         var plant = Plant.Create(
                 request.Name,
                 request.Description,
                 request.CreatedBy,
                 request.plantVariantSpecs,
-                imageSpecs
+                request.Images
             );
 
         foreach (var catId in request.Categories) {

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Minio": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

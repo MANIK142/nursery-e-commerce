@@ -12,11 +12,13 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
         {
             var plant = await context.Plants
                               .Where(p => p.IsActive && p.Id == request.Id)
+                              .Include(p => p.Images)
                               .Select(p => new PlantDto
                               {
                                   Id = p.Id,
                                   Name = p.Name,
                                   Description = p.Description,
+                                  PlantImages = p.Images.ToList(),
                                   Categories = context.PlantCategories
                                       .Where(pc => pc.PlantId == p.Id)
                                       .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
@@ -29,7 +31,7 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
         }
 
         var query = context.Plants
-                    .Where(p => p.IsActive).AsQueryable();
+                    .Where(p => p.IsActive).Include(p => p.Images)  .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(request.FilterValue) && !string.IsNullOrWhiteSpace(request.FilterBy))
         {
@@ -66,6 +68,7 @@ public class GetPlantHandler(ICatalogDbContext context) : IQueryHandler<GetPlant
                       Id = p.Id,
                       Name = p.Name,
                       Description = p.Description,
+                      PlantImages = p.Images.ToList(),
                       Categories = context.PlantCategories
                             .Where(pc => pc.PlantId == p.Id)
                             .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),

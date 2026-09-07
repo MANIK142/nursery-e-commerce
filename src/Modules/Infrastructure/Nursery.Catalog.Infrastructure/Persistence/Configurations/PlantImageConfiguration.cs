@@ -12,8 +12,6 @@ public class PlantImageConfiguration : IEntityTypeConfiguration<PlantImage>
         builder.HasKey(x => x.Id); 
         builder.Property(x => x.Id).ValueGeneratedNever();
 
-        //builder.Property(x => x.PlantId).IsRequired(false);
-        //builder.Property(x => x.PlantVariantId).IsRequired(false);
 
         builder.Property(x => x.StorageKey)
             .HasMaxLength(500)

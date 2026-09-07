@@ -9,7 +9,6 @@ public class PlantImage : BaseDomainModel
     public bool IsPrimaryImage { get; private set; }
 
     private PlantImage() { }
-
     internal static PlantImage CreateForPlant(Guid plantId, string altText, string storageKey, bool isPrimary)
     {
         if (plantId == Guid.Empty) throw new ArgumentException("PlantId cannot be empty.", nameof(plantId));
@@ -24,7 +23,6 @@ public class PlantImage : BaseDomainModel
             IsPrimaryImage = isPrimary
         };
     }
-
     internal static PlantImage CreateForVariant(Guid variantId, string altText, string storageKey, bool isPrimary)
     {
         if (variantId == Guid.Empty) throw new ArgumentException("VariantId cannot be empty.", nameof(variantId));
@@ -39,7 +37,6 @@ public class PlantImage : BaseDomainModel
             IsPrimaryImage = isPrimary
         };
     }
-
     public void SetPrimaryImage(string modifiedBy)
     {
         IsPrimaryImage = true;
