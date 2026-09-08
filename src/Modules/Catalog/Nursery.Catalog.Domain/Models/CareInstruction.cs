@@ -31,7 +31,7 @@ public class CareInstruction :BaseDomainModel
         HumidityLevel humidityLevel,
         FertilizingFrequency fertilizingFrequency,
         CareDifficultyLevel difficultyLevel,
-        bool isToxicToPets) 
+        bool isToxicToPets, string? pruningNotes, string? additionalNotes) 
     {
         PlantId = plantId;
         WateringFrequency = wateringFrequency;
@@ -42,95 +42,82 @@ public class CareInstruction :BaseDomainModel
         FertilizingFrequency = fertilizingFrequency;
         DifficultyLevel = difficultyLevel;
         IsToxicToPets = isToxicToPets;
+        PruningNotes = pruningNotes;
+        AdditionalNotes = additionalNotes;
     }
 
     public static CareInstruction Create(
-        Guid plantId,
-        WateringFrequency wateringFrequency,
-        SunlightRequirement sunlightRequirement,
-        SoilType soilType,
-        int minTemperatureCelsius,
-        int maxTemperatureCelsius,
-        HumidityLevel humidityLevel,
-        FertilizingFrequency fertilizingFrequency,
-        CareDifficultyLevel difficultyLevel,
-        bool isToxicToPets)
+                                        Guid plantId,
+                                        WateringFrequency wateringFrequency,
+                                        SunlightRequirement sunlightRequirement,
+                                        SoilType soilType,
+                                        int minTemperatureCelsius,
+                                        int maxTemperatureCelsius,
+                                        HumidityLevel humidityLevel,
+                                        FertilizingFrequency fertilizingFrequency,
+                                        CareDifficultyLevel difficultyLevel,
+                                        bool isToxicToPets, string? pruningNotes, string? additionalNotes,string CreatedBy)
     {
-        
-
         var careInstruction = new CareInstruction(
-            Guid.NewGuid(),
-            plantId,
-            wateringFrequency,
-            sunlightRequirement,
-            soilType,
-            minTemperatureCelsius,
-            maxTemperatureCelsius,
-            humidityLevel,
-            fertilizingFrequency,
-            difficultyLevel,
-            isToxicToPets);
-
-        
-
+                                                    Guid.NewGuid(),
+                                                    plantId,
+                                                    wateringFrequency,
+                                                    sunlightRequirement,
+                                                    soilType,
+                                                    minTemperatureCelsius,
+                                                    maxTemperatureCelsius,
+                                                    humidityLevel,
+                                                    fertilizingFrequency,
+                                                    difficultyLevel,
+                                                    isToxicToPets,
+                                                    pruningNotes,
+                                                    additionalNotes
+                                                 );
+        careInstruction.SetCreated(CreatedBy);
         return careInstruction;
     }
-
     public void UpdateWatering(WateringFrequency frequency)
     {
         if (WateringFrequency == frequency) return;
-
         WateringFrequency = frequency;
-
     }
-
     public void UpdateSunlight(SunlightRequirement sunlight)
     {
         if (SunlightRequirement == sunlight) return;
-
         SunlightRequirement = sunlight;
- 
     }
-
     public void UpdateSoilType(SoilType soilType)
     {
         if (SoilType == soilType) return;
-
         SoilType = soilType;
     }
-
     public void UpdateTemperatureRange(int minCelsius, int maxCelsius)
     {
         if (MinTemperatureCelsius == minCelsius && MaxTemperatureCelsius == maxCelsius) return;
-
         SetTemperatureRange(minCelsius, maxCelsius);
     }
 
     public void UpdateHumidityLevel(HumidityLevel humidityLevel)
     {
         if (HumidityLevel == humidityLevel) return;
-
         HumidityLevel = humidityLevel;
     }
 
     public void UpdateFertilizingFrequency(FertilizingFrequency frequency)
     {
         if (FertilizingFrequency == frequency) return;
-
         FertilizingFrequency = frequency;
     }
 
     public void UpdateDifficultyLevel(CareDifficultyLevel level)
     {
         if (DifficultyLevel == level) return;
-
         DifficultyLevel = level;
     }
 
     public void SetToxicityToPets(bool isToxic)
     {
         if (IsToxicToPets == isToxic) return;
-
         IsToxicToPets = isToxic;
     }
 
@@ -151,7 +138,6 @@ public class CareInstruction :BaseDomainModel
             throw new ArgumentException(
                 $"Minimum temperature ({minCelsius}°C) cannot exceed maximum ({maxCelsius}°C).");
         }
-
         MinTemperatureCelsius = minCelsius;
         MaxTemperatureCelsius = maxCelsius;
     }

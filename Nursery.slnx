@@ -2,13 +2,17 @@
   <Folder Name="/src/" />
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Utility/BuildingBlocks.Utility.csproj" Id="218b101e-b15c-49c4-95a2-2b3827a0c5cd" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Catalog/">
-    <Project Path="src/Modules/Api/Nursery.Catalog.Api/Nursery.Catalog.Api.csproj" />
-    <Project Path="src/Modules/Application/Nursery.Catalog.Application/Nursery.Catalog.Application.csproj" />
+    <Project Path="src/Modules/Catalog/Nursery.Catalog.Api/Nursery.Catalog.Api.csproj" />
+    <Project Path="src/Modules/Catalog/Nursery.Catalog.Application/Nursery.Catalog.Application.csproj" />
     <Project Path="src/Modules/Catalog/Nursery.Catalog.Domain/Nursery.Catalog.Domain.csproj" />
-    <Project Path="src/Modules/Infrastructure/Nursery.Catalog.Infrastructure/Nursery.Catalog.Infrastructure.csproj" />
+    <Project Path="src/Modules/Catalog/Nursery.Catalog.Infrastructure/Nursery.Catalog.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Identity/">
+    <Project Path="src/Modules/Identity/Nursery.Identity/Nursery.Identity.csproj" Id="ca54c75f-5caa-421c-b861-354a16c9aab4" />
   </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />

@@ -10,7 +10,6 @@ public class Plant : BaseDomainModel
     public string Name { get; private set; } = default!;
     public string Description { get; private set; } = default!;
     public bool IsActive { get; private set; } = true;
-
     public CareInstruction? CareInstruction { get; private set; } = default!;
 
     private readonly List<PlantImage> _images = new();       // generic/hero images
