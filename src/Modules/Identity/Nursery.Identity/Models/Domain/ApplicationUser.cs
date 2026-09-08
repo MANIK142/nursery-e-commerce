@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Nursery.Identity.Models;
+namespace Nursery.Identity.Models.Domain;
 
 public class ApplicationUser :IdentityUser
 {

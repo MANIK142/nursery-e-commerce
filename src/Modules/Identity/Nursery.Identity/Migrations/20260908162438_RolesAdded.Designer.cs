@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nursery.Identity.DatabaseContext;
 
@@ -11,9 +12,11 @@ using Nursery.Identity.DatabaseContext;
 namespace Nursery.Identity.Migrations
 {
     [DbContext(typeof(NurseryIdentityDbContext))]
-    partial class NurseryIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908162438_RolesAdded")]
+    partial class RolesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

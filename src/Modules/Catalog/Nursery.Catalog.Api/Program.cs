@@ -46,30 +46,6 @@ builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-//builder.Services.AddScoped<IBlobStorageService,LocalStorageService>();
-
-
-
-
-//var AccessKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:AccessKey");
-//var SecretKey = builder.Configuration.GetValue<string>("Storage_Aws:S3:SecretKey");
-//var ServiceUrl = builder.Configuration.GetValue<string>("Storage_Aws:S3:ServiceUrl");
-//var ForcePathStyle = builder.Configuration.GetValue<bool>("Storage_Aws:S3:ForcePathStyle");
-//var AuthenticationRegion = builder.Configuration.GetValue<string>("Storage_Aws:S3:Region");
-//builder.Services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(
-//                AccessKey, SecretKey,
-//                new AmazonS3Config
-//                {
-//                    ServiceURL = ServiceUrl,
-//                    ForcePathStyle = ForcePathStyle,
-//                    AuthenticationRegion = AuthenticationRegion
-//                }));
-//builder.Services.AddScoped<IBlobStorageService, S3BlobStorageService>();
-
-
-//var AzureConnectionKey = builder.Configuration.GetValue<string>("Storage_Azure:Azure:ConnectionString");
-//builder.Services.AddSingleton(new BlobServiceClient(AzureConnectionKey));
-//builder.Services.AddScoped<IBlobStorageService, AzureBlobStorageService>();
 
 builder.Services.AddStorage(builder.Configuration);
 
