@@ -18,8 +18,6 @@ builder.Services.AddOpenApi();
 builder.Services.AddCarter();
 
 
-
-
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());

@@ -1,5 +1,7 @@
 ﻿using Azure.Core;
+using BuildingBlocks.Common.IntegrationEvents;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -18,17 +20,20 @@ namespace Nursery.Identity.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IValidator<RegisterRequestDto> _registerValidator;
         private readonly IValidator<LoginRequestDto> _loginValidator;
+        private readonly IMediator mediator;
+
         public ITokenRepository TokenRepository { get; }
        
         public AuthController(UserManager<ApplicationUser> userManager, 
             IValidator<RegisterRequestDto> registerValidator,
             IValidator<LoginRequestDto> loginValidator,
-            ITokenRepository tokenRepository)
+            ITokenRepository tokenRepository, IMediator mediator)
         {
             this.userManager = userManager;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
             TokenRepository = tokenRepository;
+            this.mediator = mediator;
         }
         [HttpPost]
         [Route("Register")]
@@ -47,7 +52,8 @@ namespace Nursery.Identity.Controllers
                 FirstName = registerRequestDto.FirstName,
                 LastName = registerRequestDto.LastName,
                 UserName = registerRequestDto.Username,
-                Email = registerRequestDto.Username
+                Email = registerRequestDto.Username,
+                PhoneNumber = "+917708407334"
             };
             var identityResult = await userManager.CreateAsync(user, registerRequestDto.Password);
             if (identityResult.Succeeded)
@@ -57,7 +63,21 @@ namespace Nursery.Identity.Controllers
                     identityResult = await userManager.AddToRolesAsync(user, registerRequestDto.Roles);
                     if (identityResult.Succeeded)
                     {
+
+                        try
+                        {
+                            await mediator.Publish(new UserRegisteredIntegrationEvent(
+                                user.FirstName, user.LastName,user.Id, user.Email!,user.PhoneNumber!));
+                        }
+                        catch (Exception)
+                        {
+                            await userManager.DeleteAsync(user); 
+                            return Problem(detail: "Registration succeeded but profile creation failed. Please try again.",
+                                statusCode: StatusCodes.Status500InternalServerError);
+                        }
+
                         return Ok(new RegisterResponseDto("Success", $"User {user.FirstName} created successfully"));
+
                     }
                 }
             }

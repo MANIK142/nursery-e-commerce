@@ -1,11 +1,4 @@
-﻿using Carter;
-using Mapster;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Nursery.Catalog.Application.Dtos;
-using Nursery.Catalog.Application.Plants.Commands.CreatePlant;
-using Nursery.Catalog.Domain.Models;
-using System.Text.Json;
+﻿using Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
 namespace Nursery.Catalog.Api.Endpoints.Plant;
 

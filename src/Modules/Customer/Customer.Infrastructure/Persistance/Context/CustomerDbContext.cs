@@ -2,8 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Customer.Domain.Models;
+using Customer.Application.Data;
 namespace Customer.Infrastructure.Persistance.Context;
-public class CustomerDbContext : DbContext
+public class CustomerDbContext : DbContext, ICustomerDbContext
 {
     public CustomerDbContext(DbContextOptions<CustomerDbContext> options):base(options)
     {
