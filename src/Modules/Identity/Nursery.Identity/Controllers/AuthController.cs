@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Nursery.Identity.Models.Domain;
 using Nursery.Identity.Models.DTO;
@@ -13,11 +16,18 @@ namespace Nursery.Identity.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IValidator<RegisterRequestDto> _registerValidator;
+        private readonly IValidator<LoginRequestDto> _loginValidator;
         public ITokenRepository TokenRepository { get; }
-
-        public AuthController(UserManager<ApplicationUser> userManager,ITokenRepository tokenRepository)
+       
+        public AuthController(UserManager<ApplicationUser> userManager, 
+            IValidator<RegisterRequestDto> registerValidator,
+            IValidator<LoginRequestDto> loginValidator,
+            ITokenRepository tokenRepository)
         {
             this.userManager = userManager;
+            _registerValidator = registerValidator;
+            _loginValidator = loginValidator;
             TokenRepository = tokenRepository;
         }
         [HttpPost]
@@ -28,6 +38,10 @@ namespace Nursery.Identity.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<RegisterResponseDto>> Register([FromBody] RegisterRequestDto registerRequestDto)
         {
+            var validationResult = await _registerValidator.ValidateAsync(registerRequestDto);
+            if (!validationResult.IsValid)
+                throw new FluentValidation.ValidationException(validationResult.Errors); // caught by CustomExceptionHandler → same ProblemDetails shape as Catalog
+
             var user = new ApplicationUser()
             {
                 FirstName = registerRequestDto.FirstName,
@@ -59,6 +73,10 @@ namespace Nursery.Identity.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto  loginRequestDto)
         {
+            var validatorResult = await  _loginValidator.ValidateAsync(loginRequestDto);
+            if (!validatorResult.IsValid)
+                throw new FluentValidation.ValidationException(validatorResult.Errors);
+
             var user = await userManager.FindByEmailAsync(loginRequestDto.UserName);
 
             if (user != null)
@@ -72,8 +90,6 @@ namespace Nursery.Identity.Controllers
 
                     if (roles != null)
                     {
-                        // Create Token
-
                         var jwtToken = TokenRepository.CreateJWTToken(user, roles.ToList());
 
                         var response = new LoginResponseDto

@@ -1,6 +1,0 @@
-@Nursery.Identity_HostAddress = http://localhost:5281
-
-GET {{Nursery.Identity_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Nursery.Identity.Models.Domain;
 
-namespace Nursery.Identity.DatabaseContext;
+namespace Nursery.Identity.Data;
 
 public class NurseryIdentityDbContext : IdentityDbContext<ApplicationUser>
 {

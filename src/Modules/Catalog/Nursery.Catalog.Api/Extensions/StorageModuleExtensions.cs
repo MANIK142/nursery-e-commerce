@@ -2,12 +2,14 @@
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Nursery.Catalog.Application.Data;
 using Nursery.Catalog.Infrastructure.Repository;
 
 namespace Nursery.Catalog.Api.Extensions;
 
-public static class Extentions
+public static class StorageModuleExtensions
 {
     public static IServiceCollection AddStorage(this IServiceCollection services, IConfiguration config)
     {

@@ -1,5 +1,7 @@
 <Solution>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="src/Nursery.Api.Host/Nursery.Api.Host.csproj" Id="30cc42c1-87e4-450c-86ad-6c4977cc3038" />
+  </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Utility/BuildingBlocks.Utility.csproj" Id="218b101e-b15c-49c4-95a2-2b3827a0c5cd" />
@@ -10,6 +12,12 @@
     <Project Path="src/Modules/Catalog/Nursery.Catalog.Application/Nursery.Catalog.Application.csproj" />
     <Project Path="src/Modules/Catalog/Nursery.Catalog.Domain/Nursery.Catalog.Domain.csproj" />
     <Project Path="src/Modules/Catalog/Nursery.Catalog.Infrastructure/Nursery.Catalog.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Customer/">
+    <Project Path="src/Modules/Customer/Customer.API/Customer.API.csproj" Id="b4353454-8fbb-446b-94af-82e68c303c7d" />
+    <Project Path="src/Modules/Customer/Customer.Application/Customer.Application.csproj" Id="3cc7c0b4-3b33-4dd5-bbe6-c073886890d7" />
+    <Project Path="src/Modules/Customer/Customer.Domain/Customer.Domain.csproj" Id="226b8c8a-d125-4ca5-8c57-89b0ca2e0ffc" />
+    <Project Path="src/Modules/Customer/Customer.Infrastructure/Customer.Infrastructure.csproj" Id="fcc3b424-40a8-4cad-a0cd-ee0d552bc289" />
   </Folder>
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Modules/Identity/Nursery.Identity/Nursery.Identity.csproj" Id="ca54c75f-5caa-421c-b861-354a16c9aab4" />

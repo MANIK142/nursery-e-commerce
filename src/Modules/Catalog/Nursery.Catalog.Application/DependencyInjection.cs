@@ -8,7 +8,6 @@ namespace Nursery.Catalog.Application;
 
 public static class DependencyInjection
 {
-
     public static IServiceCollection AddApplicationServices
       (this IServiceCollection services, IConfiguration configuration)
     {
@@ -18,7 +17,7 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
-
+      
         return services;
     }   
 }

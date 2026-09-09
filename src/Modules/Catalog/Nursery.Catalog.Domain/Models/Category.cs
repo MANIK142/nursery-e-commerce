@@ -1,6 +1,8 @@
 ﻿
+
+
 namespace Nursery.Catalog.Domain.Models;
-public class Category :BaseDomainModel
+public class Category : BaseDomainModel
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }

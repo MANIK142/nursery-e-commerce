@@ -30,7 +30,7 @@ public class Plant : BaseDomainModel
         Description = description;
     }
 
-    public static Plant Create( string name, string description,   string createdBy, List<PlantVariantSpec> plantVariantSpecs,List<ImageSpec> imageSpecs)
+    public static Plant Create( string name, string description,string createdBy, List<PlantVariantSpec> plantVariantSpecs,List<ImageSpec> imageSpecs)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Plant name is required.", nameof(name));

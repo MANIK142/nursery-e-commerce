@@ -19,6 +19,7 @@ public class GetPlant : ICarterModule
         .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithSummary("Get Plants")
         .WithDescription("Get Plants")
-        .WithTags("Plants");
+        .WithTags("Plants")
+        .RequireAuthorization();
     }
 }   

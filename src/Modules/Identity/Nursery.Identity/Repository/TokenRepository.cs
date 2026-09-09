@@ -24,11 +24,16 @@ public class TokenRepository : ITokenRepository
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
-
+        int validityInSeconds = 10;
+        if (int.TryParse(configuration["Jwt:ValidityInSeconds"], out int validity))
+        {
+            validityInSeconds = validity;
+        }
+  
         var token = new JwtSecurityToken(configuration["Jwt:Issuer"],
                 configuration["Jwt:Audience"],
                 claims,
-                expires: DateTime.Now.AddMinutes(15),
+                expires: DateTime.Now.AddSeconds(validityInSeconds),
                 signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

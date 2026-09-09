@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
-namespace Nursery.Catalog.Domain.Models;
+namespace BuildingBlocks.Common;
 
 public class BaseDomainModel
 {
