@@ -1,15 +1,18 @@
 ﻿
 using BuildingBlocks.Common.CQRS;
+using Customer.Application.Dtos;
+using Customer.Domain.Models;
 using FluentValidation;
 
-namespace Customer.Application.CustomerHandler.CreateCustomer;
-public record CreateCustomerCommand(string FirstName, string LastName, string ExternalUserId, string EmailAddress, string PhoneNumber) : ICommand<CreateCustomerResult>;
+namespace Customer.Application.CustomerHandler.UpdateCustomer;
 
-public record CreateCustomerResult(bool IsSuccess);
+public record UpdateCustomerProfileCommand(string FirstName, string LastName, string Email, string? PhoneNumber,List<AddressDto>? AddressDtos) : ICommand<UpdateCustomerProfileResult>;
 
-public class CreateCustomerValidator : AbstractValidator<CreateCustomerCommand>
+public record UpdateCustomerProfileResult(bool IsSuccess);
+
+public class UpdateCustomerProfileVadidator :AbstractValidator<UpdateCustomerProfileCommand>
 {
-    public CreateCustomerValidator()
+    public UpdateCustomerProfileVadidator()
     {
         RuleFor(x => x.FirstName)
              .NotEmpty().WithMessage("First name is required.")
@@ -19,11 +22,7 @@ public class CreateCustomerValidator : AbstractValidator<CreateCustomerCommand>
             .NotEmpty().WithMessage("Last name is required.")
             .MaximumLength(50).WithMessage("Last name must not exceed 50 characters.");
 
-        RuleFor(x => x.ExternalUserId)
-            .NotEmpty().WithMessage("ExternalUserId is required.")
-            .MaximumLength(200); // typical max length for IdP subject identifiers / Identity keys
-
-        RuleFor(x => x.EmailAddress)
+        RuleFor(x => x.Email)
             .NotEmpty().WithMessage("Email address is required.")
             .EmailAddress().WithMessage("A valid email address is required.")
             .MaximumLength(100).WithMessage("Email address must not exceed 256 characters.");

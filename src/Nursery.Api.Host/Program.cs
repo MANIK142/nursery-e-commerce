@@ -4,6 +4,7 @@ using Customer.API;
 using Microsoft.AspNetCore.Authorization;
 using Nursery.Catalog.Api.Extensions;
 using Nursery.Identity;
+using Nursery.Orders.API.Extenstions;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
 
@@ -29,6 +30,8 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddCatalogModules(builder.Configuration);
 builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddCustomerModule(builder.Configuration);
+builder.Services.AddOrdersModule(builder.Configuration);
+
 
 var app = builder.Build();
 

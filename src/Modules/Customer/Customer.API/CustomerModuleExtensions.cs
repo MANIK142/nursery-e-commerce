@@ -14,7 +14,8 @@ public static class CustomerModuleExtensions
         services.AddDbContext<CustomerDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("CustomerDb")));
 
-        services.AddScoped<ICustomerDbContext, CustomerDbContext>();
+        services.AddScoped<ICustomerDbContext>(sp => sp.GetRequiredService<CustomerDbContext>());
+        //services.AddScoped<ICustomerDbContext, CustomerDbContext>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         return services;
     }

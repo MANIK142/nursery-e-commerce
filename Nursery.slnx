@@ -22,6 +22,12 @@
   <Folder Name="/src/Modules/Identity/">
     <Project Path="src/Modules/Identity/Nursery.Identity/Nursery.Identity.csproj" Id="ca54c75f-5caa-421c-b861-354a16c9aab4" />
   </Folder>
+  <Folder Name="/src/Modules/Orders/">
+    <Project Path="src/Modules/Orders/Nursery.Orders.API/Nursery.Orders.API.csproj" Id="3956e922-07a2-487e-bc7b-163d771b6f24" />
+    <Project Path="src/Modules/Orders/Nursery.Orders.Application/Nursery.Orders.Application.csproj" Id="c27954fe-9a6c-436b-9204-f790930f23bf" />
+    <Project Path="src/Modules/Orders/Nursery.Orders.Domain/Nursery.Orders.Domain.csproj" Id="63e82d67-07cc-4753-8470-026f1ec2e525" />
+    <Project Path="src/Modules/Orders/Nursery.Orders.Infrastructure/Nursery.Orders.Infrastructure.csproj" Id="d42c65d7-b2cf-4b75-af1d-c6975268aa72" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>

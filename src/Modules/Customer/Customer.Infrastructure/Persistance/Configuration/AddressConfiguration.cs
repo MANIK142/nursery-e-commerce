@@ -9,6 +9,9 @@ public class AddressConfiguration : IEntityTypeConfiguration<Address>
 {
     public void Configure(EntityTypeBuilder<Address> builder)
     {
+        builder.HasKey(x => x.Id);
+        builder.Property(x => x.Id).ValueGeneratedNever();
+
         builder.Property(x => x.CustomerId).IsRequired();
         builder.Property(x => x.Line1).IsRequired().HasMaxLength(200);
         builder.Property(x => x.Line2).HasMaxLength(200);

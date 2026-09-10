@@ -1,5 +1,4 @@
-﻿
-using Customer.Domain.Models;
+﻿using Customer.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

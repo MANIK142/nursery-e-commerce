@@ -1,5 +1,4 @@
-﻿
-using MediatR;
+﻿using MediatR;
 namespace BuildingBlocks.Common.IntegrationEvents;
 
 public sealed record UserRegisteredIntegrationEvent(string FirstName,

@@ -3,8 +3,9 @@
 namespace Customer.Application.Data;
 public interface ICustomerRepository
 {
-    Task<CustomerEntity?> GetCustomerByEmail(string email, CancellationToken cancellationToken);
-    Task<bool> CreateCustomer(CustomerEntity customer, CancellationToken cancellationToken);
-    Task<bool> UpdateCustomer(CustomerEntity customer, CancellationToken cancellationToken);
+    Task<CustomerEntity?> GetCustomerByEmailAsync(string email, CancellationToken cancellationToken);
+    Task<CustomerEntity?> GetCustomerByIdAsync(Guid Id, CancellationToken cancellationToken);
+    Task<bool> CreateCustomerAsync(CustomerEntity customer, CancellationToken cancellationToken);
+    Task<bool> UpdateCustomerAsync(CustomerEntity customer, CancellationToken cancellationToken);
 
 }
