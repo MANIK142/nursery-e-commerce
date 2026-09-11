@@ -4,5 +4,5 @@ namespace Nursery.Identity.Repository;
 
 public interface ITokenRepository
 {
-    string CreateJWTToken(IdentityUser user, List<string> roles);
+    string CreateJWTToken(IdentityUser user, Guid? customerId, List<string> roles);
 }

@@ -19,9 +19,9 @@ public class Cart : BaseDomainModel
         CustomerId = customerId;
         CartStatus = cartStatus;
     }
-    public static Cart Create(Guid id, Guid customerId, Guid PlantvariantId)
+    public static Cart Create(Guid customerId)
     {
-        var cart = new Cart(id,customerId,CartStatus.Active);
+        var cart = new Cart(Guid.NewGuid(),customerId,CartStatus.Active);
         return cart;
     }
 
@@ -42,14 +42,14 @@ public class Cart : BaseDomainModel
             _items.Remove(cartItem);
         }
     }
-    public void AddItemQuantity(Guid PlantvariantId) 
+    public void IncreaseItemQuantity(Guid PlantvariantId) 
     { 
         var cartItem = _items.FirstOrDefault(i => i.PlantvariantId == PlantvariantId);
         if (cartItem != null) {
             cartItem.AddQuantity();
         }
     }
-    public void RemoveItemQuantity(Guid PlantvariantId)
+    public void DecreaseItemQuantity(Guid PlantvariantId)
     {
         var cartItem = _items.FirstOrDefault(i => i.PlantvariantId == PlantvariantId);
         if (cartItem != null)

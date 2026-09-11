@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using BuildingBlocks.Common.IntegrationEvents;
+using BuildingBlocks.Common.SharedContracts;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -21,17 +22,19 @@ namespace Nursery.Identity.Controllers
         private readonly IValidator<RegisterRequestDto> _registerValidator;
         private readonly IValidator<LoginRequestDto> _loginValidator;
         private readonly IMediator mediator;
-
+        public ICustomerLookup CustomerLookup { get; }
         public ITokenRepository TokenRepository { get; }
        
         public AuthController(UserManager<ApplicationUser> userManager, 
             IValidator<RegisterRequestDto> registerValidator,
             IValidator<LoginRequestDto> loginValidator,
+            ICustomerLookup customerLookup,
             ITokenRepository tokenRepository, IMediator mediator)
         {
             this.userManager = userManager;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            CustomerLookup = customerLookup;
             TokenRepository = tokenRepository;
             this.mediator = mediator;
         }
@@ -110,8 +113,8 @@ namespace Nursery.Identity.Controllers
 
                     if (roles != null)
                     {
-                        var jwtToken = TokenRepository.CreateJWTToken(user, roles.ToList());
-
+                        var customerId = await CustomerLookup.GetCustomerIdByExternalUserIdAsync(user.Id, HttpContext.RequestAborted);
+                        var jwtToken = TokenRepository.CreateJWTToken(user, customerId, roles.ToList());
                         var response = new LoginResponseDto
                         {
                             JwtToken = jwtToken

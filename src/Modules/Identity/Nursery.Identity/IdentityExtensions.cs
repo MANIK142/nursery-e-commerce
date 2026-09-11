@@ -8,6 +8,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BuildingBlocks.Common.SharedContracts;
 namespace Nursery.Identity;
 
 public static class IdentityExtensions
@@ -34,7 +35,7 @@ public static class IdentityExtensions
         .AddEntityFrameworkStores<NurseryIdentityDbContext>();
 
         services.AddScoped<ITokenRepository, TokenRepository>();
-
+      
         int validityInSeconds = 10;
         if (int.TryParse(configuration["Jwt:ValidityInSeconds"], out int validity))
         {

@@ -13,13 +13,18 @@ public class TokenRepository : ITokenRepository
     {
         this.configuration = configuration;
     }
-    public string CreateJWTToken(IdentityUser user, List<string> roles)
+    public string CreateJWTToken(IdentityUser user,Guid? customerId, List<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.Email, user.Email));
+
+        if (customerId != null)
+        {
+            claims.Add(new Claim("customer_id", customerId.ToString()));
+        }
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));

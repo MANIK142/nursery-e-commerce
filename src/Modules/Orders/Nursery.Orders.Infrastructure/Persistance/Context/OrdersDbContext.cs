@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nursery.Orders.Application.Data;
 using Nursery.Orders.Domain.Carts;
+using Nursery.Orders.Domain.Orders;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,11 @@ public class OrdersDbContext : DbContext, IOrdersDbContext
     public DbSet<Cart> Carts => Set<Cart>();
 
     public DbSet<CartItem> CartItems => Set<CartItem>();
+
+    public DbSet<Order> Orders => Set<Order>();
+
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrdersDbContext).Assembly);
