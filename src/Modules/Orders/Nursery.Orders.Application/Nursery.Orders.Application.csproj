@@ -7,15 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Features\UpdateOrder\**" />
+    <EmbeddedResource Remove="Features\UpdateOrder\**" />
+    <None Remove="Features\UpdateOrder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks.Utility\BuildingBlocks.Utility.csproj" />
     <ProjectReference Include="..\..\Catalog\Nursery.Catalog.Application\Nursery.Catalog.Application.csproj" />
     <ProjectReference Include="..\..\Catalog\Nursery.Catalog.Infrastructure\Nursery.Catalog.Infrastructure.csproj" />
     <ProjectReference Include="..\Nursery.Orders.Domain\Nursery.Orders.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\UpdateOrder\" />
   </ItemGroup>
 
 </Project>

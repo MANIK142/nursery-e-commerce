@@ -54,6 +54,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             ba.Property(a => a.ZipCode).IsRequired().HasMaxLength(20).HasColumnName("BillingAddress_ZipCode");
         });
 
-        
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }

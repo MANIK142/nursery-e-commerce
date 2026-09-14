@@ -21,5 +21,7 @@ public class AddressConfiguration : IEntityTypeConfiguration<Address>
         builder.Property(x => x.Country).IsRequired().HasMaxLength(50);
         builder.Property(x => x.Type).HasConversion<string>().IsRequired().HasMaxLength(10);
 
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }

@@ -22,5 +22,7 @@ public class CustomerEntityConfiguration : IEntityTypeConfiguration<CustomerEnti
         builder.Navigation(x => x.Addresses)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
 
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }

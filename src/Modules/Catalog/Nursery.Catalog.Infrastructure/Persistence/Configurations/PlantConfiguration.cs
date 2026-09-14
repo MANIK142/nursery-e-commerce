@@ -41,6 +41,6 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
             .WithOne()
             .HasForeignKey<CareInstruction>(ci => ci.PlantId)
             .OnDelete(DeleteBehavior.Cascade);
-
+        builder.Ignore(x => x.DomainEvents);
     }
 }

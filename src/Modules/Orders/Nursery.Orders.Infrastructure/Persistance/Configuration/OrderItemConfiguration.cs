@@ -32,5 +32,7 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
         builder.Ignore(oi => oi.LineTotal);
 
         builder.HasIndex(oi => oi.OrderId);
+
+        builder.Ignore(x => x.DomainEvents);
     }
 }

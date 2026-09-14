@@ -11,6 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Payment\Nursery.Payment.Api\Nursery.Payment.Api.csproj" />
+    <ProjectReference Include="..\..\Shippings\Nursery.Shippings.Application\Nursery.Shippings.Application.csproj" />
     <ProjectReference Include="..\Nursery.Orders.Application\Nursery.Orders.Application.csproj" />
   </ItemGroup>
 

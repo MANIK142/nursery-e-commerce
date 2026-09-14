@@ -1,4 +1,6 @@
-﻿namespace Nursery.Catalog.Domain.Models;
+﻿using Nursery.Catalog.Domain.Events;
+
+namespace Nursery.Catalog.Domain.Models;
 
 public class PlantVariant : BaseDomainModel
 {
@@ -39,11 +41,16 @@ public class PlantVariant : BaseDomainModel
             throw new ArgumentException("Wholesale price cannot be negative.", nameof(wholesalePrice));
 
         var plantVariant = new PlantVariant(Guid.NewGuid(), plantId, sku, variantName, retailPrice, wholesalePrice);
+
+        plantVariant.Raise(new PlantVariantCreatedEvent(plantVariant.Id, plantId, sku, variantName, ImageSpecs, retailPrice, wholesalePrice,createdBy));
+
         plantVariant.SetCreated(createdBy);
         foreach(var imageSpec in ImageSpecs)
         {
             plantVariant.AddPlantImage(plantVariant.Id, imageSpec, createdBy);
         }
+
+
         
         return plantVariant;
     }

@@ -29,7 +29,7 @@ namespace Nursery.Identity.Controllers
             IValidator<RegisterRequestDto> registerValidator,
             IValidator<LoginRequestDto> loginValidator,
             ICustomerLookup customerLookup,
-            ITokenRepository tokenRepository, IMediator mediator)
+            ITokenRepository tokenRepository,IMediator mediator)
         {
             this.userManager = userManager;
             _registerValidator = registerValidator;

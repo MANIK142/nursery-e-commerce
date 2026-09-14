@@ -5,6 +5,7 @@
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />
     <Project Path="src/BuildingBlocks/BuildingBlocks.Utility/BuildingBlocks.Utility.csproj" Id="218b101e-b15c-49c4-95a2-2b3827a0c5cd" />
+    <Project Path="src/BuildingBlocks/Nursery.ShareKernel/Nursery.ShareKernel.csproj" Id="bce6283f-fa26-43cc-bfea-3b05e2813533" />
   </Folder>
   <Folder Name="/src/Modules/" />
   <Folder Name="/src/Modules/Catalog/">
@@ -27,6 +28,15 @@
     <Project Path="src/Modules/Orders/Nursery.Orders.Application/Nursery.Orders.Application.csproj" Id="c27954fe-9a6c-436b-9204-f790930f23bf" />
     <Project Path="src/Modules/Orders/Nursery.Orders.Domain/Nursery.Orders.Domain.csproj" Id="63e82d67-07cc-4753-8470-026f1ec2e525" />
     <Project Path="src/Modules/Orders/Nursery.Orders.Infrastructure/Nursery.Orders.Infrastructure.csproj" Id="d42c65d7-b2cf-4b75-af1d-c6975268aa72" />
+  </Folder>
+  <Folder Name="/src/Modules/Payment/">
+    <Project Path="src/Modules/Payment/Nursery.Payment.Api/Nursery.Payment.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Shippings/">
+    <Project Path="src/Modules/Shippings/Nursery.Shippings.API/Nursery.Shippings.API.csproj" Id="e06851a4-9a5a-4016-b10a-7f0c5d0ee4a4" />
+    <Project Path="src/Modules/Shippings/Nursery.Shippings.Application/Nursery.Shippings.Application.csproj" Id="438b14bd-5eb8-4ab5-bdd0-5205f60149a4" />
+    <Project Path="src/Modules/Shippings/Nursery.Shippings.Domain/Nursery.Shippings.Domain.csproj" Id="1e36b3c7-350e-4587-839a-008e512c6e3b" />
+    <Project Path="src/Modules/Shippings/Nursery.Shippings.Infrastucture/Nursery.Shippings.Infrastucture.csproj" Id="8871ac29-e9ec-4ca7-a8b2-83556f7c5371" />
   </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />

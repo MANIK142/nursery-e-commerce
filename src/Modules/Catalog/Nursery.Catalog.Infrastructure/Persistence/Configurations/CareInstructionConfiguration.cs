@@ -48,5 +48,7 @@ public class CareInstructionConfiguration : IEntityTypeConfiguration<CareInstruc
 
         builder.Property(c => c.AdditionalNotes)
             .HasMaxLength(1000);
+
+        builder.Ignore(x => x.DomainEvents);
     }
 }

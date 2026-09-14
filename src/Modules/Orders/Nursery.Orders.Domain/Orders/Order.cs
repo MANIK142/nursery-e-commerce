@@ -2,6 +2,7 @@
 using BuildingBlocks.Common;
 using Nursery.Orders.Domain.Enums;
 using Nursery.Orders.Domain.ValueObjects;
+using System.Reflection.Emit;
 namespace Nursery.Orders.Domain.Orders;
 public class Order : BaseDomainModel
 {
@@ -13,6 +14,8 @@ public class Order : BaseDomainModel
     public Address ShippingAddress { get; private set; } = default!;
     public OrderStatus Status { get; private set; }
     public PaymentStatus PaymentStatus { get; private set; }
+
+    public Decimal TotalOrderValue => OrderItems.Sum(oi => oi.Quantity * oi.UnitPriceAtPurchase);
 
     public static Order Create(Guid CustomerId,Address BillingAddress, Address ShippingAddress)
     {
@@ -56,6 +59,32 @@ public class Order : BaseDomainModel
     public void CancelOrder()
     {
         Status = OrderStatus.Cancelled;
+    }
+
+    public void MarkAsPaid()
+    {
+        if (PaymentStatus is PaymentStatus.Paid)
+            return; 
+
+        if (PaymentStatus is not PaymentStatus.Pending)
+            throw new InvalidOperationException(
+                $"Cannot mark Order as Paid from status {PaymentStatus}.");
+
+        PaymentStatus = PaymentStatus.Paid;
+        ModifiedAt = DateTime.UtcNow;
+    }
+
+    public void MarkPaymentFailed()
+    {
+        if (PaymentStatus is PaymentStatus.Failed)
+            return; // idempotent
+
+        if (PaymentStatus is not PaymentStatus.Pending)
+            throw new InvalidOperationException(
+                $"Cannot mark Order payment as Failed from status {PaymentStatus}.");
+
+        PaymentStatus = PaymentStatus.Failed;
+        ModifiedAt = DateTime.UtcNow;
     }
     private void EnsureMutable()
     {

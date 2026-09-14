@@ -10,6 +10,10 @@ using Nursery.Orders.API.Endpoints;
 using Nursery.Orders.API.Extenstions;
 using Nursery.Orders.Application.Data;
 using Nursery.Orders.Infrastructure.Persistance.Repository;
+using Nursery.Payment.Api;
+using Nursery.Payment.Api.Contracts;
+using Nursery.Shippings.API;
+using Nursery.Shippings.Application.Data;
 using Scalar.AspNetCore;
 using System.Text.Json.Serialization;
 
@@ -35,9 +39,17 @@ builder.Services.AddCatalogModules(builder.Configuration);
 builder.Services.AddIdentityModule(builder.Configuration);
 builder.Services.AddCustomerModule(builder.Configuration);
 builder.Services.AddOrdersModule(builder.Configuration);
+builder.Services.AddPaymentModule(builder.Configuration);
+builder.Services.AddShippingService(builder.Configuration);
+
+
 
 builder.Services.AddScoped<ICustomerLookup, CustomerLookup>();
 builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
+builder.Services.AddScoped<IOrderLookup, OrderLookup>();
+builder.Services.AddScoped<IOrderLineItemLookup, OrderLineItemLookup>();
+
+
 
 var app = builder.Build();
 

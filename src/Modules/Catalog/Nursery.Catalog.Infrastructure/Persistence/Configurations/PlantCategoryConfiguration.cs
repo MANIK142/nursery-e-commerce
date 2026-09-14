@@ -24,5 +24,6 @@ public class PlantCategoryConfiguration : IEntityTypeConfiguration<PlantCategory
             .HasForeignKey(pc => pc.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
 
+       
     }
 }

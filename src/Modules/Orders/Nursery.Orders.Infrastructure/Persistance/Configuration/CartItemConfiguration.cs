@@ -17,5 +17,7 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
         .IsRequired()
         .HasPrecision(18, 2);
 
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }

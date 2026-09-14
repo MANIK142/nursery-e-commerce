@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BuildingBlocks.Common;
 
-public class BaseDomainModel
+public abstract class BaseDomainModel
 {
     public string? CreatedBy { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
@@ -25,4 +25,11 @@ public class BaseDomainModel
         ModifiedBy = modifiedBy;
         ModifiedAt = DateTime.Now;
     }
+
+    private readonly List<IDomainEvent> _domainEvents = new();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    protected void Raise(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+
+    public void ClearDomainEvents() => _domainEvents.Clear();
+
 }

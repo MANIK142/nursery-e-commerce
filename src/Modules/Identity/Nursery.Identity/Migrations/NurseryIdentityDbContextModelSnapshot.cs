@@ -17,7 +17,7 @@ namespace Nursery.Identity.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -69,6 +69,13 @@ namespace Nursery.Identity.Migrations
                             ConcurrencyStamp = "c309fa92-2123-47be-b397-a1c77adb502c",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "3ca074b1-81cf-470e-99d3-b652a54dafad",
+                            ConcurrencyStamp = "3ca074b1-81cf-470e-99d3-b652a54dafad",
+                            Name = "WarehouseStaff",
+                            NormalizedName = "WAREHOUSESTAFF"
                         });
                 });
 

@@ -9,6 +9,7 @@ using Nursery.Orders.Application.Features.GetCarts;
 using Nursery.Orders.Application.Features.IncreaseCartItemQuantity;
 using Nursery.Orders.Application.Features.RemoveItemFromCart;
 using System.Security.Claims;
+using BuildingBlocks.Common;
 
 namespace Nursery.Orders.API.Endpoints;
 

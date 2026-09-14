@@ -24,5 +24,7 @@ public class VariantSalePriceConfiguration : IEntityTypeConfiguration<VariantSal
                 .IsRequired();
         });
 
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }

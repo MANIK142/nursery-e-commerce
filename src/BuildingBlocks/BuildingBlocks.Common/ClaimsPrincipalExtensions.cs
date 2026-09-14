@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace Nursery.Orders.API.Extenstions;
+namespace BuildingBlocks.Common;
 
 public static class ClaimsPrincipalExtensions
 {

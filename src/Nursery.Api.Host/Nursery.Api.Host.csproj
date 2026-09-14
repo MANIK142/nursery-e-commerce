@@ -20,10 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Modules\Payment\Nursery.Payment.Api\Nursery.Payment.Api.csproj" />
     <ProjectReference Include="..\Modules\Catalog\Nursery.Catalog.Api\Nursery.Catalog.Api.csproj" />
     <ProjectReference Include="..\Modules\Customer\Customer.API\Customer.API.csproj" />
     <ProjectReference Include="..\Modules\Identity\Nursery.Identity\Nursery.Identity.csproj" />
     <ProjectReference Include="..\Modules\Orders\Nursery.Orders.API\Nursery.Orders.API.csproj" />
+    <ProjectReference Include="..\Modules\Shippings\Nursery.Shippings.API\Nursery.Shippings.API.csproj" />
   </ItemGroup>
 
 </Project>

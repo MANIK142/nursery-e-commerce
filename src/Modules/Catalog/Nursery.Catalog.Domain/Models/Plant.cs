@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Nursery.Catalog.Domain.Events;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -36,6 +37,9 @@ public class Plant : BaseDomainModel
             throw new ArgumentException("Plant name is required.", nameof(name));
  
         var plant = new Plant(Guid.NewGuid(), name, description);
+
+        plant.Raise(new PlantCreatedEvent(plant.Id, plant.Name, plant.Description));
+
         plant.SetCreated(createdBy);
         foreach (var plantVariantSpec in plantVariantSpecs)
         {
@@ -97,7 +101,6 @@ public class Plant : BaseDomainModel
         var variant = PlantVariant.Create(plantVariantSpec.PlantId, plantVariantSpec.Sku, plantVariantSpec.VariantName,plantVariantSpec.ImageSpecs,
                                                     plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice, modifiedBy);
 
-    
 
         _variants.Add(variant);
         SetModified(modifiedBy);

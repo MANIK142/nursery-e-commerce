@@ -22,5 +22,7 @@ public class PlantImageConfiguration : IEntityTypeConfiguration<PlantImage>
 
         builder.HasIndex(x => x.PlantId);
         builder.HasIndex(x => x.PlantVariantId);
+
+        builder.Ignore(x => x.DomainEvents);
     }
 } 

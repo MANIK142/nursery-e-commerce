@@ -28,6 +28,7 @@ public class CartConfiguration : IEntityTypeConfiguration<Cart>
 
         builder.Navigation(x => x.Items)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+        builder.Ignore(x => x.DomainEvents);
 
     }
 }

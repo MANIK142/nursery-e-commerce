@@ -41,5 +41,7 @@ public class PlantVariantConfiguration : IEntityTypeConfiguration<PlantVariant>
             .HasForeignKey(pi => pi.PlantVariantId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.Ignore(x => x.DomainEvents);
+
     }
 }
