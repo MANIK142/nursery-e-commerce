@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Nursery.Api.Host/Nursery.Api.Host.csproj" Id="30cc42c1-87e4-450c-86ad-6c4977cc3038" />
+    <Project Path="src/Nursery.Web.Host/Nursery.Web.Host.csproj" Id="4b014ed5-038f-446b-aad6-ee45946ac786" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Common/BuildingBlocks.Common.csproj" />

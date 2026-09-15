@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Nursery.Web.Host</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/herosection.css" asp-append-version="true" />
+    @* <link rel="stylesheet" href="~/css/bootstrap-icons.min.css" asp-append-version="true" /> *@
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/Nursery.Web.Host.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+            <div class="container-fluid">
+
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center"
+                   asp-area=""
+                   asp-controller="Home"
+                   asp-action="Index">
+                    <img src="~/Images/ShopPlant.png"
+                         alt="ShopPlants"
+                         style="width: 180px;"
+                         class="img-fluid" />
+                </a>
+
+                <!-- Mobile toggle -->
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar content -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+
+                    <!-- Search -->
+                    <div class="input-group mx-lg-4 my-3 my-lg-0 flex-grow-1"
+                         style="max-width:70%">
+
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Search plants..."
+                               aria-label="Search plants">
+
+                        <button class="input-group-text bg-white"
+                                type="button">
+                            <i class="bi bi-search fs-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Menu -->
+                    <ul class="navbar-nav ms-lg-3">
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-area=""
+                               asp-controller="Home"
+                               asp-action="Index">
+                                Home
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"
+                               asp-area=""
+                               asp-controller="Home"
+                               asp-action="Privacy">
+                                Privacy
+                            </a>
+                        </li>
+
+                    </ul>
+                    <!-- Right side -->
+                    <div class="d-flex align-items-center ms-auto">
+
+                        <!-- Login -->
+                        <a class="nav-link text-dark px-3"
+                           asp-area=""
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <i class="bi bi-person-check fs-4"></i>
+                            <span class="ms-1">Login</span>
+                        </a>
+
+                        <!-- Cart -->
+                        <a class="nav-link text-dark bg-success-subtle rounded-pill px-3"
+                           asp-area=""
+                           asp-controller="Home"
+                           asp-action="Index">
+
+                            <i class="bi bi-cart4 fs-3"></i>
+                            <span class="fs-5 ms-1">0</span>
+                        </a>
+
+                    </div>
+
+                   
+
+                </div>
+            </div>
+        </nav>
+
+    </header>
+
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2026 - Nursery.Web.Host - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

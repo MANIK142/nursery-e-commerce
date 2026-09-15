@@ -1,0 +1,19 @@
+﻿@model Nursery.Web.Host.Models.Catalog.PlantDetailDto
+
+<div class="row">
+    <div class="col-md-6">
+        @if (Model.ImageUrls.Any())
+        {
+            <img src="@Model.ImageUrls.First()" class="img-fluid" alt="@Model.Name" />
+        }
+    </div>
+    <div class="col-md-6">
+        <h1>@Model.Name</h1>
+        <p class="text-muted">@Model.Category</p>
+        <h3>₹@Model.Price</h3>
+        <p>@Model.Description</p>
+        <h5>Care Instructions</h5>
+        <p>@Model.CareInstructions</p>
+        <a asp-action="Index" class="btn btn-secondary">Back to Plants</a>
+    </div>
+</div>
