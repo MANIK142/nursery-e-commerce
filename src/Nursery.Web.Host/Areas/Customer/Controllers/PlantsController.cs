@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Nursery.Web.Host.Services;
+using Nursery.Web.Host.Services.Interface;
 using Nursery.Web.Host.ViewModels;
 using System.Numerics;
 
 namespace Nursery.Web.Host.Areas.Customer.Controllers;
 
+[Area("Customer")]
 public class PlantsController : Controller
 {
     private readonly ICatalogApiClient _catalogApi;
@@ -30,4 +31,6 @@ public class PlantsController : Controller
         var card = plant.ToCardViewModel(_imageBaseUrl);
         return View(card);
     }
+
+  
 }

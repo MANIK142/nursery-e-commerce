@@ -125,7 +125,7 @@ namespace Nursery.Identity.Controllers
                 }
             }
 
-            return BadRequest("Username or password incorrect");
+            throw new BadHttpRequestException("User/Password not valid");
         }
     }
     

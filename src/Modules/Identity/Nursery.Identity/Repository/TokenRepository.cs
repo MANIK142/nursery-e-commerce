@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Nursery.Identity.Models.Domain;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -13,17 +14,19 @@ public class TokenRepository : ITokenRepository
     {
         this.configuration = configuration;
     }
-    public string CreateJWTToken(IdentityUser user,Guid? customerId, List<string> roles)
+    public string CreateJWTToken(ApplicationUser user,Guid? customerId, List<string> roles)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.Email, user.Email));
+        claims.Add(new Claim(ClaimTypes.Name, user.FirstName));
 
         if (customerId != null)
         {
             claims.Add(new Claim("customer_id", customerId.ToString()));
+            claims.Add(new Claim("last_name", user.LastName));
         }
         foreach (var role in roles)
         {

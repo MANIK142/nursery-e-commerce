@@ -1,0 +1,69 @@
+﻿@using Nursery.Web.Host.ViewModels;
+@model PlantVM;
+
+
+
+<div class="container-fluid py-3">
+    <a asp-action="Index" class="text-decoration-none text-secondary small fw-medium d-inline-flex align-items-center gap-1 mb-3">
+        <i class="bi bi-arrow-left"></i> Back to products
+    </a>
+    <div class="card border shadow-sm overflow-hidden">
+        <div class="card-header text-white py-3 px-4" style="background: linear-gradient(to right, #065f46, #282828, #191414);">
+            <h5 class="mb-0 fw-bold"><i class="bi bi-plus-lg me-2"></i>@(Model.Plant?.Id != null ? "Edit" : "Create") Product</h5>
+            <p class="mb-0 small" style="color: #1DB954;">
+                @(Model.Plant?.Id != null ? "Edit Product Details" : "Add a new Product")
+            </p>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input asp-for="Plant.Id" hidden />
+                        <input asp-for="Plant.PlantImages" hidden />
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label asp-for="Plant.Name" class="form-label fw-semibold small"></label>
+                                <input type="text" asp-for="Plant.Name" class="form-control" placeholder="Enter product name" />
+                                <span asp-validation-for="Plant.Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="Plant.Categories" class="form-label fw-semibold small"></label>
+                                <textarea asp-for="Plant.Categories" hidden class="form-control" placeholder="Enter product desc"></textarea>
+                                <div id="quill-editor" style="height: 200px;"></div>
+                                <span asp-validation-for="Plant.Categories" class="text-danger small"></span>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+
+    <!-- Include stylesheet -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+
+    <!-- Create the editor container -->
+    <!-- Include the Quill library -->
+    <!-- Initialize Quill editor -->
+    <script>
+        const quill = new Quill('#quill-editor', {
+            theme: 'snow'
+        });
+
+        const textAreaDesc = document.querySelector('textarea[name="Product.Description"]');
+
+        //load existing content and auto-sync
+        if (textAreaDesc.value) quill.root.innerHTML = textAreaDesc.value;
+
+        quill.on('text-change', () => textAreaDesc.value = quill.root.innerHTML);
+    </script>
+
+}

@@ -8,7 +8,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 namespace Nursery.Catalog.Application.Catagories.Queries.GetCategory;
 
 public record GetCategoryQuery(int? PageNumber, int? PageSize,Guid? Id, string? FilterBy, string? FilterByValue) : IQuery<GetCategoryResult>;
-public record GetCategoryResult(IEnumerable<Category> Categories);
+public record GetCategoryResult(IEnumerable<CategoryDto> Categories);
 public class GetQueryHandler(ICatalogDbContext catalogDbContext) : IQueryHandler<GetCategoryQuery, GetCategoryResult>
 {
     private readonly ICatalogDbContext catalogDbContext = catalogDbContext;
@@ -18,7 +18,7 @@ public class GetQueryHandler(ICatalogDbContext catalogDbContext) : IQueryHandler
         
         if(request.Id != null)
         {
-            var category = await catalogDbContext.Categories.FirstOrDefaultAsync(c => c.Id == request.Id);
+            var category = await catalogDbContext.Categories.Select(c => new CategoryDto(c.Id,c.Name)).FirstOrDefaultAsync(c => c.Id == request.Id);
             return new GetCategoryResult(new[] { category });
         }
         var query = catalogDbContext.Categories.AsQueryable();
@@ -39,6 +39,7 @@ public class GetQueryHandler(ICatalogDbContext catalogDbContext) : IQueryHandler
 
         var categories = await query
                     .OrderBy(c => c.CreatedAt)
+                    .Select(c => new CategoryDto(c.Id, c.Name))
                     .Skip(pageNumber * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
