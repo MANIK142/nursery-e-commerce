@@ -20,7 +20,7 @@
 
                 <!-- Logo -->
                 <a class="navbar-brand d-flex align-items-center"
-                   asp-area=""
+                   asp-area="Customer"
                    asp-controller="Home"
                    asp-action="Index">
                     <img src="~/Images/ShopPlant.png"
@@ -113,15 +113,22 @@
 
     </header>
 
-    <div class="container-fluid">
-        <main role="main" class="pb-3">
+    @{
+    var controllerName = ViewContext.RouteData.Values["controller"]?.ToString();
+    var containerClass = string.Equals(controllerName, "Home", StringComparison.OrdinalIgnoreCase)
+        ? "container-fluid"
+        : "container";
+    }
+
+    <div class="@containerClass">
+        <main role="main"  style="padding-top:100px">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - Nursery.Web.Host - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - ShopPlants - <a asp-area="Customer" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

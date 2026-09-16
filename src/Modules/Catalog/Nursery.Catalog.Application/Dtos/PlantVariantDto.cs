@@ -3,8 +3,11 @@ namespace Nursery.Catalog.Application.Dtos;
 
 public class PlantVariantDto
 {
-    public string Sku { get; private set; } = default!;
-    public string VariantName { get; private set; } = default!;
-    public Money RetailPrice { get; private set; } = default!;
-    public Money WholesalePrice { get; private set; } = default!;
+    public Guid Id { get;  set; }
+    public Guid PlantId { get;  set; }
+    public string Sku { get;  set; } = default!;
+    public string VariantName { get;  set; } = default!;
+    public Money RetailPrice { get;  set; } = default!;
+    public Money Price { get; set; } = default!;
+    public List<PlantImageDto> Images { get; set; } = default!;
 }

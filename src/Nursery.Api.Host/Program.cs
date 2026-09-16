@@ -4,6 +4,7 @@ using Carter;
 using Customer.API;
 using Customer.Infrastructure.Persistance.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.FileProviders;
 using Nursery.Catalog.Api.Extensions;
 using Nursery.Identity;
 using Nursery.Orders.API.Endpoints;
@@ -49,7 +50,7 @@ builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
 builder.Services.AddScoped<IOrderLookup, OrderLookup>();
 builder.Services.AddScoped<IOrderLineItemLookup, OrderLineItemLookup>();
 
-
+builder.Services.AddDirectoryBrowser();
 
 var app = builder.Build();
 
@@ -69,5 +70,22 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
+var basePath = builder.Configuration.GetValue<string>("Storage_Local:BasePath");
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, basePath)),
+    RequestPath = $"/{basePath}"
+});
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append(
+            "Cache-Control", "public,max-age=600");
+    }
+});
+app.UseDirectoryBrowser();
 
 app.Run();

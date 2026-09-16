@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Nursery.Web.Host.Models;
 using System.Diagnostics;
 
-namespace Nursery.Web.Host.Controllers
+namespace Nursery.Web.Host.Areas.Customer.Controllers
 {
     public class HomeController : Controller
     {

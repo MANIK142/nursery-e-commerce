@@ -19,13 +19,35 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                   Id = p.Id,
                                   Name = p.Name,
                                   Description = p.Description,
-                                  PlantImages = p.Images.ToList(),
+                                  PlantImages = p.Images.Select(i => new PlantImageDto 
+                                                                            { 
+                                                                                Id = i.Id,
+                                                                              AltText = i.AltText,
+                                                                              IsPrimaryImage =i.IsPrimaryImage,
+                                                                              StorageKey =i.StorageKey
+                                                                            }).ToList(),
                                   Categories = context.PlantCategories
                                       .Where(pc => pc.PlantId == p.Id)
                                       .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
                                   PlantVariants = context.PlantVariants
-                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p =>p.SalePrices).ToList(),
-                                  CareInstruction = p.CareInstruction               
+                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p =>p.SalePrices)
+                                                    .Select(pv => new PlantVariantDto
+                                                    {
+                                                        Id= pv.Id,
+                                                        PlantId = pv.PlantId,
+                                                        Price = pv.GetPrice(CustomerTier.Retail,DateTime.Now),
+                                                        Sku = pv.Sku,
+                                                        VariantName = pv.VariantName,
+                                                        RetailPrice =pv.RetailPrice,
+                                                        Images = pv.Images.Select(pvi => new PlantImageDto
+                                                        {
+                                                            Id = pvi.Id,
+                                                            AltText = pvi.AltText,
+                                                            IsPrimaryImage = pvi.IsPrimaryImage,
+                                                            StorageKey = pvi.StorageKey
+                                                        }).ToList()
+                                                        
+                                                    }).ToList()             
                               })
                               .ToListAsync();
             return new GetPlantResponse(plant);
@@ -69,13 +91,35 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                       Id = p.Id,
                       Name = p.Name,
                       Description = p.Description,
-                      PlantImages = p.Images.ToList(),
+                      PlantImages = p.Images.Select(i => new PlantImageDto
+                      {
+                          Id = i.Id,
+                          AltText = i.AltText,
+                          IsPrimaryImage = i.IsPrimaryImage,
+                          StorageKey = i.StorageKey
+                      }).ToList(),
                       Categories = context.PlantCategories
-                            .Where(pc => pc.PlantId == p.Id)
-                            .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
+                                      .Where(pc => pc.PlantId == p.Id)
+                                      .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
                       PlantVariants = context.PlantVariants
-                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p => p.SalePrices).ToList(),
-                      CareInstruction = p.CareInstruction
+                                                    .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p => p.SalePrices)
+                                                    .Select(pv => new PlantVariantDto
+                                                    {
+                                                        Id = pv.Id,
+                                                        PlantId = pv.PlantId,
+                                                        Price = pv.GetPrice(CustomerTier.Retail, DateTime.Now),
+                                                        Sku = pv.Sku,
+                                                        VariantName = pv.VariantName,
+                                                        RetailPrice = pv.RetailPrice,
+                                                        Images = pv.Images.Select(pvi => new PlantImageDto
+                                                        {
+                                                            Id = pvi.Id,
+                                                            AltText = pvi.AltText,
+                                                            IsPrimaryImage = pvi.IsPrimaryImage,
+                                                            StorageKey = pvi.StorageKey
+                                                        }).ToList()
+
+                                                    }).ToList()
                   })
                   .ToListAsync();
         return new GetPlantResponse(FilteredPlants);

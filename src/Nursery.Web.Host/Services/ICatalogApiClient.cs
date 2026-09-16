@@ -4,6 +4,6 @@ namespace Nursery.Web.Host.Services;
 
 public interface ICatalogApiClient
 {
-    Task<PagedResult<PlantSummaryDto>> GetPlantsAsync(int page = 0, int pageSize = 3, CancellationToken ct = default);
-    Task<PlantDetailDto?> GetPlantByIdAsync(Guid id, CancellationToken ct = default);
+    Task<IReadOnlyList<PlantDto>> GetPlantsAsync(CancellationToken ct = default);
+    Task<PlantDto?> GetPlantByIdAsync(Guid id, CancellationToken ct = default);
 }

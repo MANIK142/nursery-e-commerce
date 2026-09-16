@@ -7,31 +7,26 @@ namespace Nursery.Web.Host.Services;
 public class CatalogApiClient : ICatalogApiClient
 {
     private readonly HttpClient _httpClient;
-    private readonly ILogger<CatalogApiClient> _logger;
 
-    public CatalogApiClient(HttpClient httpClient, ILogger<CatalogApiClient> logger)
-    {
-        _httpClient = httpClient;
-        _logger = logger;
-    }
+    public CatalogApiClient(HttpClient httpClient) => _httpClient = httpClient;
 
-    public async Task<PagedResult<PlantSummaryDto>> GetPlantsAsync(int page = 0, int pageSize = 3, CancellationToken ct = default)
+    public async Task<IReadOnlyList<PlantDto>> GetPlantsAsync(CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"api/v1/plants?PageNumber={page}&PageSize={pageSize}", ct);
+        var response = await _httpClient.GetAsync("api/v1/plants", ct);
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<PagedResult<PlantSummaryDto>>(cancellationToken: ct);
-        return result ?? new PagedResult<PlantSummaryDto>([], page, pageSize, 0);
+        var result = await response.Content.ReadFromJsonAsync<PlantsResponse>(cancellationToken: ct);
+        return result?.Plants ?? [];
     }
 
-    public async Task<PlantDetailDto?> GetPlantByIdAsync(Guid id, CancellationToken ct = default)
+    public async Task<PlantDto?> GetPlantByIdAsync(Guid id, CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"api/v1/plants/{id}", ct);
+        var response = await _httpClient.GetAsync($"api/v1/plants?id={id}", ct);
+        if (response.StatusCode == HttpStatusCode.NotFound) return null;
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-            return null;
 
         response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<PlantDetailDto>(cancellationToken: ct);
+        var result = await response.Content.ReadFromJsonAsync<PlantsResponse>(cancellationToken: ct);
+        return result?.Plants.FirstOrDefault() ?? null;
     }
 }

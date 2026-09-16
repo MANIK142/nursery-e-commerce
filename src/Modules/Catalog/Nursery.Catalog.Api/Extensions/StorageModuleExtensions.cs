@@ -13,7 +13,7 @@ public static class StorageModuleExtensions
 {
     public static IServiceCollection AddStorage(this IServiceCollection services, IConfiguration config)
     {
-        var Storage = "Storage_Aws";
+        var Storage = "Storage_Local";
         services.Configure<StorageOptions>(config.GetSection(Storage));
         var options = config.GetSection(Storage).Get<StorageOptions>()!;
 
