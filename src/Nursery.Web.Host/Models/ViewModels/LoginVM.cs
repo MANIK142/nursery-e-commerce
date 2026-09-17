@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Nursery.Web.Host.ViewModels;
+namespace Nursery.Web.Host.Models.ViewModels;
 
 public class LoginVM
 {

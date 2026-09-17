@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Nursery.Web.Host.Models.ViewModels;
 using Nursery.Web.Host.Services.Interface;
-using Nursery.Web.Host.ViewModels;
 using System.Numerics;
 
 namespace Nursery.Web.Host.Areas.Customer.Controllers;

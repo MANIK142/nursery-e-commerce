@@ -20,6 +20,10 @@ using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(Nursery.Identity.IdentityExtensions).Assembly)
     .AddApplicationPart(typeof(Customer.API.CustomerModuleExtensions).Assembly);
@@ -53,6 +57,9 @@ builder.Services.AddScoped<IOrderLineItemLookup, OrderLineItemLookup>();
 builder.Services.AddDirectoryBrowser();
 
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

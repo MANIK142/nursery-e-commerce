@@ -1,6 +1,6 @@
-﻿using Nursery.Web.Host.Models.Catalog;
+﻿using Nursery.Web.Host.Models.DTOs.Catalog;
 
-namespace Nursery.Web.Host.ViewModels;
+namespace Nursery.Web.Host.Models.ViewModels;
 
 public record PlantCardViewModel(
     Guid Id,

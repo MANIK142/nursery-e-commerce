@@ -1,4 +1,5 @@
-﻿using Nursery.Web.Host.Models.Catalog;
+﻿using Nursery.Web.Host.Models.DTOs;
+using Nursery.Web.Host.Models.DTOs.Catalog;
 using Nursery.Web.Host.Services.Interface;
 using System.Net;
 
@@ -10,6 +11,32 @@ public class CatalogApiClient : ICatalogApiClient
     private readonly HttpClient _httpClient;
 
     public CatalogApiClient(HttpClient httpClient) => _httpClient = httpClient;
+
+
+
+    public async Task<(bool IsSuccess, string? ErrorMessage)> CreatePlantAsync(
+        CreatePlantApiRequest payload,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("/api/v1/plants", payload, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return (true, null);
+            }
+
+            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
+            //_logger.LogWarning("Plant creation failed with status {StatusCode}: {Response}", response.StatusCode, rawError);
+            return (false, string.IsNullOrWhiteSpace(rawError) ? "API rejected the plant submission." : rawError);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Failed to reach Plant API.");
+            return (false, "An error occurred while communicating with the catalog service.");
+        }
+    }
 
     public async Task<IReadOnlyList<PlantDto>> GetPlantsAsync(CancellationToken ct = default)
     {

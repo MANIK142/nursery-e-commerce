@@ -34,6 +34,8 @@ public class UploadImage : ICarterModule
             }
         })
         .DisableAntiforgery()
+        .Produces<UploadImageResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
         .WithTags("Images")
         .WithDisplayName("Upload Image")
         .WithName("Upload Image")

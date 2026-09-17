@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Modules\Shippings\Nursery.Shippings.API\Nursery.Shippings.API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="plant\images\nursery\uploads\" />
+  </ItemGroup>
+
 </Project>

@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Nursery.Web.Host.Models.Identity;
+using Nursery.Web.Host.Models.DTOs.Identity;
+using Nursery.Web.Host.Models.ViewModels;
 using Nursery.Web.Host.Services.Interface;
-using Nursery.Web.Host.ViewModels;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 

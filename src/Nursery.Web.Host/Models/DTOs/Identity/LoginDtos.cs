@@ -1,4 +1,4 @@
-﻿namespace Nursery.Web.Host.Models.Identity;
+﻿namespace Nursery.Web.Host.Models.DTOs.Identity;
 public class LoginRequest
 {
     public string userName { get; set; } = default!;

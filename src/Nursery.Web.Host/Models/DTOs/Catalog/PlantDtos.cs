@@ -1,4 +1,4 @@
-﻿namespace Nursery.Web.Host.Models.Catalog;
+﻿namespace Nursery.Web.Host.Models.DTOs.Catalog;
 public record PlantsResponse(IReadOnlyList<PlantDto> Plants);
 
 public record PlantDto(

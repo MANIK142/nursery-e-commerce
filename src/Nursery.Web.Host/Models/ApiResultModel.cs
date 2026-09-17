@@ -1,4 +1,4 @@
-﻿using Nursery.Web.Host.Models.Identity;
+﻿using Nursery.Web.Host.Models.DTOs.Identity;
 
 namespace Nursery.Web.Host.Models;
 

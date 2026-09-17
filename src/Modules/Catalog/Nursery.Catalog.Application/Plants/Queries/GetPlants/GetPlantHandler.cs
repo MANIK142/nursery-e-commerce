@@ -80,7 +80,7 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
         }
 
         var pageNumber = request.PageNumber ?? 0;
-        var pageSize = request.PageSize ?? 10;
+        var pageSize = request.PageSize ?? 100;
 
         var FilteredPlants = await query
                   .OrderBy(c => c.CreatedAt)

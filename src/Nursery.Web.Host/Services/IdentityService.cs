@@ -1,8 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Nursery.Web.Host.Models;
-using Nursery.Web.Host.Models.Catalog;
-using Nursery.Web.Host.Models.Identity;
+using Nursery.Web.Host.Models.DTOs.Catalog;
+using Nursery.Web.Host.Models.DTOs.Identity;
 using Nursery.Web.Host.Services.Interface;
 using System.Security.Principal;
 
