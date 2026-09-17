@@ -34,4 +34,6 @@ public static class PlantMappingExtensions
             Categories: string.Join(", ", plant.Categories.Select(c => c.Name))
         );
     }
+
+
 }

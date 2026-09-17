@@ -7,6 +7,8 @@ using Nursery.Catalog.Domain.Models;
 
 namespace Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
+
+
 public record CreatePlantCommand(string SkuCode, string Name, string Description, decimal RetailPrice, 
     string CreatedBy, List<Guid> Categories, List<PlantVariantSpec> plantVariantSpecs, List<ImageSpec> Images
     ) : ICommand<CreatePlantResponse>;

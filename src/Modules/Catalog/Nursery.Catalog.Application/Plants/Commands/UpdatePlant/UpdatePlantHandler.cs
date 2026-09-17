@@ -14,30 +14,34 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
             throw new ItemNotFoundException($"Plant with ID {request.Id} not found");
         }
         
-        plant.SetName(request.Name, request.ModifiedBy);
-        plant.SetDescription(request.Description, request.ModifiedBy);
-        if (!request.IsActive)
-        {
-            plant.Deactivate(request.ModifiedBy);
-        }
+        plant.SetName(request.Name, request.Name);
+        plant.SetDescription(request.Description, request.Description);
 
-        foreach (var categoryId in plant.CategoryIds)
+
+        var ExistingCategories = await context.GetCategoriesByPlantId(plant.Id, cancellationToken);
+        if (ExistingCategories != null)
         {
-            if (!request.CategoryIds.Contains(categoryId))
+            foreach (var categoryId in ExistingCategories)
             {
-                plant.RemoveCategory(categoryId, request.ModifiedBy);
+                if (!request.Categories.Contains(categoryId))
+                {
+                    plant.RemoveCategory(categoryId, request.ModifiedBy);
+                }
             }
         }
-        if (request.CategoryIds.Any())
+
+        if (request.Categories.Any())
         {
-            foreach (var categoryId in request.CategoryIds)
+            foreach (var categoryId in request.Categories)
             {
-                if (!plant.CategoryIds.Contains(categoryId))
+                if (!ExistingCategories.Contains(categoryId))
                 {
                     plant.AddCategory(categoryId, request.ModifiedBy);
                 }
             }
         }
+
+    
         var result =  await context.UpdatePlantAsync(plant, cancellationToken);
 
         return new UpdatePlantResult(result);

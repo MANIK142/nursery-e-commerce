@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using Nursery.Catalog.Application.Data;
+using Nursery.Catalog.Application.Dtos;
 using Nursery.Catalog.Domain.Models;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 using System.ComponentModel.DataAnnotations;
@@ -23,6 +24,14 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
             .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
         return plant;
     }
+
+    public async Task<List<Guid>?> GetCategoriesByPlantId(Guid PlantId, CancellationToken cancellationToken)
+    {
+        return await db.PlantCategories
+                .Where(pc => pc.PlantId == PlantId)
+                .Select(pc => pc.CategoryId).ToListAsync();
+    }
+
     public async Task<List<Plant>> GetAllPlantsAsync(CancellationToken cancellationToken)
     {
         return await db.Plants.ToListAsync(cancellationToken);

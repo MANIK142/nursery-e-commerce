@@ -39,6 +39,7 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                                         Sku = pv.Sku,
                                                         VariantName = pv.VariantName,
                                                         RetailPrice =pv.RetailPrice,
+                                                        WholesalePrice = pv.WholesalePrice,
                                                         Images = pv.Images.Select(pvi => new PlantImageDto
                                                         {
                                                             Id = pvi.Id,

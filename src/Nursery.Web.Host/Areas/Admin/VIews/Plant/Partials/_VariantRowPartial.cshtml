@@ -6,7 +6,7 @@
 
 <div class="card mb-3 border variant-card" data-index="@vIndex">
     <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
-        <span class="fw-semibold text-secondary">Variant #<span class="variant-display-idx">@(int.Parse(vIndex) + 1)</span></span>
+        <span class="fw-semibold text-secondary">Variant #<span class="variant-display-idx">#@(Convert.ToInt32(vIndex) + 1)</span></span>
         <button type="button" class="btn btn-outline-danger btn-sm remove-variant-btn">Remove Variant</button>
     </div>
     <div class="card-body">
@@ -50,11 +50,11 @@
             <div class="variant-image-container">
                 @for (int j = 0; j < Model.ImageSpecs.Count; j++)
                 {
-                    @await Html.PartialAsync("Partials/_ImageRow", Model.ImageSpecs[j], new ViewDataDictionary(ViewData)
-                    {
-                        { "Index", j },
-                        { "Prefix", $"{prefix}.ImageSpecs" }
-                    })
+                    var rowViewData = new ViewDataDictionary(ViewData);
+                    rowViewData["Index"] = j;
+                    rowViewData["Prefix"] = $"{prefix}.ImageSpecs";
+                    @await Html.PartialAsync("Partials/_ImageRowPartial", Model.ImageSpecs[j], rowViewData)
+
                 }
             </div>
         </div>

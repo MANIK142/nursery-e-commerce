@@ -1,0 +1,109 @@
+﻿@model Nursery.Web.Host.Models.ViewModels.Plants.EditPlantViewModel
+@{
+    ViewData["Title"] = $"Edit Plant - {Model.Name}";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="text-success fw-bold mb-0">Edit Plant</h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to Catalog</a>
+            </div>
+
+            <form asp-action="Update" asp-route-id="@Model.Id" method="post" id="createPlantForm">
+                <input type="hidden" asp-for="Id" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Basic Plant Info -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">General Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <label asp-for="Name" class="form-label fw-semibold">Plant Name</label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ModifiedBy" class="form-label fw-semibold">Modified By</label>
+                                <input asp-for="ModifiedBy" class="form-control" />
+                                <span asp-validation-for="ModifiedBy" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        <div>
+                            <label class="form-label fw-semibold">Categories</label>
+                            <select asp-for="SelectedCategories" asp-items="Model.AvailableCategories" class="form-select" multiple size="4"></select>
+                            <span asp-validation-for="SelectedCategories" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Base Images (Existing + New) -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">Base Plant Images</h5>
+                            <small class="text-muted">Upload replacement or additional media.</small>
+                        </div>
+                        <button type="button" class="btn btn-outline-success btn-sm" id="addPlantImageBtn">+ Add Base Image</button>
+                    </div>
+                    <div class="card-body" id="plantImagesContainer">
+                        @for (int i = 0; i < Model.Images.Count; i++)
+                        {
+                            var rowViewData = new ViewDataDictionary(ViewData);
+                            rowViewData["Index"] = i;
+                            rowViewData["Prefix"] = "Images";
+                            @await Html.PartialAsync("Partials/_ImageRowPartial", Model.Images[i], rowViewData)
+                        }
+                    </div>
+                </div>
+
+                <!-- Variants -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Plant Variants & Pricing</h5>
+                        <button type="button" class="btn btn-success btn-sm" id="addVariantBtn">+ Add Variant</button>
+                    </div>
+                    <div class="card-body" id="variantsContainer">
+                        @for (int i = 0; i < Model.PlantVariantSpecs.Count; i++)
+                        {
+                            var variantViewData = new ViewDataDictionary(ViewData);
+                            variantViewData["Index"] = i;
+                            @await Html.PartialAsync("Partials/_VariantRowPartial", Model.PlantVariantSpecs[i], variantViewData)
+                        }
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 pb-5">
+                    <button type="submit" id="submitBtn" class="btn btn-primary px-4">Update Plant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Reuses the exact same dynamic templates defined in Create.cshtml -->
+<partial name="_PlantTemplatesPartial" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/plant-create.js" asp-append-version="true"></script>
+}

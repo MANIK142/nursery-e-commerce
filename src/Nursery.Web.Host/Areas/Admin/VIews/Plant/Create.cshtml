@@ -21,7 +21,7 @@
                     </div>
                     <div class="card-body">
                         <div class="row g-3 mb-3">
-                            <div class="col-md-8">
+                            <div class="col-md">
                                 <label asp-for="Name" class="form-label fw-semibold">Plant Name</label>
                                 <input asp-for="Name" class="form-control" placeholder="e.g., Monstera Deliciosa" />
                                 <span asp-validation-for="Name" class="text-danger small"></span>
@@ -31,7 +31,7 @@
                                 <input asp-for="CreatedBy" class="form-control" placeholder="Author/Admin username" />
                                 <span asp-validation-for="CreatedBy" class="text-danger small"></span>
                             </div>
-                        </div>
+                        </div>a
 
                         <div class="mb-3">
                             <label asp-for="Description" class="form-label fw-semibold">Description</label>
@@ -64,7 +64,7 @@
                             @await Html.PartialAsync("Partials/_ImageRowPartial", Model.Images[i], new ViewDataDictionary(ViewData)
                             {
                                 { "Index", i },
-                                { "Prefix", "Images" }  
+                                { "Prefix", "Images" }
                             })
                         }
                     </div>

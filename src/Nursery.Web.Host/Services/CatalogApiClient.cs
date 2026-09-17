@@ -52,7 +52,6 @@ public class CatalogApiClient : ICatalogApiClient
         var response = await _httpClient.GetAsync($"api/v1/plants?id={id}", ct);
         if (response.StatusCode == HttpStatusCode.NotFound) return null;
 
-
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<PlantsResponse>(cancellationToken: ct);
         return result?.Plants.FirstOrDefault() ?? null;
@@ -69,4 +68,26 @@ public class CatalogApiClient : ICatalogApiClient
 
         return result?.Categories ?? [];
     }
+
+    public async Task<(bool IsSuccess, string? ErrorMessage)> UpdatePlantAsync(
+     Guid id,
+     UpdatePlantApiRequest payload,
+     CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/v1/plants", payload, cancellationToken);
+            if (response.IsSuccessStatusCode) return (true, null);
+
+            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
+            return (false, string.IsNullOrWhiteSpace(rawError) ? "Failed to update plant." : rawError);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Failed to send update for plant {PlantId}", id);
+            return (false, "Communication error with catalog service.");
+        }
+    }
+
+
 }

@@ -8,6 +8,7 @@ using Nursery.Web.Host.Models.ViewModels.Plants;
 using Nursery.Web.Host.Services.Interface;
 using System.Numerics;
 
+
 namespace Nursery.Web.Host.Areas.Admin.Controllers
 {
     [Area("Admin")]
@@ -33,10 +34,14 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
         {
             var plants = await _catalogApiClient.GetPlantsAsync(ct);
             var cards = plants.Select(p => p.ToCardViewModel("")).ToList();
-            return View(cards);
+            return Json(new { data = cards });
+
         }
 
-        public async Task<IActionResult> Upsert(int? Id, CancellationToken ct = default)
+
+        
+        [HttpGet]
+        public async Task<IActionResult> Create( CancellationToken ct = default)
         {
             var categories = await _catalogApiClient.GetCatgoriesAsync(ct);
             var CreatePlantViewModel = new CreatePlantViewModel
@@ -55,11 +60,125 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             return View(CreatePlantViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid Id,CancellationToken ct = default)
+        {
+            var categories = await _catalogApiClient.GetCatgoriesAsync(ct);
+            if (Id != Guid.Empty && Id != null)
+            {
+            }
+
+
+            var plant = await _catalogApiClient.GetPlantByIdAsync(Id, ct);
+            var editPlantViewModel = new EditPlantViewModel
+            {
+                Id = plant.Id,
+                AvailableCategories = categories.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }).ToList(),
+                Name = plant.Name,
+                Description = plant.Description,
+                SelectedCategories = plant.Categories.Select(c => c.Id.ToString()).ToList(),
+                Images = plant.PlantImages.Select(pi => new PlantImageInputModel
+                {
+                    AltText = pi.AltText,
+                    IsPrimaryImage = pi.IsPrimaryImage,
+                    StorageKey = pi.StorageKey
+                }).ToList(),
+                PlantVariantSpecs = plant.PlantVariants.Select(pv => new PlantVariantInputModel
+                {
+                    Sku = pv.Sku,
+                    RetailPrice = new MoneyInputModel
+                    {
+                        Amount = pv.RetailPrice.Amount,
+                        Currency = pv.RetailPrice.Currency
+                    },
+                    WholesalePrice = new MoneyInputModel
+                    {
+                        Amount = pv.WholeSalePrice.Amount,
+                        Currency = pv.WholeSalePrice.Currency
+                    },
+                    VariantName = pv.VariantName,
+                    ImageSpecs = pv.Images.Select(i => new PlantImageInputModel
+                    {
+                        AltText = i.AltText,
+                        IsPrimaryImage = i.IsPrimaryImage,
+                        StorageKey = i.StorageKey
+                    }).ToList()
+                }).ToList(),
+            };
+            return View(editPlantViewModel);
+           
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(Guid id, EditPlantViewModel model, CancellationToken cancellationToken)
+        {
+            if (id != model.Id) return BadRequest();
+
+            if (model.PlantVariantSpecs.Count == 0)
+            {
+                ModelState.AddModelError(string.Empty, "At least one variant specification is required.");
+            }
+
+            model.Images.RemoveAll(img => string.IsNullOrWhiteSpace(img.StorageKey));
+            foreach (var variant in model.PlantVariantSpecs)
+            {
+                variant.ImageSpecs.RemoveAll(img => string.IsNullOrWhiteSpace(img.StorageKey));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var categories = await _catalogApiClient.GetCatgoriesAsync(cancellationToken);
+                model.AvailableCategories = categories.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }).ToList();
+                return View(model);
+            }
+
+            var payload = new UpdatePlantApiRequest(
+                Id: model.Id,
+                Name: model.Name,
+                Description: model.Description ?? string.Empty,
+                ModifiedBy: string.IsNullOrWhiteSpace(model.ModifiedBy) ? (User.Identity?.Name ?? "Admin") : model.ModifiedBy,
+                Categories: model.SelectedCategories,
+                PlantVariantSpecs: model.PlantVariantSpecs.Select(v => new PlantVariantSpecDto(
+                    Sku: v.Sku,
+                    VariantName: v.VariantName,
+                    ImageSpecs: v.ImageSpecs.Select(i => new ImageSpecDto(i.StorageKey, i.IsPrimaryImage, i.AltText ?? string.Empty)).ToList(),
+                    RetailPrice: new MoneyDto(v.RetailPrice.Amount, v.RetailPrice.Currency),
+                    WholesalePrice: new MoneyDto(v.WholesalePrice.Amount, v.WholesalePrice.Currency)
+                )).ToList(),
+                Images: model.Images.Select(i => new ImageSpecDto(i.StorageKey, i.IsPrimaryImage, i.AltText ?? string.Empty)).ToList()
+            );
+
+            var (isSuccess, errorMessage) = await _catalogApiClient.UpdatePlantAsync(id, payload, cancellationToken);
+
+            if (!isSuccess)
+            {
+                ModelState.AddModelError(string.Empty, errorMessage ?? "Failed to update plant.");
+                var categories = await _catalogApiClient.GetCatgoriesAsync(cancellationToken);
+                model.AvailableCategories = categories.Select(c => new SelectListItem
+                {
+                    Text = c.Name,
+                    Value = c.Id.ToString()
+                }).ToList();
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = $"Plant \"{model.Name}\" was updated successfully!";
+            return RedirectToAction(nameof(Update), new { id });
+        }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(CreatePlantViewModel model, CancellationToken cancellationToken)
+        public async Task<IActionResult> Create(CreatePlantViewModel model, CancellationToken cancellationToken)
         {
             // 1. Business & Cross-field validations
             if (model.PlantVariantSpecs.Count == 0)
@@ -86,11 +205,13 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
                 return View(model);
             }
 
+            var createdBy = User.Identity?.Name ?? "Admin";
+
             // 3. Map View Model to exact API DTO Payload
             var payload = new CreatePlantApiRequest(
                 Name: model.Name,
                 Description: model.Description ?? string.Empty,
-                CreatedBy: string.IsNullOrWhiteSpace(model.CreatedBy) ? (User.Identity?.Name ?? "Admin") : model.CreatedBy,
+                CreatedBy: createdBy,
                 Categories: model.SelectedCategories,
                 PlantVariantSpecs: model.PlantVariantSpecs.Select(v => new PlantVariantSpecDto(
                     Sku: v.Sku,
@@ -126,7 +247,7 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             }
 
             TempData["success"] = $"Plant \"{model.Name}\" was successfully published!";
-            return RedirectToAction(nameof(Upsert));
+            return RedirectToAction(nameof(Create));
         }
 
         [HttpPost("/admin/plants/upload-image")]

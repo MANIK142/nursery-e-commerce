@@ -26,6 +26,7 @@ public class PlantVariantDto
     public string Sku { get; set; } = default!;
     public string VariantName { get; set; } = default!;
     public MoneyDto RetailPrice { get; set; } = default!;
+    public MoneyDto WholeSalePrice { get; set; } = default!;
     public MoneyDto Price { get; set; } = default!;
     public List<PlantImageDto> Images { get; set; } = default!;
 }

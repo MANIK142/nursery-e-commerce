@@ -5,7 +5,6 @@ namespace Nursery.Web.Host.Models.ViewModels.Plants;
 
 public class CreatePlantViewModel
 {
-    public Guid? Id { get; set; }
 
     [Required(ErrorMessage = "Plant name is required.")]
     [StringLength(150)]
@@ -13,8 +12,7 @@ public class CreatePlantViewModel
 
     [MaxLength(1000)]
     public string? Description { get; set; }
-
-    public string CreatedBy { get; set; } = string.Empty;
+    public string? CreatedBy { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select at least one category.")]
     [MinLength(1, ErrorMessage = "At least one category must be selected.")]

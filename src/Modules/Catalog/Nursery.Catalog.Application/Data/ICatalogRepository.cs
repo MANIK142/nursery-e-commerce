@@ -8,8 +8,10 @@ public interface ICatalogRepository
     Task<bool> UpdatePlantAsync(Plant plant, CancellationToken cancellationToken);
     Task<bool> DeletePlantById(Guid Id, CancellationToken cancellationToken);
 
+    Task<List<Guid>?> GetCategoriesByPlantId(Guid PlantId, CancellationToken cancellationToken);
+    
 
-    Task<bool> IsCategoryExistsAsync(string name, CancellationToken cancellationToken);
+        Task<bool> IsCategoryExistsAsync(string name, CancellationToken cancellationToken);
     Task<Category?> GetCategoryById(Guid Id, CancellationToken cancellationToken);
     Task<Category> CreateCategoryAsync(Category category, CancellationToken cancellationToken);
     Task<bool> UpdateCategoryAsync(Category category, CancellationToken cancellationToken);

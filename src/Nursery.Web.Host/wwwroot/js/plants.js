@@ -1,31 +1,68 @@
 ﻿var plantDataTable;
 
 $(document).ready(function () {
-    //plantDataTable();
+    plantDataTable();
 })
 
-
-// plantDataTable = $('#tblData').DataTable({
-//     ajax: '/admin/plant/getall',
-//     columns: [
-//         { data: 'Id', "width": "25%" },
-//         { data: 'Name', "width": "15%" },
-//         { data: 'SalePrice', "width": "10%", "render": function (data) { return '$' + data.toFixed(2); } },
-//         { data: 'Categories', "width": "15%" },
-//         {
-//             data: 'id', "width": "25%", "render": function (data) {
-//                 return `<div class="d-flex gap-2 justify-content-end">
-//                             <a href="/admin/product/upsert?id=${data}" class="btn btn-sm btn-outline-success">
-//                                  <i class="bi bi-pencil-square"></i> Edit
-//                             </a>
-//                               <a onclick="Delete('/admin/product/delete/${data}')" class="btn btn-sm btn-outline-danger">
-//                                  <i class="bi bi-trash"></i> Delete
-//                             </a>
-//                         </div > `;
+function plantDataTable() {
+    $('#tblData').DataTable({
+        ajax: {
+            url: '/admin/plant/getall',
+            type: 'GET',
+            dataSrc: 'data', // remove or change to '' if your controller returns a raw array
+            error: function (xhr, error, code) {
+                console.error("Status:", xhr.status);
+                console.error("Response:", xhr.responseText);
+            }
+        },
+        columns: [
+            { data: 'name', width: '15%' },
+            {
+                data: 'categories',
+                width: '30%',
+                render: function (data) {
+                    return Array.isArray(data) ? data.join(', ') : data;
+                }
+            },
+            { data: 'displayPrice', width: '30%' },
+            {
+                data: 'id', width: '15%', render: function (data) {
+                    return `<div class="d-flex gap-2 justify-content-end">
+                                         <a href="/admin/plant/update?id=${data}" class="btn btn-sm btn-outline-success">
+                                              <i class="bi bi-pencil-square"></i> Edit
+                                         </a>
+                                           <a onclick="Delete('/admin/plant/delete/${data}')" class="btn btn-sm btn-outline-danger">
+                                              <i class="bi bi-trash"></i> Delete
+                                         </a>
+                         </div > `;
+                }
+            }
+        ]
+    });
+}
+  
+// function plantDataTable() {
+//     $('#tblData').DataTable({
+//         ajax: '/admin/plant/getall',
+//         columns: [
+//             { data: 'Name', "width": "25%" },
+//             { data: 'Categories', "width": "15%" },
+//             { data: 'DisplayPrice', "width": "15%" },
+//             {
+//                 data: 'Id', "width": "25%", "render": function (data) {
+//                     return `<div class="d-flex gap-2 justify-content-end">
+//                              <a href="/admin/product/upsert?id=${data}" class="btn btn-sm btn-outline-success">
+//                                   <i class="bi bi-pencil-square"></i> Edit
+//                              </a>
+//                                <a onclick="Delete('/admin/product/delete/${data}')" class="btn btn-sm btn-outline-danger">
+//                                   <i class="bi bi-trash"></i> Delete
+//                              </a>
+//                          </div > `;
+//                 }
 //             }
-//         }
-//     ]
-// });
+//         ]
+//     });
+// } 
 
 
 // function Delete(url) {
