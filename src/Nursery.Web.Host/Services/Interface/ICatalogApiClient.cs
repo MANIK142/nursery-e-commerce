@@ -12,4 +12,7 @@ public interface ICatalogApiClient
     Task<IReadOnlyList<PlantDto>> GetPlantsAsync(CancellationToken ct = default);
 
     Task<IEnumerable<CategoryDto>?> GetCatgoriesAsync(CancellationToken ct = default);
+
+    Task<(bool IsSuccess, string? ErrorMessage)> CreateCareInstruction(CreateCareInstructionRequest payload, CancellationToken ct = default);
+    Task<(bool IsSuccess, string? ErrorMessage)> UpdateCareInstruction(UpdateCareInstructionRequest payload, CancellationToken cancellationToken = default);
 }

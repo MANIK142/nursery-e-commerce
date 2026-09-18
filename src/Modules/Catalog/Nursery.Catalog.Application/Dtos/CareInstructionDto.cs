@@ -4,6 +4,7 @@ using Nursery.Catalog.Domain.Enums;
 namespace Nursery.Catalog.Application.Dtos;
 public class CareInstructionDto
 {
+    public Guid? Id { get; set; }
     public Guid PlantId { get;  set; }
     public WateringFrequency WateringFrequency { get;  set; }
     public SunlightRequirement SunlightRequirement { get;  set; }

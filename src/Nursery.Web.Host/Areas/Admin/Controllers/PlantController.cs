@@ -273,5 +273,89 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
 
             return StatusCode((int)apiResponse.StatusCode, responseBody);
         }
+
+
+        public async Task<IActionResult> CreateCareInstruction(Guid Id, CancellationToken cancellationToken)
+        {
+
+            var plant = await _catalogApiClient.GetPlantByIdAsync(Id,cancellationToken);
+            if (plant.CareInstruction != null)
+            {
+                var updateCareInstructionViewModel = new CreateCareInstructionViewModel()
+                {
+                    Id = plant.CareInstruction.Id,
+                    PlantId = Id,
+                    Name = plant.Name,
+                    AdditionalNotes = plant.CareInstruction.AdditionalNotes,
+                    IsToxicToPets = plant.CareInstruction.IsToxicToPets,
+                    SunlightRequirement = plant.CareInstruction.SunlightRequirement,
+                    FertilizingFrequency = plant.CareInstruction.FertilizingFrequency,
+                    HumidityLevel = plant.CareInstruction.HumidityLevel,
+                    SoilType = plant.CareInstruction.SoilType,
+                    WateringFrequency = plant.CareInstruction.WateringFrequency,    
+                    DifficultyLevel = plant.CareInstruction.DifficultyLevel,
+                    MaxTemperatureCelsius = plant.CareInstruction.MaxTemperatureCelsius,
+                    MinTemperatureCelsius = plant.CareInstruction.MinTemperatureCelsius,
+                    PruningNotes = plant.CareInstruction.PruningNotes
+                };
+                return View(updateCareInstructionViewModel);
+            }
+            var createCareInstructionViewModel = new CreateCareInstructionViewModel()
+            {
+                PlantId = Id,
+                Name = plant.Name
+            };
+            return View(createCareInstructionViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCareInstruction(CreateCareInstructionViewModel CreateCareInstructionViewModel, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                var createCareInstructionViewModel = new CreateCareInstructionViewModel()
+                {
+                    PlantId = CreateCareInstructionViewModel.PlantId,
+                    Name = CreateCareInstructionViewModel.Name
+                };
+                return View(createCareInstructionViewModel);
+            }
+
+            var createdBy = User.Identity?.Name ?? "Admin";
+
+
+
+            // 3. Map View Model to exact API DTO Payload
+
+            var isSuccess = false;
+            var errorMessage = "";
+            if (CreateCareInstructionViewModel.Id != null)
+            {
+                var updatepayload = new UpdateCareInstructionRequest((Guid)CreateCareInstructionViewModel.Id, CreateCareInstructionViewModel.PlantId, CreateCareInstructionViewModel.WateringFrequency, CreateCareInstructionViewModel.SunlightRequirement,
+                                                                CreateCareInstructionViewModel.SoilType, CreateCareInstructionViewModel.MinTemperatureCelsius, CreateCareInstructionViewModel.MaxTemperatureCelsius,
+                                                                CreateCareInstructionViewModel.HumidityLevel, CreateCareInstructionViewModel.FertilizingFrequency, CreateCareInstructionViewModel.DifficultyLevel,
+                                                                CreateCareInstructionViewModel.IsToxicToPets, CreateCareInstructionViewModel.PruningNotes, CreateCareInstructionViewModel.AdditionalNotes);
+                 (isSuccess, errorMessage) = await _catalogApiClient.UpdateCareInstruction(updatepayload, cancellationToken);
+            }
+            else
+            {
+                var payload = new CreateCareInstructionRequest(CreateCareInstructionViewModel.PlantId, CreateCareInstructionViewModel.WateringFrequency, CreateCareInstructionViewModel.SunlightRequirement,
+                                                                CreateCareInstructionViewModel.SoilType, CreateCareInstructionViewModel.MinTemperatureCelsius, CreateCareInstructionViewModel.MaxTemperatureCelsius,
+                                                                CreateCareInstructionViewModel.HumidityLevel, CreateCareInstructionViewModel.FertilizingFrequency, CreateCareInstructionViewModel.DifficultyLevel,
+                                                                CreateCareInstructionViewModel.IsToxicToPets, CreateCareInstructionViewModel.PruningNotes, CreateCareInstructionViewModel.AdditionalNotes);
+                 (isSuccess, errorMessage) = await _catalogApiClient.CreateCareInstruction(payload, cancellationToken);
+            }
+            // 4. Send request to Backend API
+            
+
+            if (!isSuccess)
+            {
+                ModelState.AddModelError(string.Empty, errorMessage ?? "Failed to publish plant.");
+                return RedirectToAction(nameof(CreateCareInstruction));
+            }
+
+            TempData["success"] = $"Plant Care Instruction  \"{CreateCareInstructionViewModel.Name}\" was successfully published!";
+            return RedirectToAction(nameof(CreateCareInstruction));
+        }
     }
 }

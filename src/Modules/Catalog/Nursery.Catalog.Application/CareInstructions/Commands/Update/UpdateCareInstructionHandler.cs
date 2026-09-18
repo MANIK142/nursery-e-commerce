@@ -12,7 +12,7 @@ public class UpdateCareInstructionHandler(ICatalogRepository catalog) : ICommand
 
     public async Task<UpdateCareInstructionResult> Handle(UpdateCareInstructionCommand request, CancellationToken cancellationToken)
     {
-        var existingInstruction = await catalog.GetCareInstructionByPlantId(request.PlantId, cancellationToken);
+        var existingInstruction = await catalog.GetCareInstructionByPlantId(request.Id, cancellationToken);
         if (existingInstruction == null)
             throw new ItemNotFoundException($"Care Instructions not found for Plant Id {request.PlantId}");
 

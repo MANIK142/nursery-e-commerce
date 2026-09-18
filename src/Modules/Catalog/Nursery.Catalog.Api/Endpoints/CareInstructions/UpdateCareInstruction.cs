@@ -5,7 +5,8 @@ namespace Nursery.Catalog.Api.Endpoints.CareInstructions;
 
 public class UpdateCareInstruction : ICarterModule
 {
-    public record UpdateCareInstructionRequest(Guid PlantId,
+    public record UpdateCareInstructionRequest(Guid Id,
+                                        Guid PlantId,
                                         string WateringFrequency,
                                         string SunlightRequirement,
                                         string SoilType,

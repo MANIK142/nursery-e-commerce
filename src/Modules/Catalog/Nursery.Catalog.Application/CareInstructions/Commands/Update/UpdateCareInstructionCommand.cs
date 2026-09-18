@@ -5,7 +5,9 @@ using Nursery.Catalog.Domain.Enums;
 
 namespace Nursery.Catalog.Application.CareInstructions.Commands.Update;
 
-public record UpdateCareInstructionCommand(Guid PlantId,
+public record UpdateCareInstructionCommand(
+                                        Guid Id,
+                                        Guid PlantId,
                                         string WateringFrequency,
                                         string SunlightRequirement,
                                         string SoilType,

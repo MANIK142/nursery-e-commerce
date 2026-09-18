@@ -89,5 +89,47 @@ public class CatalogApiClient : ICatalogApiClient
         }
     }
 
+    public async Task<(bool IsSuccess, string? ErrorMessage)> CreateCareInstruction(
+                                                                                 CreateCareInstructionRequest payload,
+                                                                                 CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync($"/api/v1/careinstruction", payload, cancellationToken);
+            if (response.IsSuccessStatusCode) return (true, null);
+
+            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
+            return (false, string.IsNullOrWhiteSpace(rawError) ? "Failed to update plant." : rawError);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Failed to send update for plant {PlantId}", id);
+            return (false, "Communication error with catalog service.");
+        }
+    }
+
+    public async Task<(bool IsSuccess, string? ErrorMessage)> UpdateCareInstruction(
+                                                                              UpdateCareInstructionRequest payload,
+                                                                              CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync($"/api/v1/careinstruction", payload, cancellationToken);
+            if (response.IsSuccessStatusCode) return (true, null);
+
+            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
+            return (false, string.IsNullOrWhiteSpace(rawError) ? "Failed to update plant." : rawError);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Failed to send update for plant {PlantId}", id);
+            return (false, "Communication error with catalog service.");
+        }
+    }
+
+
+
+    
+
 
 }

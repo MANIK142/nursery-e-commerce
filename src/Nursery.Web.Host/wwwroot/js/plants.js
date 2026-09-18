@@ -24,14 +24,17 @@ function plantDataTable() {
                     return Array.isArray(data) ? data.join(', ') : data;
                 }
             },
-            { data: 'displayPrice', width: '30%' },
+            { data: 'displayPrice', width: '10%' },
             {
-                data: 'id', width: '15%', render: function (data) {
+                data: 'id', width: '30%', render: function (data) {
                     return `<div class="d-flex gap-2 justify-content-end">
                                          <a href="/admin/plant/update?id=${data}" class="btn btn-sm btn-outline-success">
                                               <i class="bi bi-pencil-square"></i> Edit
                                          </a>
-                                           <a onclick="Delete('/admin/plant/delete/${data}')" class="btn btn-sm btn-outline-danger">
+                                          <a href="/admin/plant/CreateCareInstruction/${data}" class="btn btn-sm btn-outline-secondary">
+                                              <i class="bi bi-plus"></i> Add Care
+                                         </a>
+                                          <a onclick="Delete('/admin/plant/delete/${data}')" class="btn btn-sm btn-outline-danger">
                                               <i class="bi bi-trash"></i> Delete
                                          </a>
                          </div > `;

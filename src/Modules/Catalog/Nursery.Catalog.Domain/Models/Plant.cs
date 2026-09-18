@@ -17,6 +17,7 @@ public class Plant : BaseDomainModel
     public IReadOnlyCollection<PlantImage> Images => _images.AsReadOnly();
 
     private readonly List<PlantCategory> _categories = new();
+    public IReadOnlyCollection<PlantCategory> Categories => _categories.AsReadOnly();
     public IReadOnlyCollection<Guid> CategoryIds => _categories.Select(pc => pc.CategoryId).ToList();
 
     private readonly List<PlantVariant> _variants = new();

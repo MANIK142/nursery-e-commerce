@@ -19,6 +19,24 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                   Id = p.Id,
                                   Name = p.Name,
                                   Description = p.Description,
+                                  CareInstruction = p.CareInstruction != null ? new CareInstructionDto
+                                  {
+                                      Id = p.CareInstruction.Id,
+                                      PlantId = p.Id,
+                                      WateringFrequency = p.CareInstruction.WateringFrequency,
+                                      AdditionalNotes = p.CareInstruction.AdditionalNotes,
+                                      DifficultyLevel = p.CareInstruction.DifficultyLevel,
+                                      FertilizingFrequency = p.CareInstruction.FertilizingFrequency,
+                                      HumidityLevel = p.CareInstruction.HumidityLevel,
+                                      MaxTemperatureCelsius = p.CareInstruction.MaxTemperatureCelsius,
+                                      IsToxicToPets = p.CareInstruction.IsToxicToPets,
+                                      MinTemperatureCelsius = p.CareInstruction.MinTemperatureCelsius,
+                                      PruningNotes = p.CareInstruction.PruningNotes,
+                                      SoilType = p.CareInstruction.SoilType,
+                                      SunlightRequirement = p.CareInstruction.SunlightRequirement,
+
+
+                                  } : null,
                                   PlantImages = p.Images.Select(i => new PlantImageDto 
                                                                             { 
                                                                                 Id = i.Id,
@@ -48,7 +66,9 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                                             StorageKey = pvi.StorageKey
                                                         }).ToList()
                                                         
-                                                    }).ToList()             
+                                                    }).ToList(),
+                                 
+
                               })
                               .ToListAsync();
             return new GetPlantResponse(plant);
@@ -92,6 +112,24 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                       Id = p.Id,
                       Name = p.Name,
                       Description = p.Description,
+                      CareInstruction = p.CareInstruction != null ? new CareInstructionDto
+                      {
+                          PlantId = p.Id,
+                          Id = p.CareInstruction.Id,
+                          WateringFrequency = p.CareInstruction.WateringFrequency,
+                          AdditionalNotes = p.CareInstruction.AdditionalNotes,
+                          DifficultyLevel = p.CareInstruction.DifficultyLevel,
+                          FertilizingFrequency = p.CareInstruction.FertilizingFrequency,
+                          HumidityLevel = p.CareInstruction.HumidityLevel,
+                          MaxTemperatureCelsius = p.CareInstruction.MaxTemperatureCelsius,
+                          IsToxicToPets = p.CareInstruction.IsToxicToPets,
+                          MinTemperatureCelsius = p.CareInstruction.MinTemperatureCelsius,
+                          PruningNotes = p.CareInstruction.PruningNotes,
+                          SoilType = p.CareInstruction.SoilType,
+                          SunlightRequirement = p.CareInstruction.SunlightRequirement,
+
+
+                      }: null,
                       PlantImages = p.Images.Select(i => new PlantImageDto
                       {
                           Id = i.Id,

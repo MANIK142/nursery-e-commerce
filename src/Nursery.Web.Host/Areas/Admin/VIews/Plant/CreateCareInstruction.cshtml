@@ -1,0 +1,121 @@
+﻿
+@model CreateCareInstructionViewModel
+@{
+    ViewData["Title"] = "Create Plant Care Instructions";
+}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="text-success fw-bold mb-0">@(Model.Id != null ? "Update Care Instruction" : "Create Care Instruction") </h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+
+            <form asp-action="CreateCareInstruction" method="post" id="createPlantForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                <input asp-for="PlantId" hidden/>
+                <input asp-for="Id" hidden />
+                <!-- Basic Plant Info -->
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0">General Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label asp-for="Name" class="form-label fw-semibold">Plant Name</label>
+                                <input asp-for="Name" class="form-control" placeholder="e.g., Monstera Deliciosa"   readonly/>
+                                <span asp-validation-for="Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                    <label class="form-label fw-semibold">WateringFrequency</label>
+                                    <select asp-for="WateringFrequency" asp-items="Model.AvailableWateringFrequency" class="form-select">
+                                    </select>
+                                    @* <div class="form-text">Hold Ctrl (or Cmd on Mac) to select multiple categories.</div> *@
+                                    <span asp-validation-for="WateringFrequency" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label class="form-label fw-semibold">SunlightRequirement</label>
+                                <select asp-for="SunlightRequirement" asp-items="Model.AvailableSunlightRequirement" class="form-select">
+                                </select>
+                                <span asp-validation-for="SunlightRequirement" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">WateringFrequency</label>
+                                <select asp-for="WateringFrequency" asp-items="Model.AvailableWateringFrequency" class="form-select">
+                                </select>
+                                <span asp-validation-for="WateringFrequency" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label asp-for="MinTemperatureCelsius" class="form-label fw-semibold">Minimum Temp.</label>
+                                <input asp-for="MinTemperatureCelsius" class="form-control" placeholder="10 Degree" />
+                                <span asp-validation-for="MinTemperatureCelsius" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                 <label asp-for="MaxTemperatureCelsius" class="form-label fw-semibold">Maximum Temp.</label>
+                                <input asp-for="MaxTemperatureCelsius" class="form-control" placeholder="10 Degree" />
+                                <span asp-validation-for="MaxTemperatureCelsius" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+
+                         <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label class="form-label fw-semibold">HumidityLevel</label>
+                                <select asp-for="HumidityLevel" asp-items="Model.AvailableHumidityLevel" class="form-select">
+                                </select>
+                                <span asp-validation-for="HumidityLevel" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">FertilizingFrequency</label>
+                                <select asp-for="FertilizingFrequency" asp-items="Model.AvailableFertilizingFrequency" class="form-select">
+                                </select>
+                                <span asp-validation-for="FertilizingFrequency" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                         <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label class="form-label fw-semibold">DifficultyLevel</label>
+                                <select asp-for="DifficultyLevel" asp-items="Model.AvailableCareDifficultyLevel" class="form-select">
+                                </select>
+                                <span asp-validation-for="DifficultyLevel" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">IsToxicToPets</label>
+                                <select asp-for="IsToxicToPets"  class="form-select">
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                                <span asp-validation-for="IsToxicToPets" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md">
+                                <label class="form-label fw-semibold">PruningNotes</label>
+                                <textarea class="form-control" asp-for="PruningNotes" rows="4"></textarea>
+                                <span asp-validation-for="PruningNotes" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">AdditionalNotes</label>
+                                <textarea class="form-control" asp-for="AdditionalNotes" rows="4"></textarea>
+                                <span asp-validation-for="AdditionalNotes" class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                  <div class="d-flex justify-content-end gap-2 pb-5">
+                    <button type="submit" id="submitBtn" class="btn btn-success px-4">@(Model.Id != null ? "Update Care Instruction" : "Save & Publish Care Instruction")</button>
+                </div>
+           </form>
+        </div>
+    </div>
+</div>

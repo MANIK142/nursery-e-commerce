@@ -1,4 +1,6 @@
-﻿namespace Nursery.Web.Host.Models.DTOs.Catalog;
+﻿using Nursery.Web.Host.Models.Enums;
+
+namespace Nursery.Web.Host.Models.DTOs.Catalog;
 public record PlantsResponse(IReadOnlyList<PlantDto> Plants);
 
 public record PlantDto(
@@ -33,14 +35,16 @@ public class PlantVariantDto
 
 
 public record CareInstructionDto(
-    string WateringFrequency,
-    string SunlightRequirement,
-    string SoilType,
+    Guid Id,
+    Guid PlantId,
+    WateringFrequency WateringFrequency,
+    SunlightRequirement SunlightRequirement,
+    SoilType SoilType,
     int MinTemperatureCelsius,
     int MaxTemperatureCelsius,
-    string HumidityLevel,
-    string FertilizingFrequency,
-    string DifficultyLevel,
+    HumidityLevel HumidityLevel,
+    FertilizingFrequency FertilizingFrequency,
+    CareDifficultyLevel DifficultyLevel,
     bool IsToxicToPets,
     string? PruningNotes,
     string? AdditionalNotes

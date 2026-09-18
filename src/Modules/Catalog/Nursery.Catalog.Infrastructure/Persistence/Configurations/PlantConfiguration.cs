@@ -19,8 +19,19 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
         builder.Property(x => x.Description).IsRequired().HasMaxLength(1000);
 
         builder.Ignore(p => p.CategoryIds);
-        builder.Navigation("_categories")
+
+        builder.HasMany(p => p.Categories)
+            .WithOne()
+            .HasForeignKey(pc => pc.PlantId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(p => p.Categories)
             .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+
+        //builder.Ignore(p => p.CategoryIds);
+        //builder.Navigation("_categories")
+        //    .UsePropertyAccessMode(PropertyAccessMode.Field);
 
 
         builder.HasMany(p => p.Variants)

@@ -19,9 +19,13 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
     public async Task<Plant?> GetPlantById(Guid Id, CancellationToken cancellationToken)
     {
         var plant = await db.Plants
-            .Include(p => p.Variants)
-            .ThenInclude(v => v.SalePrices)
-            .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+                        .Include(p => p.Categories)
+                        .Include(p => p.Images) 
+                        .Include(p => p.Variants)
+                            .ThenInclude(v => v.SalePrices)
+                        .Include(p => p.Variants)
+                            .ThenInclude(v => v.Images) 
+                        .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
         return plant;
     }
 

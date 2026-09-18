@@ -10,5 +10,5 @@ public class PlantDto
     public List<PlantImageDto> PlantImages { get; set; } = default!;
     public List<CategoryDto> Categories { get; set; } = new();
     public List<PlantVariantDto> PlantVariants { get; set; } = new();
-    public CareInstruction? CareInstruction { get; set; } 
+    public CareInstructionDto? CareInstruction { get; set; } 
 }
