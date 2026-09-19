@@ -4,6 +4,7 @@
     const plantImagesContainer = document.getElementById('plantImagesContainer');
     const variantsContainer = document.getElementById('variantsContainer');
     const plantImageTemplate = document.getElementById('plantImageTemplate').innerHTML;
+    const salePriceTemplate = document.getElementById('salePriceTemplate').innerHTML;
     const variantTemplate = document.getElementById('variantTemplate').innerHTML;
 
     let activeUploadCount = 0;
@@ -42,6 +43,14 @@
             reindexImageCollection(parent);
             return;
         }
+        if (e.target.closest('.remove-sale-btn')) {
+            const row = e.target.closest('.sale-price-item');
+            const parent = row.parentElement;
+            row.remove();
+            reindexsales(parent);
+            return;
+        }
+
 
         if (e.target.closest('.remove-variant-btn')) {
             const card = e.target.closest('.variant-card');
@@ -50,19 +59,39 @@
             return;
         }
 
+     
+ 
+
         const addVarImgBtn = e.target.closest('.add-variant-image-btn');
         if (addVarImgBtn) {
             const variantCard = addVarImgBtn.closest('.variant-card');
             const varIdx = variantCard.dataset.index;
             const container = variantCard.querySelector('.variant-image-container');
             const imgIdx = container.querySelectorAll('.image-spec-item').length;
-
+            console.log(variantCard.dataset);
             const html = plantImageTemplate
                 .replace(/__PREFIX__/g, `PlantVariantSpecs[${varIdx}].ImageSpecs`)
                 .replace(/__IMG_IDX__/g, imgIdx);
 
             container.insertAdjacentHTML('beforeend', html);
         }
+
+        const addSalePriceBtn = e.target.closest('.add-Sale-btn');
+        if (addSalePriceBtn) {
+            const salePriceCard = addSalePriceBtn.closest('.variant-card');
+            const varIdx = salePriceCard.dataset.index;
+            const container = salePriceCard.querySelector('.sale-price-container');
+            const spIdx = container.querySelectorAll('.sale-price-item').length;
+            // console.log(salePriceCard.dataset);
+            const html = salePriceTemplate
+                .replace(/__PREFIX__/g, `PlantVariantSpecs[${varIdx}].SalePrices`)
+                .replace(/__SALE_DISPLAY_IDX__/g, spIdx + 1)
+                .replace(/__SP_IDX__/g, spIdx)
+                .replace(/varIdx/g, varIdx);
+
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
     });
 
     // Async Image Upload Pipeline
@@ -126,6 +155,24 @@
         const items = container.querySelectorAll('.image-spec-item');
         items.forEach((item, idx) => {
             item.dataset.index = idx;
+   
+
+            item.querySelectorAll('input').forEach(input => {
+                input.name = input.name.replace(/\[\d+\](?=\.[^[]+$)/, `[${idx}]`);
+            });
+        });
+    }
+
+    function reindexsales(container) {
+
+        const items = container.querySelectorAll('.sale-price-item');
+        items.forEach((item, idx) => {
+            item.dataset.index = idx;
+
+            const displayBadge = item.querySelector('.sale-display-idx');
+            console.log(displayBadge);
+            if (displayBadge) displayBadge.textContent = idx + 1;
+
             item.querySelectorAll('input').forEach(input => {
                 input.name = input.name.replace(/\[\d+\](?=\.[^[]+$)/, `[${idx}]`);
             });
@@ -152,6 +199,17 @@
             if (imgContainer) {
                 reindexImageCollection(imgContainer);
             }
+
+            const addSaleBtn = card.querySelector('.add-sale-btn');
+            if (addSaleBtn) {
+                addSaleBtn.dataset.variantPrefix = `PlantVariantSpecs[${vIdx}]`;
+            }
+
+            const saleContainer = card.querySelector('.sale-price-container');
+            if (saleContainer) {
+                reindexsales(saleContainer);
+            }
         });
     }
+
 });

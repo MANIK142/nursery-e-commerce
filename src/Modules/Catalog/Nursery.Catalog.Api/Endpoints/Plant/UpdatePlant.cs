@@ -8,7 +8,6 @@ namespace Nursery.Catalog.Api.Endpoints.Plant
 
         public record UpdatePlantRequest(Guid Id, string SkuCode, string Name, string Description, string ModifiedBy, List<Guid> Categories,
                                 List<PlantVariantSpec> PlantVariantSpecs, List<ImageSpec> Images);
-
         public record UpdatePlantResponse(bool IsSuccess);
         public void AddRoutes(IEndpointRouteBuilder app)
         {

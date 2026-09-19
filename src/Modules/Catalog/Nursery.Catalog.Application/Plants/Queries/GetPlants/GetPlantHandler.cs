@@ -47,7 +47,7 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                   Categories = context.PlantCategories
                                       .Where(pc => pc.PlantId == p.Id)
                                       .Join(context.Categories, pc => pc.CategoryId, c => c.Id, (pc, c) => new CategoryDto(c.Id, c.Name)).ToList(),
-                                  PlantVariants = context.PlantVariants
+                                  PlantVariants = context.PlantVariants.Include(pv => pv.SalePrices)
                                                     .Where(pv => pv.PlantId == p.Id).Include(pv => pv.Images).Include(p =>p.SalePrices)
                                                     .Select(pv => new PlantVariantDto
                                                     {
@@ -64,6 +64,14 @@ public class GetCareInstructionHandler(ICatalogDbContext context) : IQueryHandle
                                                             AltText = pvi.AltText,
                                                             IsPrimaryImage = pvi.IsPrimaryImage,
                                                             StorageKey = pvi.StorageKey
+                                                        }).ToList(),
+                                                        SalePrices = pv.SalePrices.Select(sp => new SalePriceDto
+                                                        {
+                                                            Id = sp.Id,
+                                                            PlantVariantId = sp.PlantVariantId,
+                                                            SalePrice = sp.SalePrice,
+                                                            EndsAtUtc = sp.EndsAtUtc,
+                                                            StartsAtUtc = sp.StartsAtUtc
                                                         }).ToList()
                                                         
                                                     }).ToList(),

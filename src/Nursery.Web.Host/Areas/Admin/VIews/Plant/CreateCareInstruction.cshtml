@@ -13,8 +13,8 @@
 
             <form asp-action="CreateCareInstruction" method="post" id="createPlantForm">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-                <input asp-for="PlantId" hidden/>
-                <input asp-for="Id" hidden />
+                <input asp-for="PlantId" type="hidden"/>
+                <input asp-for="Id" type="hidden" />
                 <!-- Basic Plant Info -->
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-header bg-white border-bottom">

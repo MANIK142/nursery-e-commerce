@@ -106,6 +106,18 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
                         AltText = i.AltText,
                         IsPrimaryImage = i.IsPrimaryImage,
                         StorageKey = i.StorageKey
+                    }).ToList(),
+                    SalePrices = pv.SalePrices.Select(sp => new SalePriceModel
+                    {
+                        SalePrice = new MoneyInputModel
+                        {
+                            Amount = sp.SalePrice.Amount,
+                            Currency = sp.SalePrice.Currency
+                        },
+                        StartsAtUtc = sp.StartsAtUtc,
+                        EndsAtUtc = sp.EndsAtUtc,
+
+                        IsActiveAt = sp.IsActive
                     }).ToList()
                 }).ToList(),
             };
@@ -152,7 +164,8 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
                     VariantName: v.VariantName,
                     ImageSpecs: v.ImageSpecs.Select(i => new ImageSpecDto(i.StorageKey, i.IsPrimaryImage, i.AltText ?? string.Empty)).ToList(),
                     RetailPrice: new MoneyDto(v.RetailPrice.Amount, v.RetailPrice.Currency),
-                    WholesalePrice: new MoneyDto(v.WholesalePrice.Amount, v.WholesalePrice.Currency)
+                    WholesalePrice: new MoneyDto(v.WholesalePrice.Amount, v.WholesalePrice.Currency),
+                    SalePrices: v.SalePrices.Select(sp => new SalePriceDto(new MoneyDto(sp.SalePrice.Amount, sp.SalePrice.Currency), sp.StartsAtUtc, sp.EndsAtUtc)).ToList()
                 )).ToList(),
                 Images: model.Images.Select(i => new ImageSpecDto(i.StorageKey, i.IsPrimaryImage, i.AltText ?? string.Empty)).ToList()
             );
@@ -222,7 +235,8 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
                         AltText: img.AltText ?? string.Empty
                     )).ToList(),
                     RetailPrice: new MoneyDto(v.RetailPrice.Amount, v.RetailPrice.Currency),
-                    WholesalePrice: new MoneyDto(v.WholesalePrice.Amount, v.WholesalePrice.Currency)
+                    WholesalePrice: new MoneyDto(v.WholesalePrice.Amount, v.WholesalePrice.Currency),
+                    SalePrices: v.SalePrices?.Select(sp => new SalePriceDto(new MoneyDto(sp.SalePrice.Amount, sp.SalePrice.Currency), sp.StartsAtUtc, sp.EndsAtUtc)).ToList()
                 )).ToList(),
                 Images: model.Images.Select(img => new ImageSpecDto(
                     StorageKey: img.StorageKey,
@@ -287,17 +301,17 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             return StatusCode((int)apiResponse.StatusCode, responseBody);
         }
 
-
-        public async Task<IActionResult> CreateCareInstruction(Guid Id, CancellationToken cancellationToken)
+        [HttpGet("admin/plant/CreateCareInstruction/{plantId}")]
+        public async Task<IActionResult> CreateCareInstruction(Guid plantId, CancellationToken cancellationToken)
         {
 
-            var plant = await _catalogApiClient.GetPlantByIdAsync(Id,cancellationToken);
+            var plant = await _catalogApiClient.GetPlantByIdAsync(plantId, cancellationToken);
             if (plant.CareInstruction != null)
             {
                 var updateCareInstructionViewModel = new CreateCareInstructionViewModel()
                 {
                     Id = plant.CareInstruction.Id,
-                    PlantId = Id,
+                    PlantId = plantId,
                     Name = plant.Name,
                     AdditionalNotes = plant.CareInstruction.AdditionalNotes,
                     IsToxicToPets = plant.CareInstruction.IsToxicToPets,
@@ -315,7 +329,7 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             }
             var createCareInstructionViewModel = new CreateCareInstructionViewModel()
             {
-                PlantId = Id,
+                PlantId = plantId,
                 Name = plant.Name
             };
             return View(createCareInstructionViewModel);

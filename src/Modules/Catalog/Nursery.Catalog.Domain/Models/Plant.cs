@@ -171,7 +171,9 @@ public class Plant : BaseDomainModel
     }
 }
 
-public record PlantVariantSpec(string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice);
+public record PlantVariantSpec(string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice,List<SalePriceSpec> SalePrices);
 public record PlantVariantSpecWithPlantId(Guid PlantId, string Sku, string VariantName, List<ImageSpec> ImageSpecs, Money RetailPrice, Money WholesalePrice);
 public record PlantVariantSpecWithId(Guid Id,string Sku, string VariantName, Money RetailPrice, Money WholesalePrice);
 public record ImageSpec(string StorageKey, bool IsPrimaryImage, string AltText);
+
+public record SalePriceSpec(Money SalePrice, DateTime StartsAtUtc, DateTime EndsAtUtc);

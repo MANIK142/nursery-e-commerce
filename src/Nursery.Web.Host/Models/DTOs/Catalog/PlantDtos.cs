@@ -19,7 +19,7 @@ public record CategoryDto(Guid Id, string Name);
 
 public record MoneyDto(decimal Amount, string Currency);
 
-public record SalePriceDto(MoneyDto SalePrice, DateTime StartsAtUtc, DateTime EndsAtUtc);
+public record SalePriceDto(MoneyDto SalePrice, DateTime StartsAtUtc, DateTime EndsAtUtc,bool IsActive);
 
 public class PlantVariantDto
 {
@@ -31,6 +31,7 @@ public class PlantVariantDto
     public MoneyDto WholeSalePrice { get; set; } = default!;
     public MoneyDto Price { get; set; } = default!;
     public List<PlantImageDto> Images { get; set; } = default!;
+    public List<SalePriceDto> SalePrices { get; set; } = default!;
 }
 
 

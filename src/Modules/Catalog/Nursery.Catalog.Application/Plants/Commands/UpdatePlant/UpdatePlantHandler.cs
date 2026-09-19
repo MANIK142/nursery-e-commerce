@@ -68,6 +68,17 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
 
                 if (existingVariant != null)
                 {
+                    foreach(SalePriceSpec salePrice in spec.SalePrices)
+                    {
+         
+                        var hasOverlap = existingVariant.SalePrices.Any(existing => existing.OverlapsWith(salePrice.StartsAtUtc, salePrice.EndsAtUtc));
+                        if (!hasOverlap)
+                        {
+                            existingVariant.StartSale(salePrice.SalePrice, salePrice.StartsAtUtc, salePrice.EndsAtUtc, request.ModifiedBy);
+                        }
+                        
+                    }
+                    
                     // 1. UPDATE EXISTING VARIANT
                     var updateSpec = new PlantVariantSpecWithId(
                         existingVariant.Id,
@@ -76,8 +87,10 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
                         spec.RetailPrice,
                         spec.WholesalePrice
                     );
+                   
 
                     plant.UpdateVariant(updateSpec, request.ModifiedBy);
+                    
                 }
                 else
                 {
@@ -91,7 +104,11 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
                         spec.WholesalePrice
                     );
 
-                    plant.AddVariant(newSpec, request.ModifiedBy);
+                    var variant = plant.AddVariant(newSpec, request.ModifiedBy);
+                    foreach (SalePriceSpec salePrice in spec.SalePrices)
+                    {
+                        variant.StartSale(salePrice.SalePrice, salePrice.StartsAtUtc, salePrice.EndsAtUtc, request.ModifiedBy);
+                    }
                 }
             }
         }

@@ -24,6 +24,7 @@ public class CreatePlantViewModel
     // Nested dynamic collections
     public List<PlantVariantInputModel> PlantVariantSpecs { get; set; } = new();
     public List<PlantImageInputModel> Images { get; set; } = new();
+
 }
 
 public class PlantVariantInputModel
@@ -38,6 +39,8 @@ public class PlantVariantInputModel
     public MoneyInputModel WholesalePrice { get; set; } = new();
 
     public List<PlantImageInputModel> ImageSpecs { get; set; } = new();
+
+    public List<SalePriceModel> SalePrices { get; set; } = new();
 }
 
 public class PlantImageInputModel
@@ -58,4 +61,13 @@ public class MoneyInputModel
     [Required(ErrorMessage = "Currency is required.")]
     [StringLength(3, MinimumLength = 3, ErrorMessage = "Use a 3-letter currency code (e.g. USD).")]
     public string Currency { get; set; } = "USD";
+}
+
+
+public class SalePriceModel
+{
+    public MoneyInputModel SalePrice { get; set; } = default!;
+    public DateTime StartsAtUtc { get; set; }
+    public DateTime EndsAtUtc { get; set; }
+    public bool IsActiveAt { get; set; }
 }

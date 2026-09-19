@@ -1,4 +1,6 @@
-﻿namespace Nursery.Web.Host.Models.DTOs;
+﻿using Nursery.Web.Host.Models.ViewModels.Plants;
+
+namespace Nursery.Web.Host.Models.DTOs;
 public record CreatePlantApiRequest(
     string Name,
     string Description,
@@ -12,7 +14,9 @@ public record PlantVariantSpecDto(
     string VariantName,
     List<ImageSpecDto> ImageSpecs,
     MoneyDto RetailPrice,
-    MoneyDto WholesalePrice
+    MoneyDto WholesalePrice,
+    List<SalePriceDto> SalePrices
+
 );
 public record ImageSpecDto(
     string StorageKey,
@@ -23,3 +27,5 @@ public record MoneyDto(
     decimal Amount,
     string Currency
 );
+
+public record SalePriceDto(MoneyDto SalePrice, DateTime StartsAtUtc, DateTime EndsAtUtc);

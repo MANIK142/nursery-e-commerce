@@ -32,6 +32,12 @@ public class PlantsController : Controller
         ViewData["baseUrl"] = _imageBaseUrl;
         return View(plant);
     }
+    [HttpPost("AddToCart")]
+    [ValidateAntiForgeryToken]
+    public async Task AddToCart(Guid plantVariantId, CancellationToken ct = default)
+    {
+        await _catalogApi.AddToCardAsync(plantVariantId, ct);
+    }
 
   
 }

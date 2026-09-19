@@ -14,12 +14,7 @@
 }
 
 <div class="row">
-    @* <div class="col-md-6">
-        @if (Model.PlantImages?.FirstOrDefault()?.StorageKey != null)
-        {
-            <img src="@($"{ViewData["baseUrl"]}{Model.PlantImages?.FirstOrDefault()?.StorageKey}")" class="img-fluid rounded-2" alt="@($"{ViewData["baseUrl"]}{Model.PlantImages?.FirstOrDefault()?.StorageKey}")" />
-        }
-    </div> *@
+
 
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
@@ -45,20 +40,7 @@
             }
         </div>
     </div>
-    @* <div class="col-md-6">
-        <h1>@Model.Name</h1>
-        <p class="text-muted">@string.Join(", ", Model.Categories.Select(c => c.Name))</p>
-      
-        <p>@Model.Description</p>
 
-        <h3>Starting Price ₹@Model.PlantVariants.FirstOrDefault()?.Price.Amount</h3>
-        <h5>Care Instructions</h5>
-
-        <partial name="_CareInstructionPartials" model="Model.CareInstruction">
-
-            
-         <a asp-action="Index" class="btn btn-secondary">Back to Plants</a>
-    </div> *@
 
     <div class="col-lg-6">
         <div class="ps-lg-3">
@@ -78,7 +60,7 @@
                 @if (defaultVariant?.WholeSalePrice.Amount != null)
                 {
                     <span class="text-muted small">
-                        Wholesale: <span id="displayWholesalePrice" class="fw-semibold">@defaultVariant.WholeSalePrice.Currency @defaultVariant.WholeSalePrice.Amount:N2</span>
+                        Wholesale: <span id="displayWholesalePrice" class="fw-semibold">@($"{defaultVariant.WholeSalePrice.Currency} {defaultVariant.WholeSalePrice.Amount:N2}")</span>
                     </span>
                 }
             </div>
@@ -101,10 +83,11 @@
                         <input type="radio"
                                class="btn-check variant-radio"
                                name="plantVariantRadio"
-                               id="variant_@variant.Sku"
-                               value="@variant.Sku"
+                               id="variant_@variant.Id"
+                               value="@variant.Id"
                                autocomplete="off"
                         @(isSelected ? "checked" : "")
+                               data-id="@variant.Id"
                                data-sku="@variant.Sku"
                                data-name="@variant.VariantName"
                                data-retail="@($"{variant.RetailPrice.Currency} {variant.RetailPrice.Amount:N2}")"
@@ -114,7 +97,7 @@
                         <label class="btn btn-outline-secondary px-3 py-2 rounded-3 text-start variant-card-label @(isSelected ? "border-success active" : "")"
                                for="variant_@variant.Sku">
                             <div class="fw-semibold">@variant.VariantName</div>
-                            <div class="small text-muted">@variant.RetailPrice.Currency @variant.RetailPrice.Amount:N2</div>
+                            <div class="small text-muted">@($"{variant.RetailPrice.Currency} {variant.RetailPrice.Amount:N2}")</div>
                         </label>
                     }
                 </div>
@@ -216,10 +199,25 @@
 
         function addToCart() {
             const selectedRadio = document.querySelector('.variant-radio:checked');
-            const sku = selectedRadio ? selectedRadio.dataset.sku : null;
+            const id = selectedRadio ? selectedRadio.value : null;
             const qty = parseInt(document.getElementById('purchaseQty').value) || 1;
 
-            console.log(`Adding SKU: ${sku}, Quantity: ${qty} to cart.`);
-            // Call your cart endpoint or emit event
+           console.log(`Adding SKU: ${id}, Quantity: ${qty} to cart.`);
+
+               $.ajax({
+               : {
+                url: '/Customer/plants/AddToCart',
+                type: 'POST',
+                data: {plantVariantId:id}
+                error: function (xhr, error, code) {
+                    console.error("Status:", xhr.status);
+                    console.error("Response:", xhr.responseText);
+                },
+                success: function(response){
+                     console.log(response);
+                }
+            })
+
+    
         }
     </script>
