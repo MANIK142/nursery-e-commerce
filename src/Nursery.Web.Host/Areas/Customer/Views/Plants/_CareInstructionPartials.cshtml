@@ -1,0 +1,133 @@
+﻿@model Nursery.Web.Host.Models.DTOs.Catalog.CareInstructionDto
+
+@if (Model != null)
+{
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-success-subtle border-0 py-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="card-title text-success-emphasis mb-0 fw-semibold">
+                <i class="bi bi-heart-pulse me-2"></i>Care Guide & Requirements
+            </h5>
+            <span class="badge @(Model.DifficultyLevel.ToString() switch
+                  {
+                      "Easy" => "bg-success",
+                      "Medium" or "Moderate" => "bg-warning text-dark",
+                      _ => "bg-danger"
+                  }) px-3 py-2 rounded-pill">
+                @Model.DifficultyLevel Difficulty
+            </span>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Pet Safety Alert -->
+            @if (Model.IsToxicToPets)
+            {
+                <div class="alert alert-danger d-flex align-items-center mb-4 rounded-3" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-3 fs-5"></i>
+                    <div>
+                        <strong>Toxic to Pets:</strong> Keep this plant away from cats, dogs, and small animals.
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success d-flex align-items-center mb-4 rounded-3" role="alert">
+                    <i class="bi bi-shield-check flex-shrink-0 me-3 fs-5"></i>
+                    <div>
+                        <strong>Pet Friendly:</strong> Non-toxic to household pets.
+                    </div>
+                </div>
+            }
+
+            <!-- Primary Care Metrics Grid -->
+            <div class="row g-3 mb-4">
+                <!-- Sunlight -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-brightness-high text-warning me-1"></i> Sunlight
+                        </div>
+                        <div class="fw-semibold text-dark">@Model.SunlightRequirement</div>
+                    </div>
+                </div>
+
+                <!-- Watering -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-droplet-half text-primary me-1"></i> Watering
+                        </div>
+                        <div class="fw-semibold text-dark">@Model.WateringFrequency</div>
+                    </div>
+                </div>
+
+                <!-- Temperature -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-thermometer-half text-danger me-1"></i> Temperature
+                        </div>
+                        <div class="fw-semibold text-dark">
+                            @Model.MinTemperatureCelsius°C – @Model.MaxTemperatureCelsius°C
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Humidity -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-moisture text-info me-1"></i> Humidity
+                        </div>
+                        <div class="fw-semibold text-dark">@Model.HumidityLevel</div>
+                    </div>
+                </div>
+
+                <!-- Soil -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-flower1 text-secondary me-1"></i> Soil Type
+                        </div>
+                        <div class="fw-semibold text-dark">@Model.SoilType</div>
+                    </div>
+                </div>
+
+                <!-- Fertilizing -->
+                <div class="col-sm-6 col-md-4">
+                    <div class="p-3 bg-light rounded-3 h-100 border">
+                        <div class="text-muted small mb-1">
+                            <i class="bi bi-stars text-warning-emphasis me-1"></i> Fertilizer
+                        </div>
+                        <div class="fw-semibold text-dark">@Model.FertilizingFrequency</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            @if (!string.IsNullOrWhiteSpace(Model.PruningNotes) || !string.IsNullOrWhiteSpace(Model.AdditionalNotes))
+            {
+                <hr class="text-muted my-3" />
+
+                @if (!string.IsNullOrWhiteSpace(Model.PruningNotes))
+                {
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-secondary mb-1">
+                            <i class="bi bi-scissors me-1"></i> Pruning Instructions
+                        </h6>
+                        <p class="text-muted mb-0">@Model.PruningNotes</p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.AdditionalNotes))
+                {
+                    <div class="mb-0">
+                        <h6 class="fw-bold text-secondary mb-1">
+                            <i class="bi bi-info-circle me-1"></i> Special Notes
+                        </h6>
+                        <p class="text-muted mb-0">@Model.AdditionalNotes</p>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+}

@@ -28,8 +28,9 @@ public class PlantsController : Controller
     {
         var plant = await _catalogApi.GetPlantByIdAsync(id, ct);
         if (plant is null) return NotFound();
-        var card = plant.ToCardViewModel(_imageBaseUrl);
-        return View(card);
+
+        ViewData["baseUrl"] = _imageBaseUrl;
+        return View(plant);
     }
 
   

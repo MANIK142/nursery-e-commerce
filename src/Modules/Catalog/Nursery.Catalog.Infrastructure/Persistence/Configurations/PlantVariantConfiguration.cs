@@ -39,7 +39,7 @@ public class PlantVariantConfiguration : IEntityTypeConfiguration<PlantVariant>
         builder.HasMany(pv => pv.Images)
             .WithOne()
             .HasForeignKey(pi => pi.PlantVariantId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.ClientCascade);
 
         builder.Ignore(x => x.DomainEvents);
 

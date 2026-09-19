@@ -1,11 +1,11 @@
-﻿var plantDataTable;
+﻿var DataTable;
 
 $(document).ready(function () {
     plantDataTable();
 })
 
 function plantDataTable() {
-    $('#tblData').DataTable({
+    DataTable =$('#tblData').DataTable({
         ajax: {
             url: '/admin/plant/getall',
             type: 'GET',
@@ -44,54 +44,39 @@ function plantDataTable() {
     });
 }
   
-// function plantDataTable() {
-//     $('#tblData').DataTable({
-//         ajax: '/admin/plant/getall',
-//         columns: [
-//             { data: 'Name', "width": "25%" },
-//             { data: 'Categories', "width": "15%" },
-//             { data: 'DisplayPrice', "width": "15%" },
-//             {
-//                 data: 'Id', "width": "25%", "render": function (data) {
-//                     return `<div class="d-flex gap-2 justify-content-end">
-//                              <a href="/admin/product/upsert?id=${data}" class="btn btn-sm btn-outline-success">
-//                                   <i class="bi bi-pencil-square"></i> Edit
-//                              </a>
-//                                <a onclick="Delete('/admin/product/delete/${data}')" class="btn btn-sm btn-outline-danger">
-//                                   <i class="bi bi-trash"></i> Delete
-//                              </a>
-//                          </div > `;
-//                 }
-//             }
-//         ]
-//     });
-// } 
 
 
-// function Delete(url) {
-//     Swal.fire({
-//         title: "Are you sure?",
-//         text: "You won't be able to revert this!",
-//         icon: "warning",
-//         showCancelButton: true,
-//         confirmButtonColor: "#3085d6",
-//         cancelButtonColor: "#d33",
-//         confirmButtonText: "Yes, delete it!"
-//     }).then((result) => {
-//         if (result.isConfirmed) {
+function Delete(url) {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
 
-//             $.ajax({
-//                 url: url,
-//                 type: 'DELETE',
-//                 success: function (data) {
-//                     productDataTable.ajax.reload();
-//                     Swal.fire({
-//                         title: "Deleted!",
-//                         text: "Your file has been deleted.",
-//                         icon: "success"
-//                     });
-//                 }
-//             })
-//         }
-//     });
-// }
+            $.ajax({
+                url: url,
+                type: 'DELETE',
+                success: function (data) {
+                    DataTable.ajax.reload(null, false);
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your file has been deleted.",
+                        icon: "success"
+                    });
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        title: "Error!",
+                        text: xhr.responseText || "Failed to delete plant.",
+                        icon: "error"
+                    });
+                }
+            })
+        }
+    });
+}

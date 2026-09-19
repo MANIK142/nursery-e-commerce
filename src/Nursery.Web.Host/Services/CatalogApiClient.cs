@@ -128,6 +128,24 @@ public class CatalogApiClient : ICatalogApiClient
     }
 
 
+    public async Task<(bool IsSuccess, string? ErrorMessage)> DeletePlant(Guid PlantId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _httpClient.DeleteAsync($"/api/v1/plants/{PlantId}",cancellationToken);
+            if (response.IsSuccessStatusCode) return (true, null);
+
+            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
+            return (false, string.IsNullOrWhiteSpace(rawError) ? "Failed to update plant." : rawError);
+        }
+        catch (Exception ex)
+        {
+            //_logger.LogError(ex, "Failed to send update for plant {PlantId}", id);
+            return (false, "Communication error with catalog service.");
+        }
+    }
+
+
 
     
 

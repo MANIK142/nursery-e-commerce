@@ -64,13 +64,6 @@ public class UpdatePlantHandler(ICatalogRepository context) : ICommandHandler<Up
         {
             foreach (var spec in request.PlantVariantSpecs)
             {
-                //if (!plant.Variants.Select(p => p.Sku).ToList().Contains(plantVariantSpec.Sku))
-                //{
-                //    var variant = new PlantVariantSpecWithPlantId(plant.Id, plantVariantSpec.Sku, plantVariantSpec.VariantName, 
-                //                                                    plantVariantSpec.ImageSpecs, plantVariantSpec.RetailPrice, plantVariantSpec.WholesalePrice);
-
-                //    plant.AddVariant(variant, request.ModifiedBy);
-                //}
                 var existingVariant = plant.Variants.FirstOrDefault(v => v.Sku == spec.Sku);
 
                 if (existingVariant != null)

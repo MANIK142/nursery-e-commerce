@@ -250,6 +250,19 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             return RedirectToAction(nameof(Create));
         }
 
+        [HttpDelete]
+        public async Task<bool> Delete(Guid Id, CancellationToken cancellationToken)
+        {
+
+            var (IsSuccess, errorMessage) = await _catalogApiClient.DeletePlant(Id, cancellationToken);
+            //if (IsSuccess)
+            //{
+            //    TempData["success"] = $"Plant \"{Id}\" was Deleted successfully!";
+            //}
+            return true;
+        }
+
+
         [HttpPost("/admin/plants/upload-image")]
         public async Task<IActionResult> ProxyImageUpload([FromServices] IHttpClientFactory httpClientFactory)
         {

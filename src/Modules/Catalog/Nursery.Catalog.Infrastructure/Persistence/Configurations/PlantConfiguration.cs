@@ -46,7 +46,7 @@ public class PlantConfiguration : IEntityTypeConfiguration<Plant>
         builder.HasMany(p => p.Images)
             .WithOne()
             .HasForeignKey(pi => pi.PlantId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(p => p.CareInstruction)
             .WithOne()

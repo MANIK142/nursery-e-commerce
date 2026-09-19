@@ -62,8 +62,19 @@ public class CatalogRepository(CatalogDbContext _db) : ICatalogRepository
     }
     public async Task<bool> DeletePlantById(Guid Id, CancellationToken cancellationToken)
     {
-        var affectedRows = await db.Plants.Where(p => p.Id == Id).ExecuteDeleteAsync(cancellationToken);
-        return affectedRows > 0;
+        var plant = await db.Plants
+        .Include(p => p.Variants)
+            .ThenInclude(v => v.Images)
+        .FirstOrDefaultAsync(p => p.Id == Id, cancellationToken);
+
+        if (plant is null)
+        {
+            return false;
+        }
+
+        db.Plants.Remove(plant);
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
     }
     public async Task<bool> IsCategoryExistsAsync(string name, CancellationToken cancellationToken)
     {

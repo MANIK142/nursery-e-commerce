@@ -15,4 +15,6 @@ public interface ICatalogApiClient
 
     Task<(bool IsSuccess, string? ErrorMessage)> CreateCareInstruction(CreateCareInstructionRequest payload, CancellationToken ct = default);
     Task<(bool IsSuccess, string? ErrorMessage)> UpdateCareInstruction(UpdateCareInstructionRequest payload, CancellationToken cancellationToken = default);
+
+    Task<(bool IsSuccess, string? ErrorMessage)> DeletePlant(Guid PlantId, CancellationToken cancellationToken = default);
 }

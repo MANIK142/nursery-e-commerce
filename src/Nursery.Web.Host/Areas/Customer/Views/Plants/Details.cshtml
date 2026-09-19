@@ -1,22 +1,225 @@
 ﻿@{
     ViewData["Title"] = "Plant Details";
+    
 }
-@model Nursery.Web.Host.Models.ViewModels.PlantCardViewModel
-@* <div class="container mt-5"> *@
+@model Nursery.Web.Host.Models.DTOs.Catalog.PlantDto;
+@{
+    var baseUrl = ViewData["baseUrl"]?.ToString() ?? "";
+    var defaultVariant = Model.PlantVariants.FirstOrDefault();
+    var defaultImages = defaultVariant?.Images?.Any() == true
+        ? defaultVariant.Images
+        : Model.PlantImages;
+    var primaryImage = defaultImages.FirstOrDefault(i => i.IsPrimaryImage)
+                       ?? defaultImages.FirstOrDefault();
+}
+
 <div class="row">
-    <div class="col-md-6">
-        @if (Model.ImageUrl != null)
+    @* <div class="col-md-6">
+        @if (Model.PlantImages?.FirstOrDefault()?.StorageKey != null)
         {
-            <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name" />
+            <img src="@($"{ViewData["baseUrl"]}{Model.PlantImages?.FirstOrDefault()?.StorageKey}")" class="img-fluid rounded-2" alt="@($"{ViewData["baseUrl"]}{Model.PlantImages?.FirstOrDefault()?.StorageKey}")" />
         }
+    </div> *@
+
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+            <div class="position-relative bg-light d-flex align-items-center justify-content-center" style="height: 420px;">
+                <img id="mainVariantImage"
+                     src="@(primaryImage != null ? $"{baseUrl}{primaryImage.StorageKey}" : "/images/placeholder-plant.png")"
+                     alt="@(primaryImage?.AltText ?? Model.Name)"
+                     class="img-fluid h-100 w-100 object-fit-contain p-3 transition-all" />
+            </div>
+        </div>
+
+        <!-- Thumbnail Strip -->
+        <div class="d-flex gap-2 overflow-x-auto pb-2" id="variantThumbnailContainer">
+            @foreach (var img in defaultImages)
+            {
+                var fullUrl = $"{baseUrl}{img.StorageKey}";
+                <button type="button"
+                        class="btn p-0 border rounded-3 overflow-hidden thumbnail-btn @(img == primaryImage ? "border-success border-2" : "border-light-subtle")"
+                        style="width: 72px; height: 72px;"
+                        onclick="switchMainImage('@fullUrl', '@img.AltText', this)">
+                    <img src="@fullUrl" alt="@img.AltText" class="w-100 h-100 object-fit-cover" />
+                </button>
+            }
+        </div>
     </div>
-    <div class="col-md-6">
+    @* <div class="col-md-6">
         <h1>@Model.Name</h1>
-        <p class="text-muted">@Model.Categories</p>
-        <h3>₹@Model.DisplayPrice</h3>
-        <p>@Model.Name</p>
+        <p class="text-muted">@string.Join(", ", Model.Categories.Select(c => c.Name))</p>
+      
+        <p>@Model.Description</p>
+
+        <h3>Starting Price ₹@Model.PlantVariants.FirstOrDefault()?.Price.Amount</h3>
         <h5>Care Instructions</h5>
-        <a asp-action="Index" class="btn btn-secondary">Back to Plants</a>
+
+        <partial name="_CareInstructionPartials" model="Model.CareInstruction">
+
+            
+         <a asp-action="Index" class="btn btn-secondary">Back to Plants</a>
+    </div> *@
+
+    <div class="col-lg-6">
+        <div class="ps-lg-3">
+            <h2 class="fw-bold text-dark mb-1">@Model.Name</h2>
+
+            <div class="text-muted small mb-3">
+                SKU: <span id="displaySku" class="fw-semibold text-secondary">@(defaultVariant?.Sku ?? "N/A")</span>
+            </div>
+
+            <!-- Price Display -->
+            <div class="d-flex align-items-baseline gap-2 mb-3">
+                <span class="fs-2 fw-bold text-success" id="displayRetailPrice">
+                    @(defaultVariant?.RetailPrice != null
+                        ? $"{defaultVariant.RetailPrice.Currency} {defaultVariant.RetailPrice.Amount:N2}"
+                        : "N/A")
+                </span>
+                @if (defaultVariant?.WholeSalePrice.Amount != null)
+                {
+                    <span class="text-muted small">
+                        Wholesale: <span id="displayWholesalePrice" class="fw-semibold">@defaultVariant.WholeSalePrice.Currency @defaultVariant.WholeSalePrice.Amount:N2</span>
+                    </span>
+                }
+            </div>
+
+            <p class="text-secondary mb-4">@Model.Description</p>
+
+            <hr class="my-4 text-muted opacity-25" />
+
+            <!-- Variant Selector -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold text-dark d-block mb-2">
+                    Select Option / Size:
+                </label>
+                <div class="d-flex flex-wrap gap-2" role="group" aria-label="Plant variants">
+                    @for (int i = 0; i < Model.PlantVariants.Count; i++)
+                    {
+                        var variant = Model.PlantVariants[i];
+                        var isSelected = i == 0;
+
+                        <input type="radio"
+                               class="btn-check variant-radio"
+                               name="plantVariantRadio"
+                               id="variant_@variant.Sku"
+                               value="@variant.Sku"
+                               autocomplete="off"
+                        @(isSelected ? "checked" : "")
+                               data-sku="@variant.Sku"
+                               data-name="@variant.VariantName"
+                               data-retail="@($"{variant.RetailPrice.Currency} {variant.RetailPrice.Amount:N2}")"
+                               data-wholesale="@(variant.WholeSalePrice != null ? $"{variant.WholeSalePrice.Currency} {variant.WholeSalePrice.Amount:N2}" : "")"
+                               data-images='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(variant.Images))' />
+
+                        <label class="btn btn-outline-secondary px-3 py-2 rounded-3 text-start variant-card-label @(isSelected ? "border-success active" : "")"
+                               for="variant_@variant.Sku">
+                            <div class="fw-semibold">@variant.VariantName</div>
+                            <div class="small text-muted">@variant.RetailPrice.Currency @variant.RetailPrice.Amount:N2</div>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 pt-2">
+                <div class="input-group" style="width: 130px;">
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustQty(-1)">-</button>
+                    <input type="number" id="purchaseQty" class="form-control text-center" value="1" min="1" />
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustQty(1)">+</button>
+                </div>
+                <button type="button" class="btn btn-success flex-grow-1 py-2 fw-semibold rounded-3 shadow-sm" onclick="addToCart()">
+                    <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                </button>
+            </div>
+        </div>
+     
     </div>
+    <partial name="_CareInstructionPartials" model="Model.CareInstruction">
 </div>
-@* </div> *@
+
+
+    <script>
+        const baseUrl = '@baseUrl';
+
+        document.querySelectorAll('.variant-radio').forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (!this.checked) return;
+
+                // 1. Update text metadata
+                document.getElementById('displaySku').innerText = this.dataset.sku;
+                document.getElementById('displayRetailPrice').innerText = this.dataset.retail;
+
+                const wholesaleEl = document.getElementById('displayWholesalePrice');
+                if (wholesaleEl && this.dataset.wholesale) {
+                    wholesaleEl.innerText = this.dataset.wholesale;
+                }
+
+                // 2. Parse variant images
+                let images = [];
+                try {
+                    images = JSON.parse(this.dataset.images || '[]');
+                } catch (e) {
+                    console.error("Failed to parse variant images:", e);
+                }
+
+                console.log(images);
+
+                // 3. Update main image & thumbnails
+                const thumbnailContainer = document.getElementById('variantThumbnailContainer');
+                thumbnailContainer.innerHTML = '';
+
+                if (images.length > 0) {
+                    const primary = images.find(x => x.IsPrimaryImage) || images[0];
+                    const fullPrimaryUrl = `${baseUrl}${primary.StorageKey}`;
+
+                    const mainImg = document.getElementById('mainVariantImage');
+                    mainImg.src = fullPrimaryUrl;
+                    mainImg.alt = primary.altText || '';
+
+                    images.forEach((img, idx) => {
+                        const fullUrl = `${baseUrl}${img.StorageKey}`;
+                        const isDefault = img.StorageKey === primary.StorageKey;
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.className = `btn p-0 border rounded-3 overflow-hidden thumbnail-btn ${isDefault ? 'border-success border-2' : 'border-light-subtle'}`;
+                        btn.style.width = '72px';
+                        btn.style.height = '72px';
+                        btn.onclick = () => switchMainImage(fullUrl, img.altText, btn);
+
+                        btn.innerHTML = `<img src="${fullUrl}" alt="${img.altText || ''}" class="w-100 h-100 object-fit-cover" />`;
+                        thumbnailContainer.appendChild(btn);
+                    });
+                }
+            });
+        });
+
+        function switchMainImage(url, alt, btnElement) {
+            const mainImg = document.getElementById('mainVariantImage');
+            mainImg.src = url;
+            if (alt) mainImg.alt = alt;
+
+            document.querySelectorAll('.thumbnail-btn').forEach(btn => {
+                btn.classList.remove('border-success', 'border-2');
+                btn.classList.add('border-light-subtle');
+            });
+            btnElement.classList.remove('border-light-subtle');
+            btnElement.classList.add('border-success', 'border-2');
+        }
+
+        function adjustQty(amount) {
+            const input = document.getElementById('purchaseQty');
+            let current = parseInt(input.value) || 1;
+            current = Math.max(1, current + amount);
+            input.value = current;
+        }
+
+        function addToCart() {
+            const selectedRadio = document.querySelector('.variant-radio:checked');
+            const sku = selectedRadio ? selectedRadio.dataset.sku : null;
+            const qty = parseInt(document.getElementById('purchaseQty').value) || 1;
+
+            console.log(`Adding SKU: ${sku}, Quantity: ${qty} to cart.`);
+            // Call your cart endpoint or emit event
+        }
+    </script>
