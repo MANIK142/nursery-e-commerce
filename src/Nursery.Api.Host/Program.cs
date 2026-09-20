@@ -26,7 +26,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(Nursery.Identity.IdentityExtensions).Assembly)
-    .AddApplicationPart(typeof(Customer.API.CustomerModuleExtensions).Assembly);
+    .AddApplicationPart(typeof(Customer.API.CustomerModuleExtensions).Assembly)
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    }); ;
 
 builder.Services.AddOpenApi();
 

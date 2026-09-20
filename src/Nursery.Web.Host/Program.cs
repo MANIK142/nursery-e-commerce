@@ -26,6 +26,22 @@ builder.Services.AddHttpClient<IIdentityApiClient, IdentityService>((sp, client)
     client.BaseAddress = new Uri(baseUrl);
 });
 
+builder.Services.AddHttpClient<IOrderApiClient, OrderApiClient>((sp, client) =>
+{
+    var baseUrl = sp.GetRequiredService<IConfiguration>()["ApiSettings:BaseUrl"]
+         ?? throw new InvalidOperationException("ApiSettings:BaseUrl is not configured.");
+    client.BaseAddress = new Uri(baseUrl);
+}).AddHttpMessageHandler<JwtForwardingHandler>();
+
+
+builder.Services.AddHttpClient<ICustomerApi, CustomerApi>((sp, client) =>
+{
+    var baseUrl = sp.GetRequiredService<IConfiguration>()["ApiSettings:BaseUrl"]
+         ?? throw new InvalidOperationException("ApiSettings:BaseUrl is not configured.");
+    client.BaseAddress = new Uri(baseUrl);
+}).AddHttpMessageHandler<JwtForwardingHandler>();
+
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

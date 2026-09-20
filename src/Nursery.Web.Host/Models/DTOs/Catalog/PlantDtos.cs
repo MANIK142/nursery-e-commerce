@@ -3,6 +3,8 @@
 namespace Nursery.Web.Host.Models.DTOs.Catalog;
 public record PlantsResponse(IReadOnlyList<PlantDto> Plants);
 
+public record PlantVariantResponse(IReadOnlyList<PlantVariantDto> PlantVariants);
+
 public record PlantDto(
     Guid Id,
     string Name,

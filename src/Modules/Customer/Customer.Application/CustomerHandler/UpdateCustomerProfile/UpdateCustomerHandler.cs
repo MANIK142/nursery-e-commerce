@@ -35,7 +35,7 @@ public class UpdateCustomerHandler(ICustomerRepository repository) : ICommandHan
         return new UpdateCustomerProfileResult(result);
     }
 
-    public bool CheckAddressExists(AddressDto addressDto, List<Address> addresses)
+    public bool CheckAddressExists(CustomerAddressDto addressDto, List<Address> addresses)
     {
         foreach (var address in addresses)
         {

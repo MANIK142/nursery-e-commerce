@@ -1,4 +1,5 @@
 ﻿using BuildingBlocks.Common.CQRS;
+using Customer.Application.CustomerHandler.GetAddresses;
 using Customer.Application.CustomerHandler.GetCustomer;
 using Customer.Application.CustomerHandler.RemoveAddress;
 using Customer.Application.CustomerHandler.SetDefaultAddress;
@@ -38,7 +39,24 @@ namespace Customer.API.Controllers
             return Ok(result.Adapt<GetCustomerResponse>());
         }
 
-        public record UpdateCustomerProfileRequest(string FirstName, string LastName, string Email, string? PhoneNumber, List<AddressDto>? AddressDtos);
+        //public record GetAddressRequest(int? PageNumber, int? PageSize, Guid? Id, string? FilterBy, string? FilterValue);
+        public record GetAddressesResponse(List<CustomerAddressDto> CustomerAddresses);
+
+        [HttpGet]
+        [Route("GetAddresses/{customerId:guid}")]
+        [ActionName("Get Customer Address By Customer Id")]
+        [EndpointSummary("Get Customer Address By Customer Id")]
+        [ProducesResponseType(typeof(GetAddressesResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetAddresses([FromRoute] Guid customerId)
+        {
+            var query = new GetAddressesQuery(customerId);
+            var result = await mediator.Send(query);
+            return Ok(result.Adapt<GetAddressesResponse>());
+        }
+
+
+        public record UpdateCustomerProfileRequest(string FirstName, string LastName, string Email, string? PhoneNumber, List<CustomerAddressDto>? AddressDtos);
         public record UpdateCustomerProfileResponse(bool IsSuccess);
 
         [HttpPut]

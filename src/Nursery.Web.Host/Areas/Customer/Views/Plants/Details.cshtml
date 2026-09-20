@@ -86,7 +86,7 @@
                                id="variant_@variant.Id"
                                value="@variant.Id"
                                autocomplete="off"
-                        @(isSelected ? "checked" : "")
+                                @(isSelected ? "checked" : "")
                                data-id="@variant.Id"
                                data-sku="@variant.Sku"
                                data-name="@variant.VariantName"
@@ -95,7 +95,7 @@
                                data-images='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(variant.Images))' />
 
                         <label class="btn btn-outline-secondary px-3 py-2 rounded-3 text-start variant-card-label @(isSelected ? "border-success active" : "")"
-                               for="variant_@variant.Sku">
+                               for="variant_@variant.Id">
                             <div class="fw-semibold">@variant.VariantName</div>
                             <div class="small text-muted">@($"{variant.RetailPrice.Currency} {variant.RetailPrice.Amount:N2}")</div>
                         </label>
@@ -202,21 +202,32 @@
             const id = selectedRadio ? selectedRadio.value : null;
             const qty = parseInt(document.getElementById('purchaseQty').value) || 1;
 
+
+            if (!id) {
+        toastr.warning('Please select a plant variant first.');
+        return;
+    }
+
            console.log(`Adding SKU: ${id}, Quantity: ${qty} to cart.`);
 
-               $.ajax({
-               : {
-                url: '/Customer/plants/AddToCart',
+            $.ajax({
+                url: '/customer/plants/addtocart',
                 type: 'POST',
-                data: {plantVariantId:id}
+                data: {
+                    plantVariantId: id
+                },
+                success: function (response) {
+                    console.log("Success:", response);
+  
+                    toastr.success(response.message || 'Added to cart successfully!',"", { positionClass: 'toast-top-right' });
+                    // Optional: trigger cart badge/count update UI
+                },
                 error: function (xhr, error, code) {
                     console.error("Status:", xhr.status);
                     console.error("Response:", xhr.responseText);
-                },
-                success: function(response){
-                     console.log(response);
+                    alert('Failed to add item to cart.');
                 }
-            })
+            });
 
     
         }

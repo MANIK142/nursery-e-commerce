@@ -25,7 +25,15 @@ public class AddItemToCartHandler(ICartRepository repository, CatalogDbContext c
             await repository.AddAsync(cart, cancellationToken);
         }
         var price = plantVariant.GetPrice(CustomerTier.Retail, DateTime.UtcNow);
-        cart.AddcartItem(plantVariant.Id, price.Amount);
+        if (cart.Items.Select(i => i.PlantvariantId).ToList().Contains(request.PlantvariantId))
+        {
+            cart.IncreaseItemQuantity(plantVariant.Id);
+        }
+        else
+        {
+            cart.AddcartItem(plantVariant.Id, price.Amount);
+        }
+        
 
        var result =  await repository.SaveChangesAsync(cancellationToken);
 

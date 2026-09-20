@@ -1,6 +1,7 @@
 ﻿using Nursery.Web.Host.Models.DTOs;
 using Nursery.Web.Host.Models.DTOs.Catalog;
 using Nursery.Web.Host.Services.Interface;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Numerics;
 
@@ -12,8 +13,6 @@ public class CatalogApiClient : ICatalogApiClient
     private readonly HttpClient _httpClient;
 
     public CatalogApiClient(HttpClient httpClient) => _httpClient = httpClient;
-
-
 
     public async Task<(bool IsSuccess, string? ErrorMessage)> CreatePlantAsync(
         CreatePlantApiRequest payload,
@@ -146,21 +145,22 @@ public class CatalogApiClient : ICatalogApiClient
         }
     }
 
-    public async Task<(bool IsSuccess, string? ErrorMessage)> AddToCardAsync(Guid plantVariantid, CancellationToken cancellationToken = default)
+
+
+    public async Task<PlantVariantResponse?> GetPlantVariantsAsync(GetPlantVariantsRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
-            var payload =new  {  plantVariantid };
-            var response = await _httpClient.PostAsJsonAsync("/api/v1/carts/items", payload, cancellationToken);
-            if (response.IsSuccessStatusCode) return (true, null);
+            var response = await _httpClient.PostAsJsonAsync("/api/v1/plantvariants", request, cancellationToken);
+            response.EnsureSuccessStatusCode();
 
-            var rawError = await response.Content.ReadAsStringAsync(cancellationToken);
-            return (false, string.IsNullOrWhiteSpace(rawError) ? "Failed to update plant." : rawError);
+            return await response.Content.ReadFromJsonAsync<PlantVariantResponse>(cancellationToken);
         }
         catch (Exception ex)
         {
+            return null;
             //_logger.LogError(ex, "Failed to send update for plant {PlantId}", id);
-            return (false, "Communication error with catalog service.");
+            //return (false, "Communication error with catalog service.");
         }
     }
 }

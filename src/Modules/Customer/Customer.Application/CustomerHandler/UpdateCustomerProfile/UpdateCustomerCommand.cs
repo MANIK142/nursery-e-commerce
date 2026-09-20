@@ -6,7 +6,7 @@ using FluentValidation;
 
 namespace Customer.Application.CustomerHandler.UpdateCustomer;
 
-public record UpdateCustomerProfileCommand(string FirstName, string LastName, string Email, string? PhoneNumber,List<AddressDto>? AddressDtos) : ICommand<UpdateCustomerProfileResult>;
+public record UpdateCustomerProfileCommand(string FirstName, string LastName, string Email, string? PhoneNumber,List<CustomerAddressDto>? AddressDtos) : ICommand<UpdateCustomerProfileResult>;
 
 public record UpdateCustomerProfileResult(bool IsSuccess);
 

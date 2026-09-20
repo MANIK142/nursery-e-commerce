@@ -1,0 +1,147 @@
+﻿@model Nursery.Web.Host.Models.ViewModels.Cart.CartViewModel
+
+@{
+    ViewData["Title"] = "Your Shopping Cart";
+    var hasItems = Model?.Items != null && Model.Items.Any();
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h1 class="h3 fw-bold text-success mb-0">
+            <i class="bi bi-cart3 me-2"></i>Shopping Cart
+        </h1>
+        <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Continue Shopping
+        </a>
+    </div>
+
+    @if (!hasItems)
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4">
+            <div class="mb-3">
+                <i class="bi bi-basket3 text-muted display-3"></i>
+            </div>
+            <h4 class="fw-semibold text-secondary">Your cart is empty</h4>
+            <p class="text-muted mb-4">Looks like you haven't added any plants or variants yet.</p>
+            <div>
+                <a asp-controller="Plants" asp-action="Index" class="btn btn-success px-4 py-2 rounded-pill">
+                    Browse Plants
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Cart Items List -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light text-muted small text-uppercase">
+                                <tr>
+                                    <th scope="col" class="ps-4">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col" style="width: 140px;">Quantity</th>
+                                    <th scope="col" class="text-end">Total</th>
+                                    <th scope="col" class="text-center pe-4" style="width: 60px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr id="row-@item.PlantVariantId">
+                                        <!-- Item Details -->
+                                        <td class="ps-4 py-3">
+                                            <div class="fw-semibold text-dark">@item.PlantVariantName</div>
+                                            <div class="small text-muted">SKU: <span class="badge bg-light text-secondary border">@item.Sku</span></div>
+                                        </td>
+
+                                        <!-- Unit Price -->
+                                        <td class="text-secondary fw-semibold">
+                                            @item.Price.ToString("C")
+                                        </td>
+
+                                        <!-- Quantity Control Form -->
+                                        <td>
+                                            <div class="input-group input-group-sm" style="width: 120px;">
+                                                <!-- Decrease Form -->
+                                                <form asp-action="DecreaseQuantity" method="post" class="d-inline">
+                                                    <input type="hidden" name="plantVariantId" value="@item.PlantVariantId" />
+                                                    <button type="submit"
+                                                            class="btn btn-outline-secondary"
+                                                        @(item.Quantity <= 1 ? "disabled" : "")>
+                                                        -
+                                                    </button>
+                                                </form>
+
+                                                <!-- Quantity Display -->
+                                                <input type="text" class="form-control text-center bg-white"
+                                                       value="@item.Quantity" readonly />
+
+                                                <!-- Increase Form -->
+                                                <form asp-action="IncreaseQuantity" method="post" class="d-inline">
+                                                    <input type="hidden" name="plantVariantId" value="@item.PlantVariantId" />
+                                                    <button type="submit" class="btn btn-outline-secondary">+</button>
+                                                </form>
+                                            </div>
+                                        </td>
+
+                                        <!-- Line Total -->
+                                        <td class="text-end fw-bold text-dark">
+                                            @item.ItemTotalPrice.ToString("C")
+                                        </td>
+
+                                        <!-- Remove Item Form -->
+                                        <td class="text-center pe-4">
+                                            <form asp-action="RemoveFromCart" method="post">
+                                                <input type="hidden" name="plantVariantId" value="@item.PlantVariantId" />
+                                                <button type="submit" class="btn btn-link text-danger p-0" title="Remove item">
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 2rem;">
+                    <h5 class="fw-bold text-dark mb-3">Order Summary</h5>
+
+                    <div class="d-flex justify-content-between text-muted mb-2">
+                        <span>Items Subtotal (@Model.Items.Sum(i => i.Quantity))</span>
+                        <span>@Model.TotalPice.ToString("C")</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between text-muted mb-3">
+                        <span>Estimated Shipping</span>
+                        <span class="text-success fw-semibold">Calculated at checkout</span>
+                    </div>
+
+                    <hr class="text-muted opacity-25" />
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="fs-5 fw-bold text-dark">Total</span>
+                        <span class="fs-4 fw-bold text-success">@Model.TotalPice.ToString("C")</span>
+                    </div>
+
+                    <a asp-controller="Checkout" asp-action="Index" class="btn btn-success w-100 py-2 fw-semibold rounded-3 shadow-sm mb-2">
+                        Proceed to Checkout <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted small">
+                            <i class="bi bi-shield-check text-success me-1"></i>Secure Checkout
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
