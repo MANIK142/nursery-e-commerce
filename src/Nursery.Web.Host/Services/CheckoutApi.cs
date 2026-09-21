@@ -1,22 +1,32 @@
 ﻿using Nursery.Web.Host.Models;
 using Nursery.Web.Host.Models.DTOs;
 using Nursery.Web.Host.Models.DTOs.Cart;
+using Nursery.Web.Host.Models.DTOs.Catalog;
 using Nursery.Web.Host.Models.DTOs.Customer;
+using Nursery.Web.Host.Models.ViewModels.Cart;
+using Nursery.Web.Host.Models.ViewModels.Checkout;
 using Nursery.Web.Host.Services.Interface;
 
 namespace Nursery.Web.Host.Services;
 
-public class CheckoutApi(ICatalogApiClient catalog,IOrderApiClient order, ICheckoutApi checkoutApi ) : ICheckoutApi
+public record GetAddressesResponse(IReadOnlyList<AddressDto> CustomerAddresses);
+public class CheckoutApi(HttpClient httpClient,ICurrentUserService currentUserService ) : ICheckoutApi
 {
-    public Task<IReadOnlyList<AddressDto>> GetAddressesAsync(CancellationToken ct)
+    private readonly HttpClient _httpClient = httpClient;
+
+    public ICurrentUserService CurrentUserService { get; } = currentUserService;
+
+    public async Task<IReadOnlyList<AddressDto>> GetAddressesAsync(CancellationToken ct)
     {
-        return checkoutApi.GetAddressesAsync(ct);
+        var customerId = CurrentUserService.CustomerId;
+        var response = await _httpClient.GetAsync($"/api/v1/Customer/GetAddresses/{customerId}", ct);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<GetAddressesResponse>(cancellationToken: ct);
+        return result?.CustomerAddresses ?? [];
     }
 
-    public Task<CartDto?> GetCartAsync(CancellationToken ct)
-    {
-        return order.GetCartAsync(ct)
-    }
+
 
     public Task<ApiResultModel<PlaceOrderResponse>> PlaceOrderAsync(PlaceOrderRequest request, CancellationToken ct)
     {

@@ -42,6 +42,13 @@ builder.Services.AddHttpClient<ICustomerApi, CustomerApi>((sp, client) =>
 }).AddHttpMessageHandler<JwtForwardingHandler>();
 
 
+builder.Services.AddHttpClient<ICheckoutApi, CheckoutApi>((sp, client) =>
+{
+    var baseUrl = sp.GetRequiredService<IConfiguration>()["ApiSettings:BaseUrl"]
+         ?? throw new InvalidOperationException("ApiSettings:BaseUrl is not configured.");
+    client.BaseAddress = new Uri(baseUrl);
+}).AddHttpMessageHandler<JwtForwardingHandler>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -70,7 +77,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

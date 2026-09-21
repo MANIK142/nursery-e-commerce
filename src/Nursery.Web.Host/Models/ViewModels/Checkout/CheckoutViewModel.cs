@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Nursery.Web.Host.Models.DTOs.Customer;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nursery.Web.Host.Models.ViewModels.Checkout;
 
 public class CheckoutViewModel
 {
+    public Guid IdempotencyKey { get; set; }
     public List<CheckoutItemViewModel> Items { get; set; } = new();
-
+    public IReadOnlyList<AddressDto> Addresses { get; set; } 
     public decimal SubTotal => Items.Sum(i => i.TotalPrice);
     public decimal ShippingFee { get; set; } = 15.00m;
     public decimal EstimatedTax => SubTotal * 0.08m; // 8% sales tax
