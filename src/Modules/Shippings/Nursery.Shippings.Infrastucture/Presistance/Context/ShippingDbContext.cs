@@ -34,20 +34,20 @@ public class ShippingDbContext :DbContext, IShippingDbContext
 
     public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var entitiesWithEvents = ChangeTracker.Entries<BaseDomainModel>()
-            .Select(e => e.Entity)
-            .Where(e => e.DomainEvents.Count > 0)
-            .ToList();
+        //var entitiesWithEvents = ChangeTracker.Entries<BaseDomainModel>()
+        //    .Select(e => e.Entity)
+        //    .Where(e => e.DomainEvents.Count > 0)
+        //    .ToList();
 
         var result = await base.SaveChangesAsync(cancellationToken);
 
-        foreach (var entity in entitiesWithEvents)
-        {
-            var events = entity.DomainEvents.ToList();
-            entity.ClearDomainEvents();
-            foreach (var domainEvent in events)
-                await _publisher.Publish(domainEvent, cancellationToken);
-        }
+        //foreach (var entity in entitiesWithEvents)
+        //{
+        //    var events = entity.DomainEvents.ToList();
+        //    entity.ClearDomainEvents();
+        //    foreach (var domainEvent in events)
+        //        await _publisher.Publish(domainEvent, cancellationToken);
+        //}
 
         return result;
     }

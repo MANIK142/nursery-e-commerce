@@ -308,13 +308,13 @@
                     if (!e.target.value) return;
                     try {
                         const addr = JSON.parse(e.target.value);
-                        document.querySelector('input[name="BillingAddress.FirstName"]').value = addr.FirstName || addr.firstName || '';
-                        document.querySelector('input[name="BillingAddress.LastName"]').value = addr.LastName || addr.lastName || '';
-                        document.querySelector('input[name="BillingAddress.EmailAddress"]').value = addr.EmailAddress || addr.emailAddress || '';
-                        document.querySelector('input[name="BillingAddress.AddressLine"]').value = addr.AddressLine || addr.addressLine || '';
+                        document.querySelector('input[name="BillingAddress.FirstName"]').value = addr.FirstName || addr.firstName || 'Manikandan';
+                        document.querySelector('input[name="BillingAddress.LastName"]').value = addr.LastName || addr.lastName || 'Rajamani';
+                        document.querySelector('input[name="BillingAddress.EmailAddress"]').value = addr.EmailAddress || addr.emailAddress || 'rajmani.manikandan@hotmail.com';
+                        document.querySelector('input[name="BillingAddress.AddressLine"]').value = addr.Line1 || addr.addressLine || '';
                         document.querySelector('input[name="BillingAddress.Country"]').value = addr.Country || addr.country || '';
                         document.querySelector('input[name="BillingAddress.State"]').value = addr.State || addr.state || '';
-                        document.querySelector('input[name="BillingAddress.ZipCode"]').value = addr.ZipCode || addr.zipCode || '';
+                        document.querySelector('input[name="BillingAddress.ZipCode"]').value = addr.PostalCode || addr.PostalCode || '';
                     } catch (err) {
                         console.error('Failed to parse saved address:', err);
                     }

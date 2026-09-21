@@ -30,6 +30,7 @@ public class GetOrderByIdHandler(IOrderRepository repository) : ICommandHandler<
         }
         var orderDto = new OrderDto
         {
+            Id = order.Id,
             CustomerId = order.CustomerId,
             PaymentStatus = order.PaymentStatus,
             Status = order.Status,

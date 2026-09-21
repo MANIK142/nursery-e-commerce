@@ -70,33 +70,37 @@ public class PlantsController : Controller
             Items = []
         };
         var cart =  await _OrderApi.GetCartAsync(ct);
-        List<Guid> plantVariantIds = cart.CartItemDtos.Select(ci => ci.PlantVariantId).ToList();
-        if (plantVariantIds.Any())
+        if(cart != null)
         {
-            var request = new GetPlantVariantsRequest(plantVariantIds);
-            var plantVariants = await _catalogApi.GetPlantVariantsAsync(request, ct);
-            if (plantVariants.PlantVariants.Any())
+            List<Guid> plantVariantIds = cart.CartItemDtos.Select(ci => ci.PlantVariantId).ToList();
+            if (plantVariantIds.Any())
             {
-
-                foreach(var cartItem in cart.CartItemDtos)
+                var request = new GetPlantVariantsRequest(plantVariantIds);
+                var plantVariants = await _catalogApi.GetPlantVariantsAsync(request, ct);
+                if (plantVariants.PlantVariants.Any())
                 {
-                    var plantVariant = plantVariants.PlantVariants.FirstOrDefault(pv => pv.Id == cartItem.PlantVariantId);
 
-                    var cartItemViewModel = new CartItemsViewModel
+                    foreach (var cartItem in cart.CartItemDtos)
                     {
-                        PlantVariantId = cartItem.PlantVariantId,
-                        Price = cartItem.Price,
-                        Quantity = cartItem.Quantity,
-                        PlantVariantName = plantVariant.VariantName,
-                        Sku = plantVariant.Sku
-                    };
-                    cartViewModel.Items.Add(cartItemViewModel);
+                        var plantVariant = plantVariants.PlantVariants.FirstOrDefault(pv => pv.Id == cartItem.PlantVariantId);
+
+                        var cartItemViewModel = new CartItemsViewModel
+                        {
+                            PlantVariantId = cartItem.PlantVariantId,
+                            Price = cartItem.Price,
+                            Quantity = cartItem.Quantity,
+                            PlantVariantName = plantVariant.VariantName,
+                            Sku = plantVariant.Sku
+                        };
+                        cartViewModel.Items.Add(cartItemViewModel);
+
+                    }
 
                 }
 
             }
-
         }
+        
 
         return View(cartViewModel);
     }

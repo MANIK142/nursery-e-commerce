@@ -96,3 +96,7 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+
+//stripe listen --forward - to https://localhost:7139/api/v1/payments/webhook
+//must specify events to forward using --events, --all - snapshot, or--all - thin

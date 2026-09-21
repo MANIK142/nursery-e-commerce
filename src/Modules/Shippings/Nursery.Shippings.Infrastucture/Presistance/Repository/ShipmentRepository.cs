@@ -22,6 +22,6 @@ public class ShipmentRepository(ShippingDbContext dbContext) : IShipmentReposito
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)
     {
-       await SaveChangesAsync(cancellationToken);
+       await dbContext.SaveChangesAsync(cancellationToken);
     }
 }

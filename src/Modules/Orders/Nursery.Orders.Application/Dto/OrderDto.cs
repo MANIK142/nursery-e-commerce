@@ -8,6 +8,7 @@ namespace Nursery.Orders.Application.Dto;
 
 public class OrderDto
 {
+    public Guid Id { get; set; }
     public Guid CustomerId { get;  set; }
     public List<OrderItemDto> OrderItems { get; set; } = [];
     public OrderStatus Status { get;  set; }

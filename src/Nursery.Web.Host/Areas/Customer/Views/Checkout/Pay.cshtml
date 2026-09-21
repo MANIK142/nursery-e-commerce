@@ -1,0 +1,142 @@
+﻿@model Nursery.Web.Host.Models.ViewModels.PayViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Payment";
+    var inr = CultureInfo.GetCultureInfo("en-IN");
+    string Money(decimal v) => v.ToString("C2", inr);
+}
+
+<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-4">
+    <h2 class="fw-bold text-success mb-0"><i class="bi bi-credit-card me-2"></i>Payment</h2>
+    <span class="text-secondary small">Order <strong>@Model.Order.Id</strong></span>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <section class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Pay securely</h5>
+
+                @if (Model.ClientSecret is null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @(Model.Error ?? "We couldn't start your payment.")
+                    </div>
+                    <a asp-action="Pay" asp-route-orderId="@Model.Order.Id" class="btn btn-success">Try again</a>
+                }
+                else
+                {
+                    <form id="payment-form"
+                          data-publishable-key="@Model.PublishableKey"
+                          data-client-secret="@Model.ClientSecret"
+                          data-return-url="@Model.ReturnUrl">
+                        <div id="payment-element" class="mb-3"></div>
+
+                        <div id="payment-message" class="alert alert-danger d-none" role="alert" aria-live="polite"></div>
+
+                        <button id="pay-button" type="submit" class="btn btn-success w-100 py-2 fw-semibold" disabled>
+                            <span id="pay-spinner" class="spinner-border spinner-border-sm me-2 d-none" aria-hidden="true"></span>
+                            <span id="pay-label">Pay @Money(Model.Order.OrderItems.Sum(oi=> oi.LineTotal))</span>
+                        </button>
+                    </form>
+                    <p class="text-center text-secondary small mt-3 mb-0">
+                        <i class="bi bi-shield-lock text-success me-1"></i>Card details go straight to Stripe. We never see or store them.
+                    </p>
+                }
+            </div>
+        </section>
+    </div>
+
+    <aside class="col-lg-4">
+        <div class="card border-0 shadow-sm position-sticky" style="top: 1rem;">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Order summary</h5>
+
+                <ul class="list-unstyled mb-3">
+                    @foreach (var i in Model.Order.OrderItems)
+                    {
+                        <li class="d-flex justify-content-between mb-2">
+                            <span>@i.PlantName @i.VariantName <span class="text-secondary">× @i.Quantity</span></span>
+                            <span>@Money(i.LineTotal)</span>
+                        </li>
+                    }
+                </ul>
+
+                <hr />
+
+                <dl class="d-flex justify-content-between mb-2">
+                    <dt class="fw-normal text-secondary">Subtotal</dt>
+                    <dd class="mb-0">@Money(Model.Order.OrderItems.Sum(i => i.LineTotal))</dd>
+                </dl>
+                <dl class="d-flex justify-content-between mb-2">
+                    <dt class="fw-normal text-secondary">Shipping</dt>
+                    <dd class="mb-0">@(Model.Order.ShippingFee == 0 ? "Free" : Money(Model.Order.ShippingFee))</dd>
+                </dl>
+                <dl class="d-flex justify-content-between align-items-baseline mb-0">
+                    <dt class="fs-5">Total</dt>
+                    <dd class="fs-4 fw-bold text-success mb-0">@Money(Model.Order.OrderItems.Sum(i => i.LineTotal))</dd>
+                </dl>
+
+                @if (Model.Order.ShippingAddress is { } a)
+                {
+                    <hr />
+                    <div class="small">
+                        <div class="fw-semibold mb-1">Delivering to</div>
+                        <div class="text-body-secondary">
+                            @a.Line1@(string.IsNullOrWhiteSpace(a.Line2) ? "" : ", " + a.Line2)<br />
+                            @a.City, @a.State @a.PostalCode
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </aside>
+</div>
+
+@section Scripts {
+    @if (Model.ClientSecret is not null)
+    {
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            (function() {
+                const form = document.getElementById('payment-form');
+                const stripe = Stripe(form.dataset.publishableKey);
+
+                const elements = stripe.elements({
+                    clientSecret: form.dataset.clientSecret,
+                    appearance: { theme: 'stripe', variables: { colorPrimary: '#198754' } }
+                });
+
+                const paymentElement = elements.create('payment');
+                paymentElement.mount('#payment-element');
+
+                const button = document.getElementById('pay-button');
+                const spinner = document.getElementById('pay-spinner');
+                const message = document.getElementById('payment-message');
+
+                paymentElement.on('ready', () => { button.disabled = false; });
+
+                function setBusy(busy) {
+                    button.disabled = busy;
+                    spinner.classList.toggle('d-none', !busy);
+                }
+
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    setBusy(true);
+                    message.classList.add('d-none');
+
+                    // On success the browser is redirected to return_url, so code below only runs on an immediate error.
+                    const { error } = await stripe.confirmPayment({
+                        elements,
+                        confirmParams: { return_url: form.dataset.returnUrl }
+                    });
+
+                    message.textContent = error?.message ?? 'Something went wrong. Please try again.';
+                    message.classList.remove('d-none');
+                    setBusy(false);
+                });
+            })();
+        </script>
+    }
+}
