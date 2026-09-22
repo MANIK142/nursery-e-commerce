@@ -1,5 +1,6 @@
 ﻿
 
+using BuildingBlocks.Common.Caching;
 using FluentValidation;
 using Nursery.Catalog.Application.Plants.Commands.CreatePlant;
 
@@ -8,7 +9,10 @@ namespace Nursery.Catalog.Application.Plants.Commands.UpdatePlant;
 
 public record UpdatePlantCommand(Guid Id,string SkuCode, string Name, string Description,string ModifiedBy, List<Guid> Categories,
                                 List<PlantVariantSpec> PlantVariantSpecs, List<ImageSpec> Images) 
-                                : ICommand<UpdatePlantResult>;
+                                : ICommand<UpdatePlantResult>, ICacheInvalidatorCommand
+{
+    public string CacheKeyPrefix => "catalog:plants";
+}
 
 public record UpdatePlantResult(bool IsSuccess);
 

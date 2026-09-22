@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,9 @@ using Stripe;
 
 namespace Nursery.Payment.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [ApiVersion(1.0)]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    //[Route("api/v1/[controller]")]
     [ApiController]
     [Tags("Payments")]
     public sealed class PaymentController(

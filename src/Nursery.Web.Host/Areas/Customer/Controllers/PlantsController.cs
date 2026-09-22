@@ -62,6 +62,15 @@ public class PlantsController : Controller
             return StatusCode(500, new { success = false, message = "Failed to add to cart." });
         }
     }
+
+
+    [HttpGet("/customer/plants/getcartcount")]
+    public async Task<IActionResult> GetCartCount(CancellationToken ct = default)
+    {
+        var count = await _OrderApi.GetCartCount(ct);
+        return Ok(count);
+    }
+
     [HttpGet("/customer/plants/getcart")]
     public async Task<IActionResult> Cart(CancellationToken ct = default)
     {

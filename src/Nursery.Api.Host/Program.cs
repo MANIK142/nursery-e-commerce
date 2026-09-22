@@ -1,27 +1,43 @@
+using Asp.Versioning;
+using BuildingBlocks.Common.Caching;
+using BuildingBlocks.Common.Middleware;
 using BuildingBlocks.Common.SharedContracts;
 using BuildingBlocks.Exceptions.Handler;
 using Carter;
 using Customer.API;
+using Customer.Infrastructure.Persistance.Context;
 using Customer.Infrastructure.Persistance.Repository;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Nursery.Catalog.Api.Extensions;
+using Nursery.Catalog.Infrastructure.Persistence.Context;
 using Nursery.Identity;
+using Nursery.Identity.Data;
 using Nursery.Orders.API.Endpoints;
 using Nursery.Orders.API.Extenstions;
 using Nursery.Orders.Application.Data;
+using Nursery.Orders.Infrastructure.Persistance.Context;
 using Nursery.Orders.Infrastructure.Persistance.Repository;
 using Nursery.Payment.Api;
 using Nursery.Payment.Api.Contracts;
+using Nursery.Payment.Api.Persistance;
 using Nursery.Shippings.API;
 using Nursery.Shippings.Application.Data;
+using Nursery.Shippings.Infrastucture.Presistance.Context;
 using Scalar.AspNetCore;
+using Serilog;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services));
 
 
 builder.Services.AddControllers()
@@ -35,6 +51,11 @@ builder.Services.AddControllers()
 builder.Services.AddOpenApi();
 
 builder.Services.AddCarter();
+
+
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
+
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
@@ -60,10 +81,36 @@ builder.Services.AddScoped<IOrderLineItemLookup, OrderLineItemLookup>();
 
 builder.Services.AddDirectoryBrowser();
 
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true; // adds api-supported-versions header to responses
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+})
+.AddMvc();
+
+
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<CatalogDbContext>("Nursery.CatalogDb", tags: ["ready"])
+    .AddDbContextCheck<NurseryIdentityDbContext>("Nursery.IdentityDb", tags: ["ready"])
+    .AddDbContextCheck<CustomerDbContext>("Nursery.CustomerDb", tags: ["ready"])
+    .AddDbContextCheck<OrdersDbContext>("Nursery.OrdersDb", tags: ["ready"])
+    .AddDbContextCheck<PaymentDbContext>("Nursery.PaymentDb", tags: ["ready"])
+    .AddDbContextCheck<ShippingDbContext>("Nursery.ShippingDb", tags: ["ready"]);
+
+
 var app = builder.Build();
 
-
-
+app.UseCorrelationId();
+//app.UseSerilogRequestLogging();
+app.UseSerilogRequestLogging(options =>
+{
+    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+    {
+        diagnosticContext.Set("CorrelationId", httpContext.TraceIdentifier);
+    };
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -78,6 +125,8 @@ app.UseAuthorization();
 app.MapCarter();
 app.UseExceptionHandler(options => { });
 app.UseHttpsRedirection();
+
+
 
 app.MapControllers();
 
@@ -98,5 +147,30 @@ app.UseStaticFiles(new StaticFileOptions
     }
 });
 app.UseDirectoryBrowser();
+
+app.MapHealthChecks("/health/live", new HealthCheckOptions
+{
+    Predicate = _ => false // matches nothing — confirms the process can respond, checks nothing else
+});
+
+app.MapHealthChecks("/health/ready", new HealthCheckOptions
+{
+    Predicate = check => check.Tags.Contains("ready"),
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var result = JsonSerializer.Serialize(new
+        {
+            status = report.Status.ToString(),
+            checks = report.Entries.Select(e => new
+            {
+                name = e.Key,
+                status = e.Value.Status.ToString(),
+                description = e.Value.Description
+            })
+        });
+        await context.Response.WriteAsync(result);
+    }
+});
 
 app.Run();

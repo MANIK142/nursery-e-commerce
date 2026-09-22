@@ -1,0 +1,184 @@
+﻿@model Nursery.Web.Host.Models.ViewModels.Orders.OrderDetailsViewModel
+
+@{
+    ViewData["Title"] = $"Order #{Model.Id.ToString()[..8].ToUpper()}";
+
+    // Dynamic badge colors based on status
+    var statusBadgeClass = Model.Status?.ToLower() switch
+    {
+        "confirmed" => "bg-primary-subtle text-primary border-primary-subtle",
+        "processing" => "bg-info-subtle text-info border-info-subtle",
+        "shipped" => "bg-warning-subtle text-dark border-warning-subtle",
+        "delivered" => "bg-success-subtle text-success border-success-subtle",
+        "cancelled" => "bg-danger-subtle text-danger border-danger-subtle",
+        _ => "bg-secondary-subtle text-secondary border-secondary-subtle"
+    };
+
+    var paymentBadgeClass = Model.PaymentStatus?.ToLower() switch
+    {
+        "paid" => "bg-success-subtle text-success border-success-subtle",
+        "pending" => "bg-warning-subtle text-dark border-warning-subtle",
+        "failed" => "bg-danger-subtle text-danger border-danger-subtle",
+        _ => "bg-secondary-subtle text-secondary border-secondary-subtle"
+    };
+}
+
+<div class="container py-5">
+    <!-- Header & Navigation -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom gap-2">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h1 class="h3 fw-bold text-success mb-0">
+                    <i class="bi bi-box2-heart me-2"></i>Order Details
+                </h1>
+                <span class="badge border rounded-pill @statusBadgeClass px-3 py-1">
+                    @Model.Status
+                </span>
+            </div>
+            <p class="text-muted small mb-0">
+                Order ID: <span class="font-monospace fw-semibold text-secondary">@Model.Id</span>
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i>Back to Orders
+            </a>
+            <button class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="window.print()">
+                <i class="bi bi-printer me-1"></i>Print Receipt
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Items Purchased -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-dark mb-0">Ordered Items</h5>
+                    <span class="badge bg-light text-secondary border rounded-pill">
+                        @Model.TotalItemCount @(Model.TotalItemCount == 1 ? "item" : "items")
+                    </span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="table-light text-muted small text-uppercase">
+                            <tr>
+                                <th scope="col" class="ps-4">Product</th>
+                                <th scope="col" class="text-center">Price</th>
+                                <th scope="col" class="text-center">Quantity</th>
+                                <th scope="col" class="text-end pe-4">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <!-- Product Info -->
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-3 bg-light d-flex align-items-center justify-content-center border me-3 flex-shrink-0"
+                                                 style="width: 52px; height: 52px;">
+                                                <i class="bi bi-flower1 text-success fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold text-dark">@item.ProductNameAtPurchase</div>
+                                                <div class="small text-muted font-monospace">
+                                                    Variant ID: @item.PlantVariantId.ToString()[..8]...
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Unit Price -->
+                                    <td class="text-center text-secondary fw-semibold">
+                                        @item.UnitPriceAtPurchase.ToString("C")
+                                    </td>
+
+                                    <!-- Quantity -->
+                                    <td class="text-center">
+                                        <span class="badge bg-light text-dark border px-3 py-2 fw-semibold">
+                                            @item.Quantity
+                                        </span>
+                                    </td>
+
+                                    <!-- Line Total -->
+                                    <td class="text-end pe-4 fw-bold text-dark">
+                                        @item.TotalPrice.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customer & Delivery Notes -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 bg-light">
+                <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-shield-check text-success fs-3"></i>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Nursery Fresh Guarantee</h6>
+                        <p class="small text-muted mb-0">
+                            Plants are inspected before dispatch. If you have any questions regarding plant care or acclimatization, contact our support team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Financial Breakdown & Metadata -->
+        <div class="col-lg-4">
+            <!-- Payment & Summary Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 2rem;">
+                <h5 class="fw-bold text-dark mb-3">Order Summary</h5>
+
+                <!-- Payment Status Pill -->
+                <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3 border">
+                    <span class="small fw-semibold text-secondary">Payment Status</span>
+                    <span class="badge border rounded-pill @paymentBadgeClass px-3 py-2">
+                        <i class="bi bi-credit-card me-1"></i>@Model.PaymentStatus
+                    </span>
+                </div>
+
+                <!-- Price Calculations -->
+                <div class="d-flex justify-content-between text-muted small mb-2">
+                    <span>Items Subtotal</span>
+                    <span>@Model.TotalAmount.ToString("C")</span>
+                </div>
+
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span>Delivery</span>
+                    <span class="text-success fw-semibold">Included</span>
+                </div>
+
+                <hr class="text-muted opacity-25" />
+
+                <!-- Grand Total -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <span class="fs-5 fw-bold text-dark">Total</span>
+                    <span class="fs-4 fw-bold text-success">@Model.TotalAmount.ToString("C")</span>
+                </div>
+
+                <!-- Metadata List -->
+                <div class="border-top pt-3">
+                    <div class="text-muted small mb-2">
+                        <span class="fw-semibold text-secondary d-block mb-1">Customer Reference</span>
+                        <span class="font-monospace text-truncate d-block">@Model.CustomerId</span>
+                    </div>
+                    <div class="text-muted small">
+                        <span class="fw-semibold text-secondary d-block mb-1">Fulfillment Status</span>
+                        <span>@Model.Status</span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-2">
+                    <a asp-area="customer" asp-controller="Plants" asp-action="Index" class="btn btn-outline-success w-100 rounded-3 fw-semibold">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

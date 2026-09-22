@@ -10,6 +10,8 @@ public interface IOrderApiClient
 {
     Task<(bool IsSuccess, string? ErrorMessage)> AddToCardAsync(Guid plantVariantid, CancellationToken cancellationToken = default);
     Task<CartDto> GetCartAsync(CancellationToken cancellationToken);
+    Task<int> GetCartCount(CancellationToken cancellationToken);
+
 
     Task<(bool IsSuccess, string? ErrorMessage)> IncreaseCartItem(Guid plantVariantid, CancellationToken cancellationToken = default);
 
@@ -18,6 +20,8 @@ public interface IOrderApiClient
     Task<(bool IsSuccess, string? ErrorMessage)> DeleteCartItem(Guid plantVariantid, CancellationToken cancellationToken = default);
 
     Task<CreateOrderApiResponse> CreateOrder(CreateOrderApiRequest payload, CancellationToken cancellationToken = default);
+
+    Task<List<OrderDto>?> GetAllOrderAsync(CancellationToken ct);
 
     Task<OrderDto?> GetOrderAsync(Guid orderId, CancellationToken ct);
 

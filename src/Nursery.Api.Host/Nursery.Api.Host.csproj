@@ -16,10 +16,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.1-preview.1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\BuildingBlocks.Common\BuildingBlocks.Common.csproj" />
     <ProjectReference Include="..\Modules\Payment\Nursery.Payment.Api\Nursery.Payment.Api.csproj" />
     <ProjectReference Include="..\Modules\Catalog\Nursery.Catalog.Api\Nursery.Catalog.Api.csproj" />
     <ProjectReference Include="..\Modules\Customer\Customer.API\Customer.API.csproj" />

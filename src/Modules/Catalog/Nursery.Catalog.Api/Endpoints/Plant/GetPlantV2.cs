@@ -3,7 +3,7 @@ using Nursery.Catalog.Application.Plants.Queries.GetPlants;
 
 namespace Nursery.Catalog.Api.Endpoints.Plant;
 
-public class GetPlant : ICarterModule
+public class GetPlantV2 : ICarterModule
 {
     public record GetPlantRequest(int? PageNumber, int? PageSize, Guid? Id, string? FilterBy, string? FilterValue);
     public record GetPlantResponse(IEnumerable<PlantDto> Plants);
@@ -16,12 +16,12 @@ public class GetPlant : ICarterModule
             return Results.Ok(response.Adapt<GetPlantResponse>());
         })
         .WithApiVersionSet(PlantApiVersioning.VersionSet(app))
-        .MapToApiVersion(1.0)
-        .WithName("Get Plants")
+        .MapToApiVersion(2.0)
+        .WithName("Get Plants v2")
         .Produces<GetPlantResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status400BadRequest)
-        .WithSummary("Get Plants")
-        .WithDescription("Get Plants")
+        .WithSummary("Get Plants v2")
+        .WithDescription("Get Plants v2")
         .WithTags("Plants");
         //.RequireAuthorization();
     }

@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Asp.Versioning;
+using Azure.Core;
 using BuildingBlocks.Common.IntegrationEvents;
 using BuildingBlocks.Common.SharedContracts;
 using FluentValidation;

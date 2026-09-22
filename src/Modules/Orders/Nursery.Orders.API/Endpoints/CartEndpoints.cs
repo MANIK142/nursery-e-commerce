@@ -1,21 +1,25 @@
 ﻿
 using Amazon.S3.Model;
+using BuildingBlocks.Common;
 using Carter;
+using Mapster;
 using MediatR;
 using Nursery.Orders.API.Extenstions;
 using Nursery.Orders.Application.Features.AddItemToCart;
 using Nursery.Orders.Application.Features.DecreaseCartItemQuantity;
+using Nursery.Orders.Application.Features.GetCartCount;
 using Nursery.Orders.Application.Features.GetCarts;
 using Nursery.Orders.Application.Features.IncreaseCartItemQuantity;
 using Nursery.Orders.Application.Features.RemoveItemFromCart;
 using System.Security.Claims;
-using BuildingBlocks.Common;
 
 namespace Nursery.Orders.API.Endpoints;
 
 public class CartEndpoints : ICarterModule
 {
     public record AddItemToCartRequest(Guid PlantvariantId);
+
+    public record GetCartCountResponse(int Count);
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/v1/carts").WithTags("Carts");
@@ -39,7 +43,20 @@ public class CartEndpoints : ICarterModule
         .WithDescription("Get Cart");
 
 
-        
+        group.MapGet("/cartcount", async (ISender mediator, ClaimsPrincipal user) =>
+        {
+            var customerId = user.GetCustomerId();
+            var command = new GetCartCountQuery(customerId);
+            var result = await mediator.Send(command);
+            return result.Adapt<GetCartCountResponse>();
+        }).WithName("Get Cart Count")
+       .Produces<GetCartCountResponse>(StatusCodes.Status200OK)
+       .ProducesProblem(StatusCodes.Status400BadRequest)
+       .WithSummary("Get Cart Count")
+       .WithDescription("Get Cart Count");
+
+
+
         group.MapPost("/items", async (AddItemToCartRequest request,ISender mediator,ClaimsPrincipal user) =>
         {
             var customerId = user.GetCustomerId();

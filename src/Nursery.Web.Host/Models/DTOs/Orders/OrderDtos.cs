@@ -10,28 +10,6 @@ public static class OrderStatuses
     public const string Cancelled = "Cancelled";
 }
 
-//public sealed class OrderDto
-//{
-//    public Guid Id { get; set; }
-//    public string OrderNumber { get; set; } = "";
-//    public string Status { get; set; } = "";
-//    public decimal Subtotal { get; set; }
-//    public decimal ShippingFee { get; set; }
-//    public decimal Total { get; set; }
-//    public List<OrderLineDto> Items { get; set; } = [];
-//    public AddressDto? ShippingAddress { get; set; }
-//}
-
-//public sealed class OrderLineDto
-//{
-//    public string PlantName { get; set; } = "";
-//    public string VariantName { get; set; } = "";
-//    public string Sku { get; set; } = "";
-//    public decimal UnitPrice { get; set; }
-//    public int Quantity { get; set; }
-//    public decimal LineTotal { get; set; }
-//}
-
 public sealed class OrderDto
 {
     public Guid Id { get; set; }
@@ -47,6 +25,30 @@ public sealed class OrderDto
     public List<OrderLineDto> OrderItems { get; set; } = [];
     public AddressDto? ShippingAddress { get; set; }
 }
+
+
+public record FlatOrderDto(Guid Id, Guid CustomerId, string Status, string PaymentStatus, decimal Total, string OrderItems);
+
+public static class OrderDtoExtention
+{
+    public static FlatOrderDto ToFlatOrderDto(this OrderDto orderDto)
+    {
+        return new FlatOrderDto(
+            orderDto.Id,
+            orderDto.CustomerId,
+            orderDto.Status,
+            orderDto.PaymentStatus,
+            orderDto.OrderItems.Sum(i => i.LineTotal),
+            string.Join(", ", orderDto.OrderItems.Select(i => i.ProductNameAtPurchase))
+            );
+    }
+}
+
+
+
+
+
+
 
 public sealed class OrderLineDto
 {

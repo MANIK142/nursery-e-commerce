@@ -15,27 +15,18 @@ function orderDataTable() {
                 console.error("Response:", xhr.responseText);
             }
         },
+      
         columns: [
-            { data: 'name', width: '15%' },
+            { data: 'id', width: '25%' },
+            { data: 'total', width: '10%' },
+            { data: 'orderItems', width: '30%' },
+            { data: 'status', width: '10%' },
+            { data: 'paymentStatus', width: '10%' },
             {
-                data: 'categories',
-                width: '30%',
-                render: function (data) {
-                    return Array.isArray(data) ? data.join(', ') : data;
-                }
-            },
-            { data: 'displayPrice', width: '10%' },
-            {
-                data: 'id', width: '30%', render: function (data) {
+                data: 'id', width: 'auto', render: function (data) {
                     return `<div class="d-flex gap-2 justify-content-end">
-                                         <a href="/admin/plant/update?id=${data}" class="btn btn-sm btn-outline-success">
-                                              <i class="bi bi-pencil-square"></i> Edit
-                                         </a>
-                                          <a href="/admin/plant/CreateCareInstruction/${data}" class="btn btn-sm btn-outline-secondary">
-                                              <i class="bi bi-plus"></i> Add Care
-                                         </a>
-                                          <a onclick="Delete('/admin/plant/delete/${data}')" class="btn btn-sm btn-outline-danger">
-                                              <i class="bi bi-trash"></i> Delete
+                                         <a href="/admin/order/update?id=${data}" class="btn btn-sm btn-outline-success">
+                                              <i class="bi bi-pencil-square"></i> Update
                                          </a>
                          </div > `;
                 }

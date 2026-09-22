@@ -220,6 +220,8 @@
                     console.log("Success:", response);
   
                     toastr.success(response.message || 'Added to cart successfully!',"", { positionClass: 'toast-top-right' });
+
+                    UpdateCartBadge();
                     // Optional: trigger cart badge/count update UI
                 },
                 error: function (xhr, error, code) {

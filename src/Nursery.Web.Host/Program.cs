@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Nursery.Web.Host.Services;
 using Nursery.Web.Host.Services.Interface;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,5 +99,4 @@ app.MapControllerRoute(
 app.Run();
 
 
-//stripe listen --forward - to https://localhost:7139/api/v1/payments/webhook
-//must specify events to forward using --events, --all - snapshot, or--all - thin
+//stripe listen --forward - to https://localhost:7139/api/v1/payments/webhook --all-snapshot

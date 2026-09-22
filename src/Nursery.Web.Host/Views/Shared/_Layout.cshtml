@@ -96,7 +96,7 @@
                                    asp-action="getcart">
 
                                 <i class="bi bi-cart4 fs-3"></i>
-                                <span class="fs-5 ms-1">0</span>
+                                <span class="fs-5 ms-1" id="CartCount">0</span>
                             </a>
                         }
                         else
@@ -140,6 +140,11 @@
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+     @if (CurrentUser.IsAuthenticated == true)
+        {
+        <script src="~/js/cart-count.js" asp-append-version="true"></script>
+        }
+
 
 
     @await RenderSectionAsync("Scripts", required: false)

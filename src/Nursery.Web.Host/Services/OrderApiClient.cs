@@ -11,6 +11,8 @@ using static System.Net.WebRequestMethods;
 namespace Nursery.Web.Host.Services;
 
 public record GetCartResult(CartDto Cart);
+
+public record GetCartCountResult(int Count);
 public class OrderApiClient : IOrderApiClient
 {
     private readonly HttpClient _httpClient;
@@ -33,6 +35,21 @@ public class OrderApiClient : IOrderApiClient
         }
     }
 
+
+    public async Task<int> GetCartCount(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("/api/v1/carts/cartcount", cancellationToken);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<GetCartCountResult>(cancellationToken);
+            return result?.Count ?? 0;
+        }
+        catch (Exception)
+        {
+            return 0;
+        }
+    }
 
 
     public async Task<(bool IsSuccess, string? ErrorMessage)> AddToCardAsync(Guid plantVariantid, CancellationToken cancellationToken = default)
@@ -147,6 +164,18 @@ public class OrderApiClient : IOrderApiClient
             : ApiResultModel<InitiatePaymentResponse>.Succeeded(body);
     }
 
-
-
+    public record GetAllOrderResposne(List<OrderDto> orders);
+    public async Task<List<OrderDto>?> GetAllOrderAsync(CancellationToken ct)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("/api/v1/orders/getallorders", ct);
+            response.EnsureSuccessStatusCode();
+            var result = await response.Content.ReadFromJsonAsync<GetAllOrderResposne>(ct);
+            return result?.orders ?? [];
+        }catch (Exception)
+        {
+            return null;
+        }
+    }
 }

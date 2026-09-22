@@ -8,13 +8,16 @@ public class CreatePlant : ICarterModule
     public record CreatePlantResponse(Guid Id);
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("/api/v1/plants", async (CreatePlantRequest command, ISender sender) =>
+        app.MapPost("/api/v{version:apiVersion}/plants", async (CreatePlantRequest command, ISender sender) =>
          {
              var RequestCommand = command.Adapt<CreatePlantCommand>();
              var result = await sender.Send(RequestCommand);
              var response = result.Adapt<CreatePlantResponse>();
              return Results.Ok(response);
-         }).WithName("Create Plant")
+         })
+         .WithApiVersionSet(PlantApiVersioning.VersionSet(app))
+        .MapToApiVersion(1.0)
+         .WithName("Create Plant")
          .Produces<CreatePlantResponse>(StatusCodes.Status200OK)
          .ProducesProblem(StatusCodes.Status400BadRequest)
          .WithSummary("Create Plant")
