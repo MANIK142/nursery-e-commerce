@@ -11,6 +11,7 @@ using Nursery.Orders.Application.Features.GetOrderById;
 using Nursery.Orders.Domain.ValueObjects;
 using System.Security.Claims;
 using BuildingBlocks.Common;
+using Nursery.Orders.Application.Features.GetAllOrder;
 namespace Nursery.Orders.API.Endpoints;
 
 public class OrderEndpoints : ICarterModule
@@ -26,6 +27,11 @@ public class OrderEndpoints : ICarterModule
     public record CancelOrderResponse(bool IsSuccess);
 
     public record GetOrdersByIdResponse(OrderDto Order);
+
+    public record GetAllOrderRequest(int? PageNumber, int? PageSize, Guid? Id, string? FilterBy, string? FilterValue) ;
+
+    public record GetAllOrderResponse(IEnumerable<OrderDto> Orders);
+
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group =  app.MapGroup("/api/v1/orders").WithTags("Orders");
@@ -69,6 +75,25 @@ public class OrderEndpoints : ICarterModule
         .WithSummary("Get Order By Id")
         .WithDescription("Returns a single order. Scoped to the authenticated customer — returns 404 if the order belongs to someone else.")
         .Produces<OrderDto>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound);
+
+
+        // GET /api/v1/orders/{orderId} — get a single order, scoped to the caller
+        group.MapGet("/getallorders", async ([AsParameters] GetAllOrderRequest request, ISender sender, ClaimsPrincipal user) =>
+        {
+            var customerId = user.GetCustomerId();
+            var query = request.Adapt<GetAllOrderQuery>();
+
+            var result = await sender.Send(query);
+            if (result is null)
+                return Results.NotFound();
+
+            return Results.Ok(result.Adapt<GetAllOrderResponse>());
+        })
+        .WithName("GetAllOrder")
+        .WithSummary("Get All Orders")
+        .WithDescription("Returns a single order. Scoped to the authenticated customer — returns 404 if the order belongs to someone else.")
+        .Produces<GetAllOrderResponse>(StatusCodes.Status200OK)
         .ProducesProblem(StatusCodes.Status404NotFound);
 
 

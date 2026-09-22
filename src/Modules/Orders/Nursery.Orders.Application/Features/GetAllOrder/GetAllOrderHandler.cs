@@ -2,22 +2,30 @@
 using Microsoft.EntityFrameworkCore;
 using Nursery.Orders.Application.Data;
 using Nursery.Orders.Application.Dto;
+using Nursery.Orders.Application.Features.GetAllOrder;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Nursery.Orders.Application.Features.GetOrder;
+namespace Nursery.Orders.Application.Features.GetAllOrder;
 
-public class GetAllOrderHandler(IOrdersDbContext DbContext) : ICommandHandler<GetOrderQuery, GetOrderResult>
+public class GetAllOrderHandler(IOrdersDbContext DbContext) : ICommandHandler<GetAllOrderQuery, GetAllOrderResult>
 {
-    public async Task<GetOrderResult?> Handle(GetOrderQuery request, CancellationToken cancellationToken)
+    public async Task<GetAllOrderResult?> Handle(GetAllOrderQuery request, CancellationToken cancellationToken)
     {
+
+        var pageNumber = request.PageNumber ?? 0;
+        var pageSize = request.PageSize ?? 100;
+
         var orders = await DbContext.Orders
             .AsNoTracking()
-            .Where(o => o.CustomerId == request.CustomerId)
             .Include(o => o.OrderItems)
+            .OrderByDescending(c => c.CreatedAt)
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
             .Select(o => new OrderDto
             {
+                Id = o.Id,
                 CustomerId = o.CustomerId,
                 PaymentStatus = o.PaymentStatus,
                 Status = o.Status,
@@ -36,6 +44,6 @@ public class GetAllOrderHandler(IOrdersDbContext DbContext) : ICommandHandler<Ge
 
 
 
-        return new GetOrderResult(orders);
+        return new GetAllOrderResult(orders);
     }
 }

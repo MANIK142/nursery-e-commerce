@@ -41,6 +41,8 @@ public class Order : BaseDomainModel
         }
 
         _orderItems.Add(OrderItem.Create(Id, plantVariantId, productName, unitPrice, quantity));
+
+
     }
 
     public void RemoveItem(Guid orderItemId)

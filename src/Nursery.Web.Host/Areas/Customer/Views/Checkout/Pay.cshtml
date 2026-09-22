@@ -56,7 +56,7 @@
                     @foreach (var i in Model.Order.OrderItems)
                     {
                         <li class="d-flex justify-content-between mb-2">
-                            <span>@i.PlantName @i.VariantName <span class="text-secondary">× @i.Quantity</span></span>
+                            <span>@i.ProductNameAtPurchase <span class="text-secondary">× @i.Quantity</span></span>
                             <span>@Money(i.LineTotal)</span>
                         </li>
                     }

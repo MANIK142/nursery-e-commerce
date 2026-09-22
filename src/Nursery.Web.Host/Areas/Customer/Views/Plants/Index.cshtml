@@ -5,24 +5,36 @@
 @model List<Nursery.Web.Host.Models.ViewModels.PlantCardViewModel>
 <h1>Plants</h1>
 
-<div class="row row-cols-1 row-cols-md-3 g-4">
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     @foreach (var plant in Model)
     {
         <div class="col">
-            <div class="card h-100">
-                <img src="@(plant.ImageUrl ?? "/images/placeholder.png")" class="card-img-top" alt="@plant.Name" />
-                <div class="card-body">
+            <div class="card h-100 shadow-sm">
+                <img src="@(plant.ImageUrl ?? "/images/placeholder.png")" 
+                     class="card-img-top" 
+                     alt="@plant.Name" 
+                     style="height: 200px; object-fit: cover; width: 100%;" />
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">@plant.Name</h5>
                     <p class="text-muted mb-1">@plant.Categories</p>
-                    @if (plant.SalePrice is not null)
-                    {
-                        <p><s>@plant.Currency @plant.DisplayPrice</s> <strong class="text-danger">@plant.Currency @plant.SalePrice</strong></p>
-                    }
-                    else
-                    {
-                        <p><strong>@plant.Currency @plant.DisplayPrice</strong></p>
-                    }
-                    <a asp-action="Details" asp-route-id="@plant.Id" class="btn btn-primary">View</a>
+                    
+                    <div class="mb-3">
+                        @if (plant.SalePrice is not null)
+                        {
+                            <p class="mb-0">
+                                <s>@plant.Currency @plant.DisplayPrice</s> 
+                                <strong class="text-danger">@plant.Currency @plant.SalePrice</strong>
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-0">
+                                <strong>@plant.Currency @plant.DisplayPrice</strong>
+                            </p>
+                        }
+                    </div>
+
+                    <a asp-action="Details" asp-route-id="@plant.Id" class="btn btn-primary mt-auto">View</a>
                 </div>
             </div>
         </div>

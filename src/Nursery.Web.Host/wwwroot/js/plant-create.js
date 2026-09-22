@@ -27,6 +27,7 @@
     });
 
     document.getElementById('addVariantBtn')?.addEventListener('click', () => {
+        console.log("Clicked!!!");
         const nextIdx = variantsContainer.querySelectorAll('.variant-card').length;
         const html = variantTemplate
             .replace(/__VAR_IDX__/g, nextIdx)

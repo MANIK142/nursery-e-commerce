@@ -26,6 +26,7 @@ public class PaymentEndpoints : ICarterModule
 
         group.MapPost("initiate", InitiatePayment).WithSummary("Initiate Payment").Produces<IResult>().RequireAuthorization();
         group.MapPost("{paymentId:guid}/retry", RetryPayment).WithSummary("Retry Payment").Produces<IResult>().RequireAuthorization();
+
         group.MapPost("webhook", HandleStripeWebhook)
           .WithSummary("Stripe webhook receiver")
           .AllowAnonymous()
