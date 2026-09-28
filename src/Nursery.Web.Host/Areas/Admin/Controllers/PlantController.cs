@@ -6,6 +6,7 @@ using Nursery.Web.Host.Models.DTOs;
 using Nursery.Web.Host.Models.ViewModels;
 using Nursery.Web.Host.Models.ViewModels.Plants;
 using Nursery.Web.Host.Services.Interface;
+using System.Globalization;
 using System.Numerics;
 
 
@@ -17,9 +18,12 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
     {
         private readonly ICatalogApiClient _catalogApiClient;
 
-        public PlantController(ICatalogApiClient catalogApiClient)
+        public IConfiguration _configuration { get; }
+
+        public PlantController(ICatalogApiClient catalogApiClient,IConfiguration configuration)
         {
             this._catalogApiClient = catalogApiClient;
+            this._configuration = configuration;
         }
         [AllowAnonymous]
         public IActionResult Index()
@@ -294,8 +298,10 @@ namespace Nursery.Web.Host.Areas.Admin.Controllers
             streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
 
             content.Add(streamContent, "file", file.FileName);
+            string baseUrl = _configuration.GetValue<string>("ApiSettings:BaseUrl");  
+            string targetUrl = $"{baseUrl}api/v1/images/upload";
 
-            var apiResponse = await client.PostAsync("https://localhost:7139/api/v1/images/upload", content);
+            var apiResponse = await client.PostAsync(targetUrl, content);
             var responseBody = await apiResponse.Content.ReadAsStringAsync();
 
             return StatusCode((int)apiResponse.StatusCode, responseBody);

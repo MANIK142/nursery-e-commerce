@@ -1,0 +1,58 @@
+services:
+  minio:
+    image: alpine/minio:RELEASE.2025-10-15T17-29-55Z
+
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio-data:/data
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: nursery-jaeger
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC receiver
+      - "4318:4318"     # OTLP HTTP receiver
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: nursery-prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: nursery-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  nursery.api.host:
+    image: ${DOCKER_REGISTRY-}nurseryapihost
+    build:
+      context: ..
+      dockerfile: src/Nursery.Api.Host/Dockerfile
+
+  nursery.web.host:
+    image: ${DOCKER_REGISTRY-}nurserywebhost
+    build:
+      context: ..
+      dockerfile: src/Nursery.Web.Host/Dockerfile
+
+volumes:
+  minio-data:
+  grafana-data:
+

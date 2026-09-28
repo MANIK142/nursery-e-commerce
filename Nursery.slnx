@@ -1,4 +1,13 @@
 <Solution>
+  <Folder Name="/deploy/">
+    <Project Path="deploy/docker-compose.dcproj" Id="81dded9d-158b-e303-5f62-77a2896d2a5a">
+      <Build />
+    </Project>
+  </Folder>
+  <Folder Name="/deploy/k8s/">
+    <File Path="00-namespace.yml" />
+    <File Path="secrets.yml" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Nursery.Api.Host/Nursery.Api.Host.csproj" Id="30cc42c1-87e4-450c-86ad-6c4977cc3038" />
     <Project Path="src/Nursery.Web.Host/Nursery.Web.Host.csproj" Id="4b014ed5-038f-446b-aad6-ee45946ac786" />
@@ -39,7 +48,4 @@
     <Project Path="src/Modules/Shippings/Nursery.Shippings.Domain/Nursery.Shippings.Domain.csproj" Id="1e36b3c7-350e-4587-839a-008e512c6e3b" />
     <Project Path="src/Modules/Shippings/Nursery.Shippings.Infrastucture/Nursery.Shippings.Infrastucture.csproj" Id="8871ac29-e9ec-4ca7-a8b2-83556f7c5371" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
 </Solution>

@@ -15,12 +15,14 @@ public class PlantsController : Controller
     private readonly ICatalogApiClient _catalogApi;
     private readonly IOrderApiClient _OrderApi;
     private readonly string _imageBaseUrl;
+    private readonly IHttpClientFactory _clientFactory;
 
-    public PlantsController(ICatalogApiClient catalogApi, IOrderApiClient orderApi, IConfiguration config)
+    public PlantsController(ICatalogApiClient catalogApi, IOrderApiClient orderApi, IConfiguration config, IHttpClientFactory clientFactory)
     {
         _catalogApi = catalogApi;
         _imageBaseUrl = config["ImageBaseUrl"] ?? "";
         _OrderApi = orderApi;
+        _clientFactory = clientFactory;
     }
 
 
@@ -38,8 +40,29 @@ public class PlantsController : Controller
         var plant = await _catalogApi.GetPlantByIdAsync(id, ct);
         if (plant is null) return NotFound();
 
-        ViewData["baseUrl"] = _imageBaseUrl;
+        ViewData["baseUrl"] = "/customer/plants/GetImage/";
         return View(plant);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("/customer/plants/GetImage/{path}")]
+    public async Task<IActionResult> GetImage(string path)
+    {
+        var client = _clientFactory.CreateClient();
+        // nursery.api.host is accessible internally from this container
+
+        string internalUrl = $"{_imageBaseUrl}/{path}";
+
+        var response = await client.GetAsync(internalUrl, HttpCompletionOption.ResponseHeadersRead);
+        if (!response.IsSuccessStatusCode)
+        {
+            return StatusCode((int)response.StatusCode);
+        }
+
+        var contentType = response.Content.Headers.ContentType?.MediaType ?? "image/jpeg";
+        var stream = await response.Content.ReadAsStreamAsync();
+
+        return File(stream, contentType);
     }
 
 

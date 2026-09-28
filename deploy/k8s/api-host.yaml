@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nursery-api-host
+  namespace: nursery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nursery-api-host
+  template:
+    metadata:
+      labels:
+        app: nursery-api-host
+    spec:
+      containers:
+        - name: nursery-api-host
+          image: nursery-api-host:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Development"
+            - name: Jwt__Issuer
+              value: "NurserySystem"
+            - name: Jwt__Audience
+              value: "NurseryClients"
+            - name: OpenTelemetry__OtlpEndpoint
+              value: "http://jaeger:4317"
+
+            - name: Storage_Local__BasePath
+              value: "plant/images"
+            - name: Storage_Local__BaseUrl
+              value: "http://nursery-api-host:8080/"
+
+            - name: ConnectionStrings__catalogDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: CATALOG_DB_CONNECTION }
+            - name: ConnectionStrings__IdentityDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: IDENTITY_DB_CONNECTION }
+            - name: ConnectionStrings__CustomerDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: CUSTOMER_DB_CONNECTION }
+            - name: ConnectionStrings__OrdersDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: ORDERS_DB_CONNECTION }
+            - name: ConnectionStrings__PaymentDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: PAYMENT_DB_CONNECTION }
+            - name: ConnectionStrings__ShippingDb
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: SHIPPING_DB_CONNECTION }
+
+            - name: Jwt__Key
+              valueFrom:
+                secretKeyRef: { name: nursery-secrets, key: JWT_KEY }
+
+            - name: Stripe__SecretKey
+              valueFrom:
+                secretKeyRef: { name: nursery-secrets, key: STRIPE_SECRET_KEY }
+            - name: Stripe__WebhookSecret
+              valueFrom:
+                secretKeyRef:
+                  { name: nursery-secrets, key: STRIPE_WEBHOOK_SECRET }
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          readinessProbe:
+            httpGet: { path: /health/ready, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health/live, port: 8080 }
+            initialDelaySeconds: 15
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nursery-api-host
+  namespace: nursery
+spec:
+  selector:
+    app: nursery-api-host
+  ports:
+    - port: 8080
+      targetPort: 8080

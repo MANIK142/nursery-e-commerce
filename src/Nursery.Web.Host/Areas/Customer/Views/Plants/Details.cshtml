@@ -20,7 +20,7 @@
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
             <div class="position-relative bg-light d-flex align-items-center justify-content-center" style="height: 420px;">
                 <img id="mainVariantImage"
-                     src="@(primaryImage != null ? $"{baseUrl}{primaryImage.StorageKey}" : "/images/placeholder-plant.png")"
+                     src="@(primaryImage != null ? $"{baseUrl}{primaryImage.StorageKey.Split('/').Last()}" : "/images/placeholder-plant.png")"
                      alt="@(primaryImage?.AltText ?? Model.Name)"
                      class="img-fluid h-100 w-100 object-fit-contain p-3 transition-all" />
             </div>
@@ -30,7 +30,7 @@
         <div class="d-flex gap-2 overflow-x-auto pb-2" id="variantThumbnailContainer">
             @foreach (var img in defaultImages)
             {
-                var fullUrl = $"{baseUrl}{img.StorageKey}";
+                var fullUrl = $"{baseUrl}{img.StorageKey.Split('/').Last()}";
                 <button type="button"
                         class="btn p-0 border rounded-3 overflow-hidden thumbnail-btn @(img == primaryImage ? "border-success border-2" : "border-light-subtle")"
                         style="width: 72px; height: 72px;"

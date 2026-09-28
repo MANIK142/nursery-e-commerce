@@ -7,30 +7,22 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# curl needed for the HEALTHCHECK below — aspnet base image doesn't include it by default
-USER root
-RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
-USER $APP_UID
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8080/health/live || exit 1
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY . .
-RUN dotnet restore "./src/Nursery.Api.Host/Nursery.Api.Host.csproj"
-WORKDIR "/src/src/Nursery.Api.Host"
-RUN dotnet build "./Nursery.Api.Host.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet restore "./src/Nursery.Web.Host/Nursery.Web.Host.csproj"
+WORKDIR "/src/src/Nursery.Web.Host"
+RUN dotnet build "./Nursery.Web.Host.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Nursery.Api.Host.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Nursery.Web.Host.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Nursery.Api.Host.dll"]
+ENTRYPOINT ["dotnet", "Nursery.Web.Host.dll"]

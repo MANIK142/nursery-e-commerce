@@ -1,4 +1,5 @@
 ﻿using Nursery.Web.Host.Models.DTOs.Catalog;
+using System.Numerics;
 
 namespace Nursery.Web.Host.Models.ViewModels;
 
@@ -24,10 +25,13 @@ public static class PlantMappingExtensions
         var primaryImage = plant.PlantImages.FirstOrDefault(i => i.IsPrimaryImage)
             ?? plant.PlantImages.FirstOrDefault();
 
+        //string fileName = Path.GetFileName(primaryImage.StorageKey);
+        string urlPart = "/customer/plants/GetImage/";
+        
         return new PlantCardViewModel(
             Id: plant.Id,
             Name: plant.Name,
-            ImageUrl: primaryImage is not null ? $"{imageBaseUrl.TrimEnd('/')}/{primaryImage.StorageKey}" : null,
+            ImageUrl: primaryImage is not null ? $"{urlPart.TrimEnd('/')}/{Path.GetFileName(primaryImage.StorageKey)}" : null,
             DisplayPrice: primaryVariant?.RetailPrice.Amount ?? 0,
             SalePrice: activeSale?.Amount,
             Currency: primaryVariant?.RetailPrice.Currency ?? "INR",

@@ -1,0 +1,53 @@
+
+services:
+  nursery.api.host:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+
+      - ConnectionStrings__catalogDb=${CATALOG_DB_CONNECTION}
+      - ConnectionStrings__IdentityDb=${IDENTITY_DB_CONNECTION}
+      - ConnectionStrings__CustomerDb=${CUSTOMER_DB_CONNECTION}
+      - ConnectionStrings__OrdersDb=${ORDERS_DB_CONNECTION}
+      - ConnectionStrings__PaymentDb=${PAYMENT_DB_CONNECTION}
+      - ConnectionStrings__ShippingDb=${SHIPPING_DB_CONNECTION}
+
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+
+      - Stripe__SecretKey=${STRIPE_SECRET_KEY}
+      - Stripe__WebhookSecret=${STRIPE_WEBHOOK_SECRET}
+
+      - Storage_Local__BasePath=${STORAGE_LOCAL_BASEPATH}
+      - Storage_Local__BaseUrl=${STORAGE_LOCAL_BASEURL}
+  
+
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
+    ports:
+      - "8080"
+      - "8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  nursery.web.host:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ApiSettings__BaseUrl=http://nursery.api.host:8080/
+      - ImageBaseUrl=http://nursery.api.host:8080/plant/images/nursery/uploads
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
+      - Stripe__PublishableKey=pk_test_51UFG6QQmL7TznnEWijOdaHfCVsIRwXKnBe0O7Ohd9i0HJhZMBRQI4WvMaa9Y7mBN5nX4t0AsrVYQ3J2QfCw8AxbZ00iIEWHiJJ
+    ports:
+      - "8080"
+      - "8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

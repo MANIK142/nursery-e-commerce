@@ -22,7 +22,7 @@ public class CheckoutController(IConfiguration configuration, ICheckoutApi check
 
     private readonly string _stripePublishableKey = configuration["Stripe:PublishableKey"].ToString();
 
-    public string ImageBaseUrl = configuration["ImageBaseUrl"].ToString();
+    public string ImageBaseUrl = "/customer/plants/GetImage/";
 
     [HttpGet]
     public async Task<IActionResult> Index(CancellationToken _cancellationToken)
@@ -135,7 +135,7 @@ public class CheckoutController(IConfiguration configuration, ICheckoutApi check
                         VariantName = plantVariant.VariantName,
                         PlantName = plantVariant.VariantName,
                         UnitPrice = plantVariant.Price.Amount,
-                        ImageUrl = $"{ImageBaseUrl}{plantVariant.Images.FirstOrDefault().StorageKey}"
+                        ImageUrl = $"{ImageBaseUrl}{plantVariant.Images.FirstOrDefault().StorageKey.Split('/').Last()}"
                     };
                     model.Items.Add(checkoutViewModel);
 

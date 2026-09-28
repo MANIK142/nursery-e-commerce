@@ -1,0 +1,52 @@
+# k8s/web-host.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nursery-web-host
+  namespace: nursery
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nursery-web-host
+  template:
+    metadata:
+      labels:
+        app: nursery-web-host
+    spec:
+      containers:
+        - name: nursery-web-host
+          image: nursery-web-host:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Docker"
+            - name: ApiSettings__BaseUrl
+              value: "http://nursery-api-host:8080/"
+            - name: ImageBaseUrl
+              value: "http://nursery-api-host:8080/plant/images/nursery/"
+            - name: OpenTelemetry__OtlpEndpoint
+              value: "http://jaeger:4317"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nursery-web-host
+  namespace: nursery
+spec:
+  type: LoadBalancer # exposes it to your host machine's localhost
+  selector:
+    app: nursery-web-host
+  ports:
+    - port: 8080
+      targetPort: 8080

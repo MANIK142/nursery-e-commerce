@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'nursery-api-host'
+    static_configs:
+      - targets: ['host.docker.internal:7139']   # adjust if running http profile instead
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true   # dev cert only — never do this in prod
+    metrics_path: /metrics

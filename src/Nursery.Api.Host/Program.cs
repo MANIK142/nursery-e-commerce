@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Nursery.Api.Host;
 using Nursery.Catalog.Api.Extensions;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 using Nursery.Identity;
@@ -26,8 +27,11 @@ using Nursery.Payment.Api.Persistance;
 using Nursery.Shippings.API;
 using Nursery.Shippings.Application.Data;
 using Nursery.Shippings.Infrastucture.Presistance.Context;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Serilog;
+using Serilog.Enrichers.Span;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -37,8 +41,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services));
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .Enrich.WithSpan());
 
+
+
+builder.Services.AddNurseryObservability(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(Nursery.Identity.IdentityExtensions).Assembly)
@@ -100,8 +109,17 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<ShippingDbContext>("Nursery.ShippingDb", tags: ["ready"]);
 
 
+
+
+
 var app = builder.Build();
 
+
+app.UseExceptionHandler(options => { });
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCorrelationId();
 //app.UseSerilogRequestLogging();
 app.UseSerilogRequestLogging(options =>
@@ -119,23 +137,36 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
+app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 app.MapCarter();
-app.UseExceptionHandler(options => { });
-app.UseHttpsRedirection();
-
-
 
 app.MapControllers();
+app.MapPrometheusScrapingEndpoint();
+// var basePath = builder.Configuration.GetValue<string>("Storage_Local:BasePath");
 
-var basePath = builder.Configuration.GetValue<string>("Storage_Local:BasePath");
+var basePath = builder.Configuration.GetValue<string>("Storage_Local:BasePath") ?? "plant/images";
+
+// 1. Clean the path: replace backslashes and strip all leading/trailing slashes
+var cleanPath = basePath.Replace('\\', '/').Trim('/');
+
+// 2. Physical directory path on the container's disk
+var fullPath = Path.Combine(builder.Environment.ContentRootPath, cleanPath);
+
+if (!Directory.Exists(fullPath))
+{
+    Directory.CreateDirectory(fullPath);
+}
+var requestPath = string.IsNullOrWhiteSpace(cleanPath) ? "" : $"/{cleanPath}";
+
 app.UseStaticFiles(new StaticFileOptions
 {
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, basePath)),
-    RequestPath = $"/{basePath}"
+    FileProvider = new PhysicalFileProvider(fullPath),
+    RequestPath = new PathString(requestPath)
 });
 
 app.UseStaticFiles(new StaticFileOptions
@@ -172,5 +203,7 @@ app.MapHealthChecks("/health/ready", new HealthCheckOptions
         await context.Response.WriteAsync(result);
     }
 });
+
+
 
 app.Run();
