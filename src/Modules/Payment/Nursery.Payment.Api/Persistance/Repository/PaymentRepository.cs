@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Nursery.Payment.Api.Contracts;
+using Nursery.Payment.Api.Models;
 
 namespace Nursery.Payment.Api.Persistance.Repository;
 
@@ -26,6 +27,13 @@ public class PaymentRepository(PaymentDbContext context) : IPaymentRepository
         await context.Payments.AddAsync(payment, ct);
         await context.SaveChangesAsync(ct);
     }
+
+    public async Task AddOutboxMessageAsync(OutboxMessage outboxMessage, CancellationToken ct)
+    {
+        await context.OutboxMessages.AddAsync(outboxMessage, ct);
+        await context.SaveChangesAsync(ct);
+    }
+
 
     public async Task UpdateAsync(Models.Payment payment, CancellationToken ct)
     {

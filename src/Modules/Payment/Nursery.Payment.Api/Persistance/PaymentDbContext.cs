@@ -18,8 +18,10 @@ public class PaymentDbContext : DbContext, IPaymentbContext
     public DbSet<Models.Payment> Payments => Set<Models.Payment>();
 
     public DbSet<PaymentAttempt> PaymentAttempts => Set<PaymentAttempt>();
-
     public DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents => Set<ProcessedWebhookEvent>();
+
+    public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<ProcessedMessage> ProcessedMessages => Set<ProcessedMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

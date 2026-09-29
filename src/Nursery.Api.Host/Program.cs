@@ -24,6 +24,7 @@ using Nursery.Orders.Infrastructure.Persistance.Repository;
 using Nursery.Payment.Api;
 using Nursery.Payment.Api.Contracts;
 using Nursery.Payment.Api.Persistance;
+using Nursery.Payment.Api.Services;
 using Nursery.Shippings.API;
 using Nursery.Shippings.Application.Data;
 using Nursery.Shippings.Infrastucture.Presistance.Context;
@@ -64,6 +65,8 @@ builder.Services.AddCarter();
 
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
+
+builder.Services.AddHostedService<OutboxPublisherService>();
 
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>

@@ -12,4 +12,5 @@ public interface IOrdersDbContext
 
     DbSet<Order> Orders { get; }
     DbSet<OrderItem> OrderItems { get; }
+    DbSet<ProcessedMessage> ProcessedMessages { get; }
 }

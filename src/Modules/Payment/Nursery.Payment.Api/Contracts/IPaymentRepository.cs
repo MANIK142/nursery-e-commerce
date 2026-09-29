@@ -1,4 +1,6 @@
-﻿namespace Nursery.Payment.Api.Contracts;
+﻿using Nursery.Payment.Api.Models;
+
+namespace Nursery.Payment.Api.Contracts;
 
 public interface IPaymentRepository
 {
@@ -7,4 +9,6 @@ public interface IPaymentRepository
     Task<Models.Payment?> GetByGatewayPaymentIntentIdAsync(string gatewayPaymentIntentId, CancellationToken ct);
     Task AddAsync(Models.Payment payment, CancellationToken ct);
     Task UpdateAsync(Models.Payment payment, CancellationToken ct);
+
+    Task AddOutboxMessageAsync(OutboxMessage outboxMessage, CancellationToken ct);
 }

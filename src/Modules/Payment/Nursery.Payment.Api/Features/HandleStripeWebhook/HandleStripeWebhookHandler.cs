@@ -3,6 +3,11 @@ using BuildingBlocks.Common.IntegrationEvents;
 using MediatR;
 using Nursery.Payment.Api.Contracts;
 using Nursery.Payment.Api.Enums;
+using Nursery.Payment.Api.Models;
+using Nursery.Payment.Api.Persistance.Repository;
+using Stripe.Climate;
+using Stripe.V2;
+using System.Text.Json;
 
 namespace Nursery.Payment.Api.Features.HandleStripeWebhook;
 
@@ -52,12 +57,34 @@ public class HandleStripeWebhookHandler(
 
         if (payment.Status is PaymentStatus.Succeeded)
         {
-            await publisher.Publish(new PaymentSucceededNotification(payment.OrderId, payment.Id), ct);
+
+            var outboxMessage = new OutboxMessage
+            {
+                Id = Guid.NewGuid(),
+                Type = "payment.success",
+                Content = JsonSerializer.Serialize(new PaymentSucceededNotification(payment.OrderId, payment.Id)),
+                OccurredOnUtc = DateTime.UtcNow
+            };
+
+            await paymentRepository.AddOutboxMessageAsync(outboxMessage, ct);
+
+            //await publisher.Publish(new PaymentSucceededNotification(payment.OrderId, payment.Id), ct);
         }
         else if (payment.Status is PaymentStatus.Failed)
         {
-            await publisher.Publish(
-                new PaymentFailedNotification(payment.OrderId, payment.Id, request.FailureReason ?? "Payment failed"), ct);
+
+            var outboxMessage = new OutboxMessage
+            {
+                Id = Guid.NewGuid(),
+                Type = "payment.failed",
+                Content = JsonSerializer.Serialize(new PaymentFailedNotification(payment.OrderId, payment.Id, request.FailureReason ?? "Payment failed")),
+                OccurredOnUtc = DateTime.UtcNow
+            };
+
+            await paymentRepository.AddOutboxMessageAsync(outboxMessage, ct);
+
+            //await publisher.Publish(
+            //    new PaymentFailedNotification(payment.OrderId, payment.Id, request.FailureReason ?? "Payment failed"), ct);
         }
 
         return true;

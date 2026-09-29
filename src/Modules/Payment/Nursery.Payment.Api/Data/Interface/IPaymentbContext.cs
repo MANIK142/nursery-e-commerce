@@ -7,4 +7,6 @@ public interface IPaymentbContext
     DbSet<Nursery.Payment.Api.Models.Payment> Payments { get; }
     DbSet<PaymentAttempt> PaymentAttempts { get; }
     DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents { get; }
+     DbSet<OutboxMessage> OutboxMessages { get; }
+     DbSet<ProcessedMessage> ProcessedMessages { get; }
 }
