@@ -1,13 +1,14 @@
+using BuildingBlocks.Common.Middleware;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Nursery.Web.Host.Auth;
 using Nursery.Web.Host.Extensions;
 using Nursery.Web.Host.Services;
 using Nursery.Web.Host.Services.Interface;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Serilog;
 using Serilog.Enrichers.Span;
-using BuildingBlocks.Common.Middleware;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,12 +19,12 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.FromLogContext()
     .Enrich.WithSpan());
 
-
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ITokenRefresher, TokenRefresher>();
 
 builder.Services.AddTransient<JwtForwardingHandler>();
 
@@ -82,6 +83,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
         options.Cookie.SameSite = SameSiteMode.Lax; // or Strict, depending on cross-site needs
         options.Cookie.Name = "Nursery.Auth";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);   // match the API's refresh-token lifetime
+        options.SlidingExpiration = false;
+        options.Events.OnValidatePrincipal = TokenRefreshEvents.ValidatePrincipalAsync;
 
     });
 

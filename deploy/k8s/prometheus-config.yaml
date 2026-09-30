@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: nursery
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'nursery-api-host'
+        static_configs:
+          - targets: ['nursery-api-host:8080']   # see note below
+        scheme: http
+        tls_config:
+          insecure_skip_verify: true   # dev cert only, never in prod
+        metrics_path: /metrics

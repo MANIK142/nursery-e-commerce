@@ -4,6 +4,7 @@ using BuildingBlocks.Common.IntegrationEvents;
 using BuildingBlocks.Common.SharedContracts;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
@@ -11,6 +12,9 @@ using Microsoft.AspNetCore.Mvc;
 using Nursery.Identity.Models.Domain;
 using Nursery.Identity.Models.DTO;
 using Nursery.Identity.Repository;
+using Nursery.Identity.Services;
+using System.Security.Cryptography;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 
 namespace Nursery.Identity.Controllers
 {
@@ -22,22 +26,33 @@ namespace Nursery.Identity.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IValidator<RegisterRequestDto> _registerValidator;
         private readonly IValidator<LoginRequestDto> _loginValidator;
+        private readonly IValidator<RefreshTokenRequestDto> _refreshValidator;
         private readonly IMediator mediator;
         public ICustomerLookup CustomerLookup { get; }
         public ITokenRepository TokenRepository { get; }
-       
+        public IConfiguration Configuration { get; }
+        private readonly IAuthTokenService tokenService;
+        private readonly IRefreshTokenRepository refreshTokens;
+
         public AuthController(UserManager<ApplicationUser> userManager, 
             IValidator<RegisterRequestDto> registerValidator,
             IValidator<LoginRequestDto> loginValidator,
+             IValidator<RefreshTokenRequestDto> refreshValidator,
             ICustomerLookup customerLookup,
-            ITokenRepository tokenRepository,IMediator mediator)
+            ITokenRepository tokenRepository,IMediator mediator,IConfiguration configuration,
+             IAuthTokenService tokenService,
+            IRefreshTokenRepository refreshTokens)
         {
             this.userManager = userManager;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            _refreshValidator = refreshValidator;
             CustomerLookup = customerLookup;
             TokenRepository = tokenRepository;
             this.mediator = mediator;
+            Configuration = configuration;
+            this.tokenService = tokenService;
+            this.refreshTokens = refreshTokens;
         }
         [HttpPost]
         [Route("Register")]
@@ -114,13 +129,8 @@ namespace Nursery.Identity.Controllers
 
                     if (roles != null)
                     {
-                        var customerId = await CustomerLookup.GetCustomerIdByExternalUserIdAsync(user.Id, HttpContext.RequestAborted);
-                        var jwtToken = TokenRepository.CreateJWTToken(user, customerId, roles.ToList());
-                        var response = new LoginResponseDto
-                        {
-                            JwtToken = jwtToken
-                        };
-
+                        var response = await tokenService.IssueAsync(user, Guid.NewGuid(), DateTime.UtcNow, HttpContext.RequestAborted);
+                        await refreshTokens.SaveChangesAsync(HttpContext.RequestAborted);
                         return Ok(response);
                     }
                 }
@@ -128,6 +138,49 @@ namespace Nursery.Identity.Controllers
 
             throw new BadHttpRequestException("User/Password not valid");
         }
+
+
+        [HttpPost]
+        [Route("Refresh")]
+        [AllowAnonymous]   // the access token is already expired when this is called
+        [ActionName("Refresh Token")]
+        [EndpointSummary("Refresh Token")]
+        [ProducesResponseType(typeof(LoginResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<LoginResponseDto>> Refresh([FromBody] RefreshTokenRequestDto request)
+        {
+            var validationResult = await _refreshValidator.ValidateAsync(request, HttpContext.RequestAborted);
+            if (!validationResult.IsValid)
+                throw new FluentValidation.ValidationException(validationResult.Errors);
+
+            var result = await tokenService.RefreshTokenAsync(request.RefreshToken, HttpContext.RequestAborted);
+
+            return result is null
+                ? Problem(title: "Invalid refresh token", statusCode: StatusCodes.Status401Unauthorized)
+                : Ok(result);
+        }
+
+        [HttpPost]
+        [Route("Logout")]
+        [AllowAnonymous]   // authenticated by possession of the refresh token
+        [ActionName("Logout User")]
+        [EndpointSummary("Logout User")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> Logout([FromBody] RefreshTokenRequestDto request)
+        {
+            var validationResult = await _refreshValidator.ValidateAsync(request, HttpContext.RequestAborted);
+            if (!validationResult.IsValid)
+                throw new FluentValidation.ValidationException(validationResult.Errors);
+
+            var existing = await refreshTokens.GetByHashAsync(
+                RefreshTokenGenerator.Hash(request.RefreshToken), HttpContext.RequestAborted);
+
+            if (existing is not null)
+                await refreshTokens.RevokeFamilyAsync(existing.FamilyId, DateTime.UtcNow, HttpContext.RequestAborted);
+
+            return NoContent();   // same response whether or not the token existed
+        }
+
     }
     
 }

@@ -36,12 +36,20 @@ namespace Nursery.Web.Host.Areas.Identity.Controllers
             };
             var result = await _identityApi.LoginAync(request, ct);
 
+          
+
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.Error ?? "Login failed.");
                 return View(loginVM);
             }
+
+            var tokens = result.Response;
             var jwt = result.Response!.jwtToken; // adjust to your LoginResponse property name
+            var refreshToken = result.Response!.RefreshToken;
+            var ExpriesAtUtc = result.Response!.ExpiresAtUtc;
+
+
             var handler = new JwtSecurityTokenHandler();
             var token = handler.ReadJwtToken(jwt);
 
@@ -53,7 +61,15 @@ namespace Nursery.Web.Host.Areas.Identity.Controllers
                 IsPersistent = loginVM.RememberMe,
                 ExpiresUtc = token.ValidTo
             };
-            authProperties.StoreTokens(new[] { new AuthenticationToken { Name = "access_token", Value = jwt } });
+
+
+            authProperties.StoreTokens(new[]
+        {
+                new AuthenticationToken { Name = AuthTokenNames.AccessToken,  Value = tokens.jwtToken },
+                new AuthenticationToken { Name = AuthTokenNames.RefreshToken, Value = tokens.RefreshToken },
+                new AuthenticationToken { Name = AuthTokenNames.ExpiresAt,    Value = tokens.ExpiresAtUtc.ToString("o") }
+            });
+
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
@@ -73,6 +89,14 @@ namespace Nursery.Web.Host.Areas.Identity.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
+            var refreshToken = await HttpContext.GetTokenAsync(AuthTokenNames.RefreshToken);
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                try { await _identityApi.LogoutAsync(refreshToken, HttpContext.RequestAborted); }   // revokes the token family server-side
+                catch (HttpRequestException) { /* best effort: still sign out locally if the API is down */ }
+            }
+
+
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home", new { area = "Customer" });
         }
@@ -83,4 +107,11 @@ namespace Nursery.Web.Host.Areas.Identity.Controllers
         }
     }
 
+}
+
+public static class AuthTokenNames
+{
+    public const string AccessToken = "access_token";
+    public const string RefreshToken = "refresh_token";
+    public const string ExpiresAt = "expires_at";
 }

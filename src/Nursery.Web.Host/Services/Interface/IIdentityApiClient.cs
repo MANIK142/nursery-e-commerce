@@ -8,4 +8,7 @@ public interface IIdentityApiClient
     Task<ApiResultModel<LoginResponse>?> LoginAync(LoginRequest loginRequest,CancellationToken ct);
 
     Task<ApiResultModel<RegisterResponse>?> RegisterAsync(RegisterRequest registerRequest, CancellationToken ct);
+
+    Task<LoginResponse?> RefreshAsync(string refreshToken, CancellationToken ct);
+    Task LogoutAsync(string refreshToken, CancellationToken ct);
 }

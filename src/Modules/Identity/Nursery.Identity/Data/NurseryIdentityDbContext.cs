@@ -4,17 +4,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Nursery.Identity.Models.Domain;
+using System.Data;
 
 namespace Nursery.Identity.Data;
 
 public class NurseryIdentityDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IPublisher _publisher;
-
     public NurseryIdentityDbContext(DbContextOptions<NurseryIdentityDbContext> options,IPublisher publisher):base (options)
     {
         this._publisher = publisher;
     }
+
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BuildingBlocks.Common.SharedContracts;
+using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Nursery.Identity.Data;
 using Nursery.Identity.Models.Domain;
 using Nursery.Identity.Repository;
+using Nursery.Identity.Services;
 using System.Reflection;
-using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BuildingBlocks.Common.SharedContracts;
 namespace Nursery.Identity;
 
 public static class IdentityExtensions
@@ -35,7 +36,9 @@ public static class IdentityExtensions
         .AddEntityFrameworkStores<NurseryIdentityDbContext>();
 
         services.AddScoped<ITokenRepository, TokenRepository>();
-      
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<IAuthTokenService, AuthTokenService>();
+
         int validityInSeconds = 10;
         if (int.TryParse(configuration["Jwt:ValidityInSeconds"], out int validity))
         {

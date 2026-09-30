@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Nursery.Identity.Data;
 
@@ -11,9 +12,11 @@ using Nursery.Identity.Data;
 namespace Nursery.Identity.Migrations
 {
     [DbContext(typeof(NurseryIdentityDbContext))]
-    partial class NurseryIdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260928071226_RefreshTokenAdded")]
+    partial class RefreshTokenAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

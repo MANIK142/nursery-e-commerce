@@ -8,6 +8,8 @@ public class LoginRequest
 public class LoginResponse
 {
     public string jwtToken { get; set; }
+    public string RefreshToken { get; set; } = default!;
+    public DateTime ExpiresAtUtc { get; set; } = default!;
 }
 
 public record LoginResult(bool IsSuccess, LoginResponse? Response, string? Error)
