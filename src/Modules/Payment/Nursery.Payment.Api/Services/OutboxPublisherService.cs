@@ -31,6 +31,8 @@ public class OutboxPublisherService :BackgroundService
             durable: true,
             cancellationToken: stoppingToken);
 
+
+
         while (!stoppingToken.IsCancellationRequested)
         {
             using var scope = _scopeFactory.CreateScope();
@@ -56,7 +58,7 @@ public class OutboxPublisherService :BackgroundService
                     var props = new BasicProperties
                     {
                         MessageId = message.Id.ToString(),
-                        DeliveryMode = DeliveryModes.Persistent, // delivery_mode = 2
+                        DeliveryMode = DeliveryModes.Persistent, 
                         ContentType = "application/json"
                     };
 
@@ -80,6 +82,7 @@ public class OutboxPublisherService :BackgroundService
             }
 
             await dbContext.SaveChangesAsync(stoppingToken);
+            await Task.Delay(1000, stoppingToken);
         }
     }
 }

@@ -16,19 +16,11 @@ public class OrderProcessingWorker : BackgroundService
 {
     private readonly IConnection _connection;
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly IOrderRepository _orderRepository;
-    public ICartRepository _cartRepository { get; }
-
-    public OrderProcessingWorker(IConnection connection, IServiceScopeFactory scopeFactory,ICartRepository cartRepository,IOrderRepository orderRepository)
+    public OrderProcessingWorker(IConnection connection, IServiceScopeFactory scopeFactory)
     {
         _connection = connection;
         _scopeFactory = scopeFactory;
-        _cartRepository = cartRepository;
-        _orderRepository = orderRepository;
     }
-
-
-
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var channel = await _connection.CreateChannelAsync(cancellationToken: stoppingToken);
@@ -47,15 +39,23 @@ public class OrderProcessingWorker : BackgroundService
             ["x-delivery-limit"] = 3 // Quorum queue maximum delivery attempts
         };
 
-        await channel.QueueDeclareAsync(
-            queue: "orders.fulfillment",
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: queueArgs,
-            cancellationToken: stoppingToken);
+        await channel.ExchangeDeclareAsync(
+                                    exchange: "paymentstatus.exchange",
+                                    type: ExchangeType.Direct,
+                                    durable: true,
+                                    autoDelete: false,
+                                    cancellationToken: stoppingToken);
 
-        await channel.QueueBindAsync("orders.fulfillment", "orders.exchange", "order.created", cancellationToken: stoppingToken);
+        await channel.QueueDeclareAsync(
+                        queue: "orders.fulfillment",
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: queueArgs,
+                        cancellationToken: stoppingToken);
+
+        await channel.QueueBindAsync("orders.fulfillment", "paymentstatus.exchange", "payment.success", cancellationToken: stoppingToken);
+        await channel.QueueBindAsync("orders.fulfillment", "paymentstatus.exchange", "payment.failed", cancellationToken: stoppingToken);
 
         // 3. Set Fair Dispatching (Prefetch QoS)
         await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 10, global: false, cancellationToken: stoppingToken);
@@ -66,6 +66,7 @@ public class OrderProcessingWorker : BackgroundService
         {
             var deliveryTag = ea.DeliveryTag;
             var messageIdStr = ea.BasicProperties.MessageId;
+            var routingKey = ea.RoutingKey;
 
             if (!Guid.TryParse(messageIdStr, out var messageId))
             {
@@ -76,11 +77,13 @@ public class OrderProcessingWorker : BackgroundService
 
             using var scope = _scopeFactory.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<OrdersDbContext>();
+            var _orderRepository = scope.ServiceProvider.GetRequiredService<OrderRepository>();
+            var _cartRepository = scope.ServiceProvider.GetRequiredService<CartReposiotry>();
 
             try
             {
                 // 5. Check Idempotency and process logic
-                var success = await HandleOrderFulfillmentIdempotently(messageId, ea.Body.ToArray(), dbContext);
+                var success = await HandleOrderFulfillmentIdempotently(messageId, routingKey, ea.Body.ToArray(), dbContext, _orderRepository, _cartRepository);
 
                 if (success)
                 {
@@ -107,7 +110,7 @@ public class OrderProcessingWorker : BackgroundService
         await channel.BasicConsumeAsync(queue: "orders.fulfillment", autoAck: false, consumer: consumer, cancellationToken: stoppingToken);
     }
 
-    private async Task<bool> HandleOrderFulfillmentIdempotently(Guid messageId, byte[] body, OrdersDbContext dbContext)
+    private async Task<bool> HandleOrderFulfillmentIdempotently(Guid messageId, string routingKey, byte[] body, OrdersDbContext dbContext, OrderRepository _orderRepository, CartReposiotry _cartRepository)
     {
         // Check if message was already handled (Idempotency)
         if (await dbContext.ProcessedMessages.AnyAsync(m => m.MessageId == messageId))
@@ -122,7 +125,7 @@ public class OrderProcessingWorker : BackgroundService
         var orderId = payload.GetProperty("OrderId").GetGuid();
        
         var ct = new CancellationToken();
-
+        using var scope = _scopeFactory.CreateScope();
         var order = await _orderRepository.GetByIdAsync(orderId, ct);
         if (order is null)
         {
@@ -131,16 +134,30 @@ public class OrderProcessingWorker : BackgroundService
             //    notification.OrderId, notification.PaymentId);
             return false;
         }
-        order.PlaceOrder();
-        order.MarkAsPaid();
-        await _orderRepository.SaveChangesAsync(ct);
 
-        var cart = await _cartRepository.GetActiveCartByCustomerIdAsync(order.CustomerId, ct);
-        foreach (var cartItem in cart.Items.ToList())
+        switch (routingKey)
         {
-            cart.RemoveItemFromCart(cartItem.PlantvariantId);
+            case "payment.success":
+                order.PlaceOrder();
+                order.MarkAsPaid();
+                await _orderRepository.SaveChangesAsync(ct);
+
+                var cart = await _cartRepository.GetActiveCartByCustomerIdAsync(order.CustomerId, ct);
+                foreach (var cartItem in cart.Items.ToList())
+                {
+                    cart.RemoveItemFromCart(cartItem.PlantvariantId);
+                }
+                await _cartRepository.SaveChangesAsync(ct);
+             break;
+            case "payment.failed":
+                order.CancelOrder();
+                order.MarkPaymentFailed();
+                await _orderRepository.SaveChangesAsync(ct);
+                break;
+            default:
+                return false;
         }
-        await _cartRepository.SaveChangesAsync(ct);
+        
 
 
         // Mark message as processed inside the same transaction

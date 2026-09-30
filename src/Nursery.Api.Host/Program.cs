@@ -16,6 +16,7 @@ using Nursery.Catalog.Api.Extensions;
 using Nursery.Catalog.Infrastructure.Persistence.Context;
 using Nursery.Identity;
 using Nursery.Identity.Data;
+using Nursery.Orders.API.BackgroundServices;
 using Nursery.Orders.API.Endpoints;
 using Nursery.Orders.API.Extenstions;
 using Nursery.Orders.Application.Data;
@@ -30,6 +31,7 @@ using Nursery.Shippings.Application.Data;
 using Nursery.Shippings.Infrastucture.Presistance.Context;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using RabbitMQ.Client;
 using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Enrichers.Span;
@@ -66,8 +68,20 @@ builder.Services.AddCarter();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
-builder.Services.AddHostedService<OutboxPublisherService>();
+builder.Services.AddSingleton(new ConnectionFactory
+{
+    HostName = builder.Configuration["RabbitMQ:HostName"] ?? "localhost"
+});
 
+// Let background workers create their own connection asynchronously, or resolve via an async wrapper:
+builder.Services.AddSingleton<IConnection>(sp =>
+{
+    var factory = sp.GetRequiredService<ConnectionFactory>();
+    return factory.CreateConnectionAsync().GetAwaiter().GetResult();
+});
+
+builder.Services.AddHostedService<OutboxPublisherService>();
+builder.Services.AddHostedService<OrderProcessingWorker>();
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
@@ -85,7 +99,9 @@ builder.Services.AddPaymentModule(builder.Configuration);
 builder.Services.AddShippingService(builder.Configuration);
 
 
-
+builder.Services.AddScoped<OrdersDbContext>();
+builder.Services.AddScoped<OrderRepository>();
+builder.Services.AddScoped<CartReposiotry>();
 builder.Services.AddScoped<ICustomerLookup, CustomerLookup>();
 builder.Services.AddScoped<ICatalogLookup, CatalogLookup>();
 builder.Services.AddScoped<IOrderLookup, OrderLookup>();
